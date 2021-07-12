@@ -36,10 +36,18 @@ int main(int argc, char const *argv[])
 
 
 
-int validateFileName(char *fileName) /* ToDo */
+int validateFileName(char *fileName)
 {
-	return 0;
+	int i;
+	for (i=0; fileName[i]!=0; i++)
+	{
+		if (i!=0 && fileName[i] == '.')
+			if (strcmp((fileName+i), ".as") == 0)
+				return 0;
+	}
+	return 1;
 }
+
 void compileFile(char *fileName) /* ToDo */
 {
 	printf("'%s' was just theoreticallty compiled!\n", fileName);

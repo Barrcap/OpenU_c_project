@@ -1,15 +1,12 @@
 #include <stdio.h>
 #include "fileCompiler.h"
 
-#define LINE_LENGTH 80
 
 int fileCompiler(char *fileName)
 {
 	FILE *file;
 	char line[LINE_LENGTH+1];
 	int reachedEOF, errorCounter = 0;
-
-	int testCounter = 1;
 
 	file = fopen(fileName, "r");
 
@@ -24,19 +21,11 @@ int fileCompiler(char *fileName)
 			errorCounter += CodingLineTake1(line);
 		else
 			errorCounter ++;
-
-		printf("line number %i is: %s\n", testCounter, line);
-		testCounter ++;
 	}
 
 	
 	fseek(file, 0, SEEK_SET);
 	
-	/*--------------------------*/
-	testCounter = 1;
-	printf("Going over file again!\n");
-	/*--------------------------*/
-
 	reachedEOF = 0;
 	while (!reachedEOF)
 	{
@@ -44,9 +33,6 @@ int fileCompiler(char *fileName)
 			errorCounter += CodingLineTake2(line);
 		else
 			errorCounter ++;
-
-		printf("line number %i is: %s\n", testCounter, line);
-		testCounter ++;
 	}
 	
 

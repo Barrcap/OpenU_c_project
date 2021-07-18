@@ -50,11 +50,3 @@ int validateFileName(char *fileName)
 	}
 	return 1;
 }
-/*
-void compileFile(char *fileName) 
-{
-	int errorCounter = 0;
-	errorCounter += fileCompiler(file);
-	printf("'%s' was just theoreticallty compiled!\n", fileName);
-}
-*/

@@ -29,17 +29,26 @@ int fileCompiler(char *fileName)
 		testCounter ++;
 	}
 
-	/*
+	
 	fseek(file, 0, SEEK_SET);
-	lineCounter = 1;
+	
+	/*--------------------------*/
+	testCounter = 1;
+	printf("Going over file again!\n");
+	/*--------------------------*/
 
-	while (file != EOF)
+	reachedEOF = 0;
+	while (!reachedEOF)
 	{
-		errorCounter += readFileLine(file, line);
-		
-		errorCounter += CodingLineTake2(line);
+		if (readFileLine(file, line, &reachedEOF) == 0)
+			errorCounter += CodingLineTake2(line);
+		else
+			errorCounter ++;
+
+		printf("line number %i is: %s\n", testCounter, line);
+		testCounter ++;
 	}
-	*/
+	
 
 
 
@@ -73,6 +82,11 @@ int readFileLine(FILE *file, char *line, int *reachedEOF)
 }
 
 int CodingLineTake1(char *line)
+{
+	return 0;
+}
+
+int CodingLineTake2(char *line)
 {
 	return 0;
 }

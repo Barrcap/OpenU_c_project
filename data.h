@@ -7,7 +7,10 @@ typedef struct dataCell
 	int adress;
 	char sourceCode[LINE_LENGTH];
 	long int machineCode;
-	char wasCoded;
+	unsigned char wasCoded : 1;
+	unsigned char byteAmount : 3;
+/*	byteAmount is relevant for data table, represents how many bytes are used
+	out of machineCode's 32 relevant bytes: 1-one byte, 2-half word, 4-word */
 
 }dataCell;
 

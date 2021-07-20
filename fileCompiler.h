@@ -1,4 +1,3 @@
-#define LINE_LENGTH 80
 
 
 int fileCompiler(char *fileName);

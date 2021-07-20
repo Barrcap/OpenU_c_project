@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <string.h>
+#include "data.h"
 #include "fileCompiler.h"
 
 
@@ -7,6 +9,8 @@ int fileCompiler(char *fileName)
 	FILE *file;
 	char line[LINE_LENGTH+1];
 	int reachedEOF, errorCounter = 0;
+	fileCodingStruct codingData;
+
 
 	file = fopen(fileName, "r");
 
@@ -15,8 +19,16 @@ int fileCompiler(char *fileName)
 		return 1;
 
 
+	/* initialize file data's both basic values, and all 3 data tables */
+	codingData.ic = 100;
+	codingData.dc = 0;
+	codingData.sourceLine = 1;
+	strcpy(codingData.fileName, fileName);
 
-
+	if (createTables(codingData.iTable, codingData.dTable, codingData.symbolTable) != 0)
+	{
+		printf("Failed allocating memory for %s! aborting file compilation.\n", fileName);
+	}
 
 	reachedEOF = 0;
 	while (!reachedEOF)
@@ -29,7 +41,9 @@ int fileCompiler(char *fileName)
 
 	
 	fseek(file, 0, SEEK_SET);
-	
+	codingData.ic = 100;
+	codingData.dc = 0;
+	codingData.sourceLine = 1;
 	reachedEOF = 0;
 	while (!reachedEOF)
 	{
@@ -42,7 +56,7 @@ int fileCompiler(char *fileName)
 
 
 
-
+	freeTables(codingData.iTable, codingData.dTable, codingData.symbolTable);
 	fclose(file);
 
 	return errorCounter;

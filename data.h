@@ -1,37 +1,54 @@
+#define FILE_NAME_SIZE 40
 #define DATA_BUFFER 20
 #define LABLE_SIZE 31
+#define LINE_LENGTH 80
 
 
 typedef struct dataCell
 {
+/*	Structure for Instruction Table and Data Table.
+	Each cell represents a line the table.
+*/
 	int adress;
 	char sourceCode[LINE_LENGTH];
-	long int machineCode;
-	unsigned char wasCoded : 1;
-	unsigned char byteAmount : 3;
+	long int machineCode; /* using only 32 bits */
+	unsigned int wasCoded : 1;
+	unsigned int byteAmount : 3;
 /*	byteAmount is relevant for data table, represents how many bytes are used
 	out of machineCode's 32 relevant bytes: 1-one byte, 2-half word, 4-word */
 
 }dataCell;
 
-typedef dataCell dataArray[DATA_BUFFER];
-
 
 typedef struct symbolCell
 {
+/*	Structure for Symbol Table.
+	Each cell represents a line in the table.
+*/
 	char name[LABLE_SIZE];
 	int value;
-	unsigned char placing : 1; /* 0-code image, 1-data image */
-	unsigned char visibility : 2; /* 0-internal, 1-entry, 2-extern */
+	unsigned int placing : 1; /* 0-code image, 1-data image */
+	unsigned int visibility : 2; /* 0-internal, 1-entry, 2-extern */
 
 }symbolCell;
 
-typedef struct fileCodingData
+typedef struct fileCodingStruct
 {
+/*	
+	General structure that contains all 3 data tables and relevant valiables for encoding.
+	will be crated when starting to work on a file, made in order to easily give relevant
+	encoding fucntions easy access to the data.
+*/
 	int ic;
 	int dc;
 	dataCell *iTable; /* Instructions Table */
 	dataCell *dTable; /* Data Table */
 	symbolCell *symbolTable;
 	int sourceLine;
-};
+	char fileName[FILE_NAME_SIZE];
+}fileCodingStruct;
+
+
+int createTables(dataCell *iTable, dataCell *dTable, symbolCell *symbolTable);
+void freeTables(dataCell *iTable, dataCell *dTable, symbolCell *symbolTable);
+/* ToDo - expanding table functions */

@@ -14,6 +14,10 @@ int fileCompiler(char *fileName)
 	/*	failed to open file */
 		return 1;
 
+
+
+
+
 	reachedEOF = 0;
 	while (!reachedEOF)
 	{

@@ -69,8 +69,4 @@ int expandTable(int tableType, fileCodingStruct *codingData);
 void freeTables(fileCodingStruct *codingData);
 
 
-
-
-
-
 void resetCounterParams(fileCodingStruct *codingData);

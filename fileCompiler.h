@@ -8,7 +8,11 @@ struct fileCodingStruct;
 
 int fileCompiler(char *fileName);
 int readFileLine(FILE *file, char *line, int *reachedEOF, struct fileCodingStruct *codingData);
-int CodingLineTake1(char *line);
-int CodingLineTake2(char *line);
+int encodingLineTake1(char *line);
+int encodingLineTake2(char *line);
+
+/*##################################################################################*/
+long int roiEncoding(char *command, char *operands); /*dummy function Roi's encoding function */
+/*##################################################################################*/
 
 void printError(char *errorString, struct fileCodingStruct *codingData);

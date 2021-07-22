@@ -34,7 +34,7 @@ int fileCompiler(char *fileName)
 	while (!reachedEOF)
 	{
 		if (readFileLine(file, line, &reachedEOF, &codingData) == 0)
-			errorCounter += CodingLineTake1(line);
+			errorCounter += encodingLineTake1(line);
 		else
 		{
 			printError("Line too long", &codingData);
@@ -52,7 +52,7 @@ int fileCompiler(char *fileName)
 	while (!reachedEOF)
 	{
 		if (readFileLine(file, line, &reachedEOF, &codingData) == 0)
-			errorCounter += CodingLineTake2(line);
+			errorCounter += encodingLineTake2(line);
 		codingData.sourceLine ++;
 	}
 	
@@ -85,12 +85,12 @@ int readFileLine(FILE *file, char *line, int *reachedEOF, fileCodingStruct *codi
 	return 0;
 }
 
-int CodingLineTake1(char *line)
+int encodingLineTake1(char *line)
 {
 	return 0;
 }
 
-int CodingLineTake2(char *line)
+int encodingLineTake2(char *line)
 {
 	return 0;
 }
@@ -102,3 +102,9 @@ void printError(char *errorString, struct fileCodingStruct *codingData)
 	printf("%s\n", errorString);
 }
 
+/*##################################################################################*/
+long int roiEncoding(char *command, char *operands) /*dummy function Roi's encoding function */
+{
+	return 0;
+}
+/*##################################################################################*/

@@ -2,7 +2,7 @@
 /*#define MACHINE_CODE_MAX_SIZE 1000  Supports roughly 250 lines of code 
 	MACHINE_CODE_MAX_SIZE is in bytes.
 	actual value is our virtual machine's memory (2^25) */
-#define DATA_BUFFER 20
+#define TABLE_BUFFER 20
 #define LABLE_SIZE 31
 #define LINE_LENGTH 80
 
@@ -53,11 +53,13 @@ typedef struct fileCodingStruct
 
 
 int createTables(dataCell *iTable, dataCell *dTable, symbolCell *symbolTable);
+
 void freeTables(dataCell *iTable, dataCell *dTable, symbolCell *symbolTable);
+
 /* ToDo - expanding table functions */
 
 
 
 
 
-void resetCounterParams(struct fileCodingStruct *codingData);
+void resetCounterParams(fileCodingStruct *codingData);

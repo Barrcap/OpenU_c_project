@@ -18,22 +18,10 @@ int fileCompiler(char *fileName)
 	if (file == NULL)
 	/*	failed to open file */
 		return 1;
-
-	/*#############################* /
-	printf("Before initialization:\n");
-	printf("ic: %i\tdc: %i\tSourceline: %i\n", codingData.ic, codingData.dc, codingData.sourceLine);
-	/ *#############################*/
 	
 
 	/* initialize file data's both basic values, and all 3 data tables */
 	resetCounterParams(&codingData);
-	/*#############################* /
-	printf("After initialization:\n");
-	printf("ic: %i\tdc: %i\tSourceline: %i\n", codingData.ic, codingData.dc, codingData.sourceLine);
-	/ *#############################*/
-	/*codingData.ic = 100;
-	codingData.dc = 0;
-	codingData.sourceLine = 1;*/
 	strcpy(codingData.fileName, fileName);
 
 	if (createTables(codingData.iTable, codingData.dTable, codingData.symbolTable) != 0)
@@ -41,41 +29,30 @@ int fileCompiler(char *fileName)
 		printf("Failed allocating memory for %s! aborting file compilation.\n", fileName);
 	}
 
+	/* First time going over source code */
 	reachedEOF = 0;
 	while (!reachedEOF)
 	{
-		/*#############################* /
-		printf("First loop:\t");
-		printf("ic: %i\tdc: %i\tSourceline: %i\n", codingData.ic, codingData.dc, codingData.sourceLine);
-		/ *#############################*/
-		if (readFileLine(file, line, &reachedEOF) == 0)
+		if (readFileLine(file, line, &reachedEOF, &codingData) == 0)
 			errorCounter += CodingLineTake1(line);
 		else
+		{
+			printError("Line too long", &codingData);
 			errorCounter ++;
+		}
 		codingData.sourceLine ++;
 	}
 
 	
+
+	/* Second time going over source code */
 	fseek(file, 0, SEEK_SET);
 	resetCounterParams(&codingData);
-	/*#############################* /
-	printf("After resetting:\n");
-	printf("ic: %i\tdc: %i\tSourceline: %i\n", codingData.ic, codingData.dc, codingData.sourceLine);
-	/ *#############################*/
-	/*codingData.ic = 100;
-	codingData.dc = 0;
-	codingData.sourceLine = 1;*/
 	reachedEOF = 0;
 	while (!reachedEOF)
 	{
-		/*#############################* /
-		printf("Second loop:\t");
-		printf("ic: %i\tdc: %i\tSourceline: %i\n", codingData.ic, codingData.dc, codingData.sourceLine);
-		/ *#############################*/
-		if (readFileLine(file, line, &reachedEOF) == 0)
+		if (readFileLine(file, line, &reachedEOF, &codingData) == 0)
 			errorCounter += CodingLineTake2(line);
-		else
-			errorCounter ++;
 		codingData.sourceLine ++;
 	}
 	
@@ -88,17 +65,14 @@ int fileCompiler(char *fileName)
 	return errorCounter;
 }
 
-int readFileLine(FILE *file, char *line, int *reachedEOF)
+int readFileLine(FILE *file, char *line, int *reachedEOF, fileCodingStruct *codingData)
 {
 	int c, i = 0;
 
 	while ((c=fgetc(file)) != EOF && c!='\n')
 	{
 		if (i >= LINE_LENGTH)
-		{
-			printf("Line too long!\n");
 			return 1;
-		}
 
 		line[i] = c;
 		i++;
@@ -119,5 +93,12 @@ int CodingLineTake1(char *line)
 int CodingLineTake2(char *line)
 {
 	return 0;
+}
+
+void printError(char *errorString, struct fileCodingStruct *codingData)
+{
+	/*printf("%s:%i: %s\n", codingData->fileName, codingData->sourceLine, errorString);*/
+	printf(RED "%s:%i: " RESET, codingData->fileName, codingData->sourceLine);
+	printf("%s\n", errorString);
 }
 

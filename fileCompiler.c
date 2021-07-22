@@ -1,74 +1,78 @@
 #include <stdio.h>
+#include <string.h>
+#include "data.h"
 #include "fileCompiler.h"
 
-#define LINE_LENGTH 80
+
 
 int fileCompiler(char *fileName)
 {
 	FILE *file;
 	char line[LINE_LENGTH+1];
 	int reachedEOF, errorCounter = 0;
+	fileCodingStruct codingData;
 
-	int testCounter = 1;
 
 	file = fopen(fileName, "r");
 
 	if (file == NULL)
 	/*	failed to open file */
 		return 1;
+	
 
+	/* initialize file data's both basic values, and all 3 data tables */
+	resetCounterParams(&codingData);
+	strcpy(codingData.fileName, fileName);
+
+	if (createTables(&codingData) != 0)
+	{
+		printf("Failed allocating memory for %s! aborting file compilation.\n", fileName);
+	}
+
+	/* First time going over source code */
 	reachedEOF = 0;
 	while (!reachedEOF)
 	{
-		if (readFileLine(file, line, &reachedEOF) == 0)
-			errorCounter += CodingLineTake1(line);
+		if (readFileLine(file, line, &reachedEOF, &codingData) == 0)
+			errorCounter += encodingLineTake1(line);
 		else
+		{
+			printError("Line too long", &codingData);
 			errorCounter ++;
-
-		printf("line number %i is: %s\n", testCounter, line);
-		testCounter ++;
+		}
+		codingData.sourceLine ++;
 	}
 
 	
+
+	/* Second time going over source code */
 	fseek(file, 0, SEEK_SET);
-	
-	/*--------------------------*/
-	testCounter = 1;
-	printf("Going over file again!\n");
-	/*--------------------------*/
-
+	resetCounterParams(&codingData);
 	reachedEOF = 0;
 	while (!reachedEOF)
 	{
-		if (readFileLine(file, line, &reachedEOF) == 0)
-			errorCounter += CodingLineTake2(line);
-		else
-			errorCounter ++;
-
-		printf("line number %i is: %s\n", testCounter, line);
-		testCounter ++;
+		if (readFileLine(file, line, &reachedEOF, &codingData) == 0)
+			errorCounter += encodingLineTake2(line);
+		codingData.sourceLine ++;
 	}
 	
 
 
 
-
+	freeTables(&codingData);
 	fclose(file);
 
 	return errorCounter;
 }
 
-int readFileLine(FILE *file, char *line, int *reachedEOF)
+int readFileLine(FILE *file, char *line, int *reachedEOF, fileCodingStruct *codingData)
 {
 	int c, i = 0;
 
 	while ((c=fgetc(file)) != EOF && c!='\n')
 	{
 		if (i >= LINE_LENGTH)
-		{
-			printf("Line too long!\n");
 			return 1;
-		}
 
 		line[i] = c;
 		i++;
@@ -81,12 +85,26 @@ int readFileLine(FILE *file, char *line, int *reachedEOF)
 	return 0;
 }
 
-int CodingLineTake1(char *line)
+int encodingLineTake1(char *line)
 {
 	return 0;
 }
 
-int CodingLineTake2(char *line)
+int encodingLineTake2(char *line)
 {
 	return 0;
 }
+
+void printError(char *errorString, struct fileCodingStruct *codingData)
+{
+	/*printf("%s:%i: %s\n", codingData->fileName, codingData->sourceLine, errorString);*/
+	printf(RED "%s:%i: " RESET, codingData->fileName, codingData->sourceLine);
+	printf("%s\n", errorString);
+}
+
+/*##################################################################################*/
+long int roiEncoding(char *command, char *operands) /*dummy function Roi's encoding function */
+{
+	return 0;
+}
+/*##################################################################################*/

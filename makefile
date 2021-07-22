@@ -1,4 +1,4 @@
-assember: main.o fileCompiler.o
+assember: main.o fileCompiler.o data.o
 	gcc -g -ansi -pedantic -Wall main.o fileCompiler.o data.o -o assember
 main.o: main.c main.h fileCompiler.h data.h
 	gcc -c -g -ansi -pedantic -Wall main.c -o main.o

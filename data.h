@@ -1,4 +1,7 @@
 #define FILE_NAME_SIZE 40
+/*#define MACHINE_CODE_MAX_SIZE 1000  Supports roughly 250 lines of code 
+	MACHINE_CODE_MAX_SIZE is in bytes.
+	actual value is our virtual machine's memory (2^25) */
 #define DATA_BUFFER 20
 #define LABLE_SIZE 31
 #define LINE_LENGTH 80
@@ -15,7 +18,7 @@ typedef struct dataCell
 	unsigned int wasCoded : 1;
 	unsigned int byteAmount : 3;
 /*	byteAmount is relevant for data table, represents how many bytes are used
-	out of machineCode's 32 relevant bytes: 1-one byte, 2-half word, 4-word */
+	out of machineCode's 4 relevant bytes: 1-one byte, 2-half word, 4-word */
 
 }dataCell;
 
@@ -52,3 +55,9 @@ typedef struct fileCodingStruct
 int createTables(dataCell *iTable, dataCell *dTable, symbolCell *symbolTable);
 void freeTables(dataCell *iTable, dataCell *dTable, symbolCell *symbolTable);
 /* ToDo - expanding table functions */
+
+
+
+
+
+void resetCounterParams(struct fileCodingStruct *codingData);

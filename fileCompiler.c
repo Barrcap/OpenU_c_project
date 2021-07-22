@@ -4,6 +4,7 @@
 #include "fileCompiler.h"
 
 
+
 int fileCompiler(char *fileName)
 {
 	FILE *file;
@@ -18,11 +19,21 @@ int fileCompiler(char *fileName)
 	/*	failed to open file */
 		return 1;
 
+	/*#############################* /
+	printf("Before initialization:\n");
+	printf("ic: %i\tdc: %i\tSourceline: %i\n", codingData.ic, codingData.dc, codingData.sourceLine);
+	/ *#############################*/
+	
 
 	/* initialize file data's both basic values, and all 3 data tables */
-	codingData.ic = 100;
+	resetCounterParams(&codingData);
+	/*#############################* /
+	printf("After initialization:\n");
+	printf("ic: %i\tdc: %i\tSourceline: %i\n", codingData.ic, codingData.dc, codingData.sourceLine);
+	/ *#############################*/
+	/*codingData.ic = 100;
 	codingData.dc = 0;
-	codingData.sourceLine = 1;
+	codingData.sourceLine = 1;*/
 	strcpy(codingData.fileName, fileName);
 
 	if (createTables(codingData.iTable, codingData.dTable, codingData.symbolTable) != 0)
@@ -33,24 +44,39 @@ int fileCompiler(char *fileName)
 	reachedEOF = 0;
 	while (!reachedEOF)
 	{
+		/*#############################* /
+		printf("First loop:\t");
+		printf("ic: %i\tdc: %i\tSourceline: %i\n", codingData.ic, codingData.dc, codingData.sourceLine);
+		/ *#############################*/
 		if (readFileLine(file, line, &reachedEOF) == 0)
 			errorCounter += CodingLineTake1(line);
 		else
 			errorCounter ++;
+		codingData.sourceLine ++;
 	}
 
 	
 	fseek(file, 0, SEEK_SET);
-	codingData.ic = 100;
+	resetCounterParams(&codingData);
+	/*#############################* /
+	printf("After resetting:\n");
+	printf("ic: %i\tdc: %i\tSourceline: %i\n", codingData.ic, codingData.dc, codingData.sourceLine);
+	/ *#############################*/
+	/*codingData.ic = 100;
 	codingData.dc = 0;
-	codingData.sourceLine = 1;
+	codingData.sourceLine = 1;*/
 	reachedEOF = 0;
 	while (!reachedEOF)
 	{
+		/*#############################* /
+		printf("Second loop:\t");
+		printf("ic: %i\tdc: %i\tSourceline: %i\n", codingData.ic, codingData.dc, codingData.sourceLine);
+		/ *#############################*/
 		if (readFileLine(file, line, &reachedEOF) == 0)
 			errorCounter += CodingLineTake2(line);
 		else
 			errorCounter ++;
+		codingData.sourceLine ++;
 	}
 	
 
@@ -94,3 +120,4 @@ int CodingLineTake2(char *line)
 {
 	return 0;
 }
+

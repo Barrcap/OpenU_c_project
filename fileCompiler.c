@@ -24,7 +24,7 @@ int fileCompiler(char *fileName)
 	resetCounterParams(&codingData);
 	strcpy(codingData.fileName, fileName);
 
-	if (createTables(codingData.iTable, codingData.dTable, codingData.symbolTable) != 0)
+	if (createTables(&codingData) != 0)
 	{
 		printf("Failed allocating memory for %s! aborting file compilation.\n", fileName);
 	}
@@ -59,7 +59,7 @@ int fileCompiler(char *fileName)
 
 
 
-	freeTables(codingData.iTable, codingData.dTable, codingData.symbolTable);
+	freeTables(&codingData);
 	fclose(file);
 
 	return errorCounter;

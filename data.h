@@ -6,6 +6,11 @@
 #define LABLE_SIZE 31
 #define LINE_LENGTH 80
 
+#define I_TABLE 0
+#define D_TABLE 1
+#define S_TABLE 2
+
+
 
 typedef struct dataCell
 {
@@ -40,23 +45,29 @@ typedef struct fileCodingStruct
 /*	
 	General structure that contains all 3 data tables and relevant valiables for encoding.
 	will be crated when starting to work on a file, made in order to easily give relevant
-	encoding fucntions easy access to the data.
+	fucntions easy access to the data.
 */
-	int ic;
-	int dc;
 	dataCell *iTable; /* Instructions Table */
 	dataCell *dTable; /* Data Table */
-	symbolCell *symbolTable;
+	symbolCell *sTable;
+	int iTableSize;
+	int dTableSize;
+	int sTableSize;
+
+	int ic; /* instruction commands counter */
+	int dc; /* data commands counter */
+	int icf; /* amount of instruction commands*/
+	int dcf; /* amount of data commands */
 	int sourceLine;
+
 	char fileName[FILE_NAME_SIZE];
 }fileCodingStruct;
 
 
-int createTables(dataCell *iTable, dataCell *dTable, symbolCell *symbolTable);
+int createTables(fileCodingStruct *codingData);
+int expandTable(int tableType, fileCodingStruct *codingData);
+void freeTables(fileCodingStruct *codingData);
 
-void freeTables(dataCell *iTable, dataCell *dTable, symbolCell *symbolTable);
-
-/* ToDo - expanding table functions */
 
 
 

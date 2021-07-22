@@ -2,33 +2,70 @@
 
 #include "data.h"
 
-int createTables(dataCell *iTable, dataCell *dTable, symbolCell *symbolTable)
+int createTables(fileCodingStruct *codingData)
 {
 
-	iTable = (dataCell*) calloc(TABLE_BUFFER, sizeof(dataCell));
-	if (iTable == NULL)
+	codingData->iTable = (dataCell*) calloc(TABLE_BUFFER, sizeof(dataCell));
+	codingData->iTableSize = TABLE_BUFFER;
+	if (codingData->iTable == NULL)
 		return 1;
 
-	dTable = (dataCell*) calloc(TABLE_BUFFER, sizeof(dataCell));
-	if (dTable == NULL)
+	codingData->dTable = (dataCell*) calloc(TABLE_BUFFER, sizeof(dataCell));
+	codingData->dTableSize = TABLE_BUFFER;
+	if (codingData->dTable == NULL)
 		return 1;
 
-	symbolTable = (symbolCell*) calloc(TABLE_BUFFER, sizeof(symbolCell));
-	if (symbolTable == NULL)
+	codingData->sTable = (symbolCell*) calloc(TABLE_BUFFER, sizeof(symbolCell));
+	codingData->sTableSize = TABLE_BUFFER;
+	if (codingData->sTable == NULL)
 		return 1;
 
 	return 0;
 }
 
 
-void freeTables(dataCell *iTable, dataCell *dTable, symbolCell *symbolTable)
+void freeTables(fileCodingStruct *codingData)
 {
 
-	free(iTable);
-	free(dTable);
-	free(symbolTable);
+	free(codingData->iTable);
+	free(codingData->dTable);
+	free(codingData->sTable);
 	
 }
+
+int expandTable(int tableType, fileCodingStruct *codingData)
+{	/* function gets table type with general struct and expand relevant table.
+	return 0 is succeeded, 1 if failed. */
+	switch (tableType)
+	{
+		case I_TABLE:
+			codingData->iTableSize += TABLE_BUFFER;
+			codingData->iTable = (dataCell*) realloc(codingData->iTable, codingData->iTableSize);
+			if (codingData->iTable == NULL)
+				return 1;
+
+			break;
+
+		case D_TABLE:
+			codingData->dTableSize += TABLE_BUFFER;
+			codingData->dTable = (dataCell*) realloc(codingData->dTable, codingData->dTableSize);
+			if (codingData->dTable == NULL)
+				return 1;
+
+			break;
+
+		case S_TABLE:
+			codingData->sTableSize += TABLE_BUFFER;
+			codingData->sTable = (symbolCell*) realloc(codingData->sTable, codingData->sTableSize);
+			if (codingData->sTable == NULL)
+				return 1;
+
+			break;
+	}
+
+	return 0;
+}
+
 
 
 void resetCounterParams(fileCodingStruct *codingData)

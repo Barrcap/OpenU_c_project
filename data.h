@@ -6,15 +6,15 @@
 #define LINE_LENGTH 80
 #define LABLE_SIZE 31
 #define COMMAND_SIZE 10
-#define OPERANDS_SIZE (LINE_LENGTH-8)
-/* longest operand possible is a string after .asciz command (6 chars).
+/*#define OPERANDS_SIZE (LINE_LENGTH-8)
+ longest operand possible is a string after .asciz command (6 chars).
 taking to account also 1 white note, and room for NULL at the end (total 8 chars less than LINE_LENGTH.*/
+#define COMMA_START_SIGN 
 
 
 #define I_TABLE 0
 #define D_TABLE 1
 #define S_TABLE 2
-
 
 /*enum table_types {I_TABLE, D_TABLE, S_TABLE};*/
 

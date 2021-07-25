@@ -35,6 +35,7 @@ int fileCompiler(char *fileName)
 	reachedEOF = 0;
 	while (!reachedEOF)
 	{
+		/*printf("#######\tReading line #%i:\n", codingData.sourceLine); / *#############*/
 		if (readFileLine(file, line, &reachedEOF, &codingData) == 0)
 			errorCounter += encodingLineTake1(line, &codingData);
 		else
@@ -47,7 +48,7 @@ int fileCompiler(char *fileName)
 
 	
 
-	/* Second time going over source code */
+	/* Second time going over source code * /
 	fseek(file, 0, SEEK_SET);
 	resetCounterParams(&codingData);
 	reachedEOF = 0;
@@ -56,7 +57,7 @@ int fileCompiler(char *fileName)
 		if (readFileLine(file, line, &reachedEOF, &codingData) == 0)
 			errorCounter += encodingLineTake2(line, &codingData);
 		codingData.sourceLine ++;
-	}
+	}*/
 	
 
 
@@ -74,7 +75,13 @@ int readFileLine(FILE *file, char *line, int *reachedEOF, fileCodingStruct *codi
 	while ((c=fgetc(file)) != EOF && c!='\n')
 	{
 		if (i >= LINE_LENGTH)
+		{
+			while ((c=fgetc(file)) != EOF && c!='\n');
+			/* finish reading rest of the line*/
+			if (c == EOF)
+				*reachedEOF = 1;
 			return 1;
+		}
 
 		line[i] = c;
 		i++;
@@ -89,14 +96,36 @@ int readFileLine(FILE *file, char *line, int *reachedEOF, fileCodingStruct *codi
 
 int encodingLineTake1(char *line, struct fileCodingStruct *codingData)
 {
-	char lable[LABLE_SIZE];
-	char command[COMMAND_SIZE];
-	char operands[OPERANDS_SIZE];
+	char lable[LABLE_SIZE] = {0};
+	char command[COMMAND_SIZE] = {0};
+	char operands[LINE_LENGTH] = {0};
+
+	int returnVal;
+
 	/* Todo - add lable and command lengh validation */
 
-	/*
-	sscanf(line, lable);
-	if (lable[strlen(lable)-1] == ':');*/
+	returnVal = seperateArguments(line, lable, command, operands, codingData);
+
+	if (returnVal != 0)
+	{
+		if (returnVal == 1)
+			/* seperateArguments detected an error */
+			return 1;
+		else
+			/* seperateArgument detected empty line/comment line */
+			return 0;
+	}
+
+	/* Todo - seperateArguments */
+	/* now lable, command, and operands strings are seperated*/
+	/* Todo - content validation for label */
+
+
+
+	/* Todo - content validtation for command and operands  */
+
+	/* Deal with encoding function */
+
 
 
 
@@ -111,52 +140,95 @@ int encodingLineTake2(char *line, struct fileCodingStruct *codingData)
 void printError(char *errorString, struct fileCodingStruct *codingData)
 {
 	/*printf("%s:%i: %s\n", codingData->fileName, codingData->sourceLine, errorString);*/
-	printf(RED "%s:%i: " RESET, codingData->fileName, codingData->sourceLine);
-	printf("%s\n", errorString);
+	printf(BOLDWHITE "%s:%i: " RESET, codingData->fileName, codingData->sourceLine);
+	printf(BOLDRED "%s\n" RESET, errorString);
 }
 
 
-int seperateArguments(char *line, char *lable, char command, char *operands, struct fileCodingStruct *codingData)
+int seperateArguments(char *line, char *lable, char *command, char *operands, struct fileCodingStruct *codingData)
 {
-	char c;
-	int i, p;
+	int start=0, end, reachedNULL;
 
-	while (isspace(line[i]))
-		/* skips white notes at the beginning */
-		i++;
+	reachedNULL = operandPointers(line, &start, &end);
 
-	p=i; /* p is now operand first character */
-
-	while (!isspace(line[i]))
-		i++;
-
-
-	/*char firstOperand[LINE_LENGTH];
-	char secondOperand[LINE_LENGTH];*/
-
-	/*sscanf(line, "%s %s", firstOperand, secondOperand);
-
-	if (firstOperand[strlen(firstOperand)-1] == ':')
+	if (line[start] == 0)
+		/* line contains only white notes */
 	{
-		/ * First string until white note is a lable * /
-		if (strlen(firstOperand) <= LABLE_SIZE)
-			strcpy(lable, firstOperand);
-		else
+		/*printError("TEST - NOT ERROR - detected blank line", codingData); / *###################*/
+		return 2;
+	}
+
+	if (line[start] == ';')
+		/* comment line */
+	{
+		/*printError("TEST - NOT ERROR - detected comment", codingData); / *###################*/
+		return 3;
+	}
+
+	if (line[end-1] == ':')
+	{
+		/*printError("TEST - NOT ERROR - detected lable", codingData); / *###################*/
+		/* First argument is a label */
+		if (end-start > LABLE_SIZE)
 		{
-			printError("Lable is too long", codingData);
+			printError("label too long", codingData);
 			return 1;
 		}
 
-		if (strlen(secondOperand) <= COMMAND_SIZE)
-			strcpy(command, secondOperand);
-		else
+		line[end] = 0;
+		strcpy(lable, line+start);
+		if (reachedNULL)
 		{
-			printError("Invalid command name", codingData);
+			printError("missing command (reachedNULL)", codingData);
 			return 1;
 		}
-	}*/
+		start = end+1;
+		
+
+		operandPointers(line, &start, &end);
+		if (line[start] == 0)
+		{
+			printError("missing command (only white notes after label)", codingData);
+			return 1;
+		}
+	}
+
+	/* start and end indexes now wrapping the command start/end */
+
+	if (end-start > COMMAND_SIZE)
+	{
+		printError("invalid command", codingData);
+		return 1;
+	}
+
+	line[end] = 0;
+	strcpy(command, line+start);
+	start = end+1;
+
+	if (start < LINE_LENGTH)
+		/* if went out of line's array or start is pointing to the array's NULL, operands will remain NULL */
+		strcpy(operands, line+start);
 
 	return 0;
+}
+
+int operandPointers(char *line, int *start, int *end)
+{/*	function gets a string with source code line as string, a starting and ending indexes in the string.
+	start index will be moved to the first none white character.
+	end index will be moved to first white character/NULL after start index. */
+
+	while (isspace(line[*start]))
+		(*start)++;
+
+	*end = *start;
+	while (line[*end]!=0 && !isspace(line[*end]))
+		(*end)++;
+
+	if (line[*end]==0)
+		return 1;
+
+	return 0;
+
 }
 
 

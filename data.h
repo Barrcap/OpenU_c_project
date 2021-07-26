@@ -3,20 +3,13 @@
 	MACHINE_CODE_MAX_SIZE is in bytes.
 	actual value is our virtual machine's memory (2^25) */
 #define TABLE_BUFFER 20
-#define LINE_LENGTH 80
 #define LABLE_SIZE 31
-#define COMMAND_SIZE 10
-/*#define OPERANDS_SIZE (LINE_LENGTH-8)
- longest operand possible is a string after .asciz command (6 chars).
-taking to account also 1 white note, and room for NULL at the end (total 8 chars less than LINE_LENGTH.*/
-#define COMMA_START_SIGN 
+#define LINE_LENGTH 80
 
-/*
 #define I_TABLE 0
 #define D_TABLE 1
 #define S_TABLE 2
-*/
-enum table_types {I_TABLE, D_TABLE, S_TABLE};
+
 
 
 typedef struct dataCell

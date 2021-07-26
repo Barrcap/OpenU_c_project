@@ -57,6 +57,13 @@ static char strREG1[2];
 static char strREG2[2];
 static char strREG3[2];
 
+/*declarations*/
+
+long int Rcase();
+long int Icase();
+long int Jcase();
+
+
 /*function that prtinting integer in binary*/
 void bin(unsigned n)
 {
@@ -65,14 +72,22 @@ void bin(unsigned n)
         (n & i) ? printf("1") : printf("0");
 }
 
+int isLabel(char * str){
+
+	if (str[0] == '$')
+		return 0;
+	else
+		return 1;
+}
+
 int sort(char * str ,char * commandSTR) {
-	int code;
+	long int code;
 	int i = 0;
 	while(strcmp(commandSTR, lines[i].command)){
 		i++;
 	}
 	if(i <= 7){
-		code = Rcase_toBinary(str,commandSTR);
+		code = Rcase(str,commandSTR);
 	}
 	else if (i >= 8 && i <= 22){
 		code = Icase_toBinary(str,commandSTR);
@@ -138,7 +153,7 @@ int findOpcode(char * str){
 
 
 
-long int Rcase_toBinary(char * str ,char * commandSTR){
+long int Rcase(char * str ,char * commandSTR){
 	/*Extracting each register from the string*/
 	char * tempReg1  = strtok(str,",");
 	char * tempReg2 = strtok(NULL,",");
@@ -200,7 +215,7 @@ long int Icase(char * str ,char * commandSTR){            /* this method isnt re
 	mask = reg2Val;
 	mask <<= 16;
 	code |= mask;
-	if(opcode >= 10 && opcode <= 14 || opcode >= 19 && opcode <= 24){
+	if((opcode >= 10 && opcode <= 14) || (opcode >= 19 && opcode <= 24)){
 		mask = tempHex;
 		mask = mask & immedVal;
 		code |= mask;
@@ -216,7 +231,7 @@ long int Icase(char * str ,char * commandSTR){            /* this method isnt re
 
 long int Jcase(char * str ,char * commandSTR){    /*this function isnt ready yet*/
 	/*Extracting each register from the string*/
-	if(!isLabel()){ 									/* i have to write  function who can find if this is label*/
+	if(!isLabel(str)){ 									
 		int tempHex = 0x00FFFFFF;
 		char * reg1 = removeDollar(str,1);
 		/*convert the string to an integer */

@@ -80,7 +80,7 @@ int getLabelAdress(char *lableName, fileCodingStruct *codingData)
 	return 0;
 }
 
-int getIC(fileCodingStruct codingData)
+int getIC(fileCodingStruct *codingData)
 {
 	return 0;
 }

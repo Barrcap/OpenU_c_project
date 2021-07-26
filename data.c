@@ -1,7 +1,10 @@
 #include <stdlib.h>
 #include <stdarg.h>
+#include <string.h>
+#include <stdio.h> /* can be removed with fileCompiler.h? ######################*/
 
 #include "data.h"
+#include "fileCompiler.h" /* move printError here? ############################## */
 
 int createTables(fileCodingStruct *codingData)
 {
@@ -18,6 +21,7 @@ int createTables(fileCodingStruct *codingData)
 
 	codingData->sTable = (symbolCell*) calloc(TABLE_BUFFER, sizeof(symbolCell));
 	codingData->sTableSize = TABLE_BUFFER;
+	codingData->sc = 0;
 	if (codingData->sTable == NULL)
 		return 1;
 
@@ -67,28 +71,31 @@ int expandTable(int tableType, fileCodingStruct *codingData)
 	return 0;
 }
 
-void addToTable(fileCodingStruct *codingData, int tableType, ...)
+/*void addToTable(fileCodingStruct *codingData, int tableType, ...)
 {
+	va_list args;
+
+
 	switch (tableType)
 	{
-		case I_TABLE:
+		case I_TABLE:  machineCode wasCoded 
 			
 			break;
 
-		case D_TABLE:
+		case D_TABLE:  machineCode, byteAmount 
 
 			break;
 
-		case S_TABLE:
+		case S_TABLE:  *name, adress, placing, visibility 
 
 			break;
 	}
-}
+}*/
 
 void resetCounterParams(fileCodingStruct *codingData)
 {
 	codingData->ic = 100;
-	codingData->dc = 0;
+	codingData->dc = 4;
 	codingData->sourceLine = 1;
 }
 
@@ -107,3 +114,63 @@ void pushCode(long int code, fileCodingStruct *codingData)
 	/* Temprorary until start using tables: ############################### */
 	codingData->code = code;
 }
+
+int pushLable(char *label, int placing, fileCodingStruct *codingData)
+{/*	
+	returns 0 on success, 1 if found error, -1 if failed to realloc symbol table size
+*/
+	int i=0;
+	/*char *errorString[LINE_LENGTH];
+	char *sourceLineString[20];*/
+
+	/* checking if label was already defined: */
+	for (i=0; i<codingData->sc; i++) 
+	{
+		if (strcmp(label,codingData->sTable[i].name) == 0)
+		{
+			/* label was already defined, so visibility value was defined as well */
+			switch (codingData->sTable[i].visibility)
+			{
+				case INTERN:
+					printError("Label already defined", codingData);
+					return 1;
+					break;
+
+				case EXTERN:
+					printError("Label already defined as extern", codingData);
+					return 1;
+					break;
+
+				case ENTRY:
+					if (placing == CODE_IMAGE)
+						codingData->sTable[i].adress = codingData->ic;
+
+					if (placing == DATA_IMAGE)
+						codingData->sTable[i].adress = codingData->dc;
+					return 0;
+					break;
+			}/* switch case ends*/
+		}
+	}
+	/* looking for label loop ended.
+	i=sc, pointing to next available spot in the table */
+
+	if (i>=codingData->sTableSize) /* expanding symbol table if needed */
+	{
+		if (expandTable(S_TABLE, codingData))
+			return -1; /* failed expanding tabel */
+	}
+
+	strcpy(codingData->sTable[i].name, label);
+	if (placing == CODE_IMAGE)
+		codingData->sTable[i].adress = codingData->ic;
+
+	if (placing == DATA_IMAGE)
+		codingData->sTable[i].adress = codingData->dc;
+
+	codingData->sTable[i].placing = placing;
+	codingData->sTable[i].visibility = INTERN;
+
+	return 0;
+}
+

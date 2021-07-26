@@ -25,7 +25,6 @@ int fileCompiler(char *fileName)
 	
 
 	/* initialize file data's both basic values, and all 3 data tables */
-	codingData.sc = 0; /* symbol table counter */
 	resetCounterParams(&codingData);
 	strcpy(codingData.fileName, fileName);
 
@@ -98,7 +97,7 @@ int readFileLine(FILE *file, char *line, int *reachedEOF, fileCodingStruct *codi
 
 int encodingLineTake1(char *line, struct fileCodingStruct *codingData)
 {
-	char lable[LABLE_SIZE] = {0};
+	char lable[LABEL_SIZE] = {0};
 	char command[COMMAND_SIZE] = {0};
 	char operands[LINE_LENGTH] = {0};
 
@@ -168,7 +167,7 @@ int seperateArguments(char *line, char *lable, char *command, char *operands, st
 	if (line[end-1] == ':')
 	{
 		/* First argument is a label */
-		if (end-start > LABLE_SIZE)
+		if (end-start > LABEL_SIZE)
 		{
 			printError("label too long", codingData);
 			return 1;

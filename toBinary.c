@@ -65,27 +65,6 @@ void bin(unsigned n)
         (n & i) ? printf("1") : printf("0");
 }
 
-int sort(char * str ,char * commandSTR) {
-	int code;
-	int i = 0;
-	while(strcmp(commandSTR, lines[i].command)){
-		i++;
-	}
-	if(i <= 7){
-		code = Rcase_toBinary(str,commandSTR);
-	}
-	else if (i >= 8 && i <= 22){
-		code = Icase_toBinary(str,commandSTR);
-	}
-	else if (i >= 23 && i <=26 ){
-		code = Jcase_toBinary(str,commandSTR);
-	}
-	else return -1;
-
-	return code;
-
-}
-
 char * removeDollar(char * str,int occation){
 	switch(occation){
 		case 1:
@@ -133,7 +112,7 @@ int findOpcode(char * str){
 	int i;
 	int res = ERROR;
 	
-	for(i=0; i<28; i++){
+	for(i=0; i<8; i++){
 		if((x = strcmp(str, lines[i].command)) == 0){
 			res = lines[i].opcode;
 			printf("####THIS IS opcode NUMBER\n" );
@@ -148,7 +127,7 @@ int findOpcode(char * str){
 
 
 
-long int Rcase_toBinary(char * str ,char * commandSTR){
+long int firstCase_toBinary(char * str ,char * commandSTR){
 	/*Extracting each register from the string*/
 	char * tempReg1  = strtok(str,",");
 	char * tempReg2 = strtok(NULL,",");
@@ -164,22 +143,22 @@ long int Rcase_toBinary(char * str ,char * commandSTR){
 
 
 	/*coding to binary*/
-	long int code = 0;
+	long int add_code = 0;
 	long int mask = findOpcode(commandSTR);        /*this is the case with opcode = 1*/ 
 	mask <<=  26;
-	code |= mask;
+	add_code |= mask;
 	mask = reg1Val;
 	mask <<= 21;
-	code |= mask;
+	add_code |= mask;
 	mask = reg2Val;
 	mask <<= 16;
-	code |= mask;
+	add_code |= mask;
 	mask = reg3Val;
 	mask <<= 11;
-	code |= mask;
+	add_code |= mask;
 	mask = findfunct(commandSTR);  /*this mask initialize funct in each case and thats the only diffrence in this case*/
 	mask <<= 6;
-	code |= mask;
+	add_code |= mask;
 	/*TESTS*/
 	printf("%s\n",tempReg1 );
 	printf("%s\n",tempReg2 );
@@ -189,14 +168,13 @@ long int Rcase_toBinary(char * str ,char * commandSTR){
 	printf("%d\n",reg3Val );
 	printf("%s\n",reg1 );
 	/*TESTS*/
-	return code;
+	return add_code;
 
 
 }
 
-long int Icase(char * str ,char * commandSTR){            /* this method isnt ready yet*/ /*have to chek complete to 2 method*/
+long int secoundCase(char * str ,char * commandSTR){
 	/*Extracting each register from the string*/
-	int tempHex = 0x00FFFFFF;
 	char * tempReg1  = strtok(str,",");
 	char * immed = strtok(NULL,",");
 	char * tempReg2 = strtok(NULL,",");
@@ -206,11 +184,10 @@ long int Icase(char * str ,char * commandSTR){            /* this method isnt re
 	/*convert the string to an integer */
 	int reg1Val = atoi(reg1);
 	int reg2Val = atoi(reg2);
-	short immedVal = atoi(immed);
+	int immedVal = atoi(immed);
 
 	long int code = 0;
-	int opcode = findOpcode(commandSTR);
-	long int mask = opcode; 
+	long int mask = findOpcode(commandSTR); 
 	mask <<=  26;
 	code |= mask;
 	mask = reg1Val;
@@ -219,46 +196,16 @@ long int Icase(char * str ,char * commandSTR){            /* this method isnt re
 	mask = reg2Val;
 	mask <<= 16;
 	code |= mask;
-	if(opcode >= 10 && opcode <= 14 || opcode >= 19 && opcode <= 24){
-		mask = tempHex;
-		mask = mask & immedVal;
-		code |= mask;
-	}
-	else if(opcode >= 15 && opcode <= 18){
-		/*no clear how to write this code for this time*/
-		/*we need lable table*/
-	}
 
-	return code;
+	/*we have to cheak if the number is in 2^16 range in singed method */
+	/* in fact the range is 2^8 in possitive numbers and vice versa */
+	mask = immed;
+	code |= mask;
+
 
 }
 
-long int Jcase(char * str ,char * commandSTR){
-	/*Extracting each register from the string*/
-	if(!isLabel()){
-		int tempHex = 0x00FFFFFF;
-		char * reg1 = removeDollar(str,1);
-		/*convert the string to an integer */
-		short reg1Val = atoi(reg1);
-		long int code = 0;
-		int opcode = findOpcode(commandSTR);
-		long int mask = opcode; 
-		mask <<=  26;
-		code |= mask;
-		mask = 1;        /*this is register case*/
-		mask <<= 21;
-		code |= mask;
-		mask = tempHex;
-		mask = mask & reg1Val;
-		code |= mask;
-		return code;
-	}
-	else {
 
-		/* this is lable case*/
-	}
-	
-}
 
 
 

@@ -14,7 +14,7 @@
 
 
 /*function that prtinting integer in binary*/
-void binPrint(unsigned n)
+void binPrint(unsigned long int n)
 {
     unsigned i;
     for (i = 1 << 31; i > 0; i = i / 2)

@@ -13,7 +13,7 @@ struct fileCodingStruct;
 
 
 
-void binPrint(unsigned n);
+void binPrint(unsigned long int n);
 int isLabel(char * str);
 int toBinary(char * str ,char * commandSTR, struct fileCodingStruct *codingData);
 int findfunct(char * str);

@@ -87,5 +87,6 @@ int getIC(fileCodingStruct codingData)
 
 void pushCode(long int code, fileCodingStruct *codingData)
 {
-	
+	/* Temprorary until start using tables: ############################### */
+	codingData->code = code;
 }

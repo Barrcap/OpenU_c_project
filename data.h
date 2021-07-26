@@ -66,7 +66,8 @@ typedef struct fileCodingStruct
 	int icf; /* amount of instruction commands*/
 	int dcf; /* amount of data commands */
 	int sourceLine;
-	long int code;
+
+	long int code; /* Temprorary until start using tables ############################### */
 
 	char fileName[FILE_NAME_SIZE];
 }fileCodingStruct;

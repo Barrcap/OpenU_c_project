@@ -203,8 +203,7 @@ long int Icase(char * str ,char * commandSTR, fileCodingStruct *codingData){    
 		tempMask = mask & immedVal;
 	}
 	else{
-		immedVal = getLabelAdress(immed,codingData);
-		distance = getDistAddres(immedVal, codingData);
+		distance = getDistAddres(immed, codingData);
 		mask = tempHex;
 		tempMask = mask & distance;
 	}

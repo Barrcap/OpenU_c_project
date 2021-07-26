@@ -1,5 +1,4 @@
 #define COMMAND_NUM 27
-#include <stdio.h>
 
 typedef struct s1
 {

@@ -30,6 +30,14 @@ int isLabel(char * str){
 		return 1;
 }
 
+int getDistAddres(int destAdd, fileCodingStruct *codingData){
+	int sourceAdd = getIC(codingData); /*find my address*/
+	int res = destAdd - sourceAdd; /*this is the clac to know where we have to go*/
+	return res;
+}
+
+
+
 int toBinary(char * str ,char * commandSTR, fileCodingStruct *codingData) {
 	long int code;
 	int i = 0;
@@ -172,33 +180,38 @@ long int Icase(char * str ,char * commandSTR, fileCodingStruct *codingData){    
 	char * tempReg1  = strtok(str,",");
 	char * immed = strtok(NULL,",");
 	char * tempReg2 = strtok(NULL,",");
-	/*removing the '$ from the strings and saving in new pointer */
-
 	char reg1[REG_LENGHT] = {0};
 	char reg2[REG_LENGHT] = {0};
-
 	int reg1Val;
 	int reg2Val;
-
 	short immedVal;
 	long int code;
 	int opcode;
 	long int mask;
-
+	long int tempMask;  /*this varieabl containes the val on each case*/
+	short distance;  /*the distance form labels*/
 	removeDollar(tempReg1, reg1);
 	removeDollar(tempReg2, reg2);
 
 	/*convert the string to an integer */
 	reg1Val = atoi(reg1);
 	reg2Val = atoi(reg2);
-	immedVal = atoi(immed);
+		/*this way we are checking what case we are (register or lables) */
+	if(!isLabel(immed)){
+		immedVal = atoi(immed);
+		mask = tempHex;
+		tempMask = mask & immedVal;
+	}
+	else{
+		immedVal = getLabelAdress(immed,codingData);
+		distance = getDistAddres(immedVal, codingData);
+		mask = tempHex;
+		tempMask = mask & distance;
+	}
 
 	code = 0;
 	opcode = findOpcode(commandSTR);
 	mask = opcode; 
-
-
-
 	mask <<=  26;
 	code |= mask;
 	mask = reg1Val;
@@ -207,15 +220,8 @@ long int Icase(char * str ,char * commandSTR, fileCodingStruct *codingData){    
 	mask = reg2Val;
 	mask <<= 16;
 	code |= mask;
-	if((opcode >= 10 && opcode <= 14) || (opcode >= 19 && opcode <= 24)){
-		mask = tempHex;
-		mask = mask & immedVal;
-		code |= mask;
-	}
-	else if(opcode >= 15 && opcode <= 18){
-		/*no clear how to write this code for this time*/
-		/*we need lable table*/
-	}
+	code |= tempMask; /*this is the coding for each case*/
+	
 
 	return code;
 

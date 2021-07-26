@@ -82,5 +82,5 @@ void resetCounterParams(fileCodingStruct *codingData);
 /* if label exists, returns adress, if not returns -1 */
 int getLabelAdress(char *lableName, fileCodingStruct *codingData);
 
-int getIC(fileCodingStruct codingData);
+int getIC(fileCodingStruct *codingData);
 void pushCode(long int code, fileCodingStruct *codingData);

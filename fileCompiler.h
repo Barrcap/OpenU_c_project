@@ -16,8 +16,8 @@ int encodingLineTake2(char *line, struct fileCodingStruct *codingData);
 int seperateArguments(char *line, char *lable, char *command, char *operands, struct fileCodingStruct *codingData);
 int operandPointers(char *line, int *start, int *end);
 
-/*##################################################################################*/
+/*###################################################################################*/
 long int roiEncoding(char *command, char *operands); /*dummy function Roi's encoding function */
-/*##################################################################################*/
+/*###################################################################################*/
 
 void printError(char *errorString, struct fileCodingStruct *codingData);

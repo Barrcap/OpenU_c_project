@@ -47,7 +47,7 @@ int fileCompiler(char *fileName)
 
 	
 
-	/* Second time going over source code * /
+	/* Second time going over source code *  /
 	fseek(file, 0, SEEK_SET);
 	resetCounterParams(&codingData);
 	reachedEOF = 0;

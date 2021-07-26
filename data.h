@@ -63,6 +63,7 @@ typedef struct fileCodingStruct
 
 	int ic; /* instruction commands counter */
 	int dc; /* data commands counter */
+	int sc; /* symbol table counter */
 	int icf; /* amount of instruction commands*/
 	int dcf; /* amount of data commands */
 	int sourceLine;
@@ -75,6 +76,8 @@ typedef struct fileCodingStruct
 int createTables(fileCodingStruct *codingData);
 int expandTable(int tableType, fileCodingStruct *codingData);
 void freeTables(fileCodingStruct *codingData);
+
+void addToTable(fileCodingStruct *codingData, int tableType, ...);
 
 void resetCounterParams(fileCodingStruct *codingData);
 

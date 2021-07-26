@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdarg.h>
 
 #include "data.h"
 
@@ -66,7 +67,23 @@ int expandTable(int tableType, fileCodingStruct *codingData)
 	return 0;
 }
 
+void addToTable(fileCodingStruct *codingData, int tableType, ...)
+{
+	switch (tableType)
+	{
+		case I_TABLE:
+			
+			break;
 
+		case D_TABLE:
+
+			break;
+
+		case S_TABLE:
+
+			break;
+	}
+}
 
 void resetCounterParams(fileCodingStruct *codingData)
 {

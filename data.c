@@ -173,9 +173,8 @@ void finalizeSymbolTable(fileCodingStruct *codingData)
 
 
 
-
-
 int pushCode(long int code, fileCodingStruct *codingData)
+
 {
 	
 	return 0;

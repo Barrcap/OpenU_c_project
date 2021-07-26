@@ -30,7 +30,8 @@ int isLabel(char * str){
 		return 1;
 }
 
-int getDistAddres(int destAdd, fileCodingStruct *codingData){
+int getDistAddres(char * label, fileCodingStruct *codingData){
+	int destAdd = getLabelAdress(label, codingData);
 	int sourceAdd = getIC(codingData); /*find my address*/
 	int res = destAdd - sourceAdd; /*this is the clac to know where we have to go*/
 	return res;
@@ -39,19 +40,19 @@ int getDistAddres(int destAdd, fileCodingStruct *codingData){
 
 
 int toBinary(char * str ,char * commandSTR, fileCodingStruct *codingData) {
-	long int code;
+	int res;
 	int i = 0;
 	while(strcmp(commandSTR, lines[i].command)){
 		i++;
 	}
 	if(i <= 7){
-		code = Rcase(str,commandSTR, codingData);
+		res = Rcase(str,commandSTR, codingData);
 	}
 	else if (i >= 8 && i <= 22){
-		code = Icase(str,commandSTR, codingData);
+		res = Icase(str,commandSTR, codingData);
 	}
 	else if (i >= 23 && i <=26 ){
-		code = Jcase(str,commandSTR, codingData);
+		res = Jcase(str,commandSTR, codingData);
 	}
 	else
 	{
@@ -59,9 +60,7 @@ int toBinary(char * str ,char * commandSTR, fileCodingStruct *codingData) {
 		return 1;
 	}
 
-	pushCode(code, codingData);
-	return 0;
-
+	return res;
 }
 
 /*void removeDollar(char * str,int occation, char *strREG1, char *strREG2, char strREG3)*/
@@ -169,8 +168,9 @@ long int Rcase(char * str ,char * commandSTR, fileCodingStruct *codingData){
 	mask = findfunct(commandSTR);  /*this mask initialize funct in each case and thats the only diffrence in this case*/
 	mask <<= 6;
 	code |= mask;
-	return code;
 
+	pushCode(code, codingData); 
+	return 0;
 
 }
 
@@ -203,8 +203,7 @@ long int Icase(char * str ,char * commandSTR, fileCodingStruct *codingData){    
 		tempMask = mask & immedVal;
 	}
 	else{
-		immedVal = getLabelAdress(immed,codingData);
-		distance = getDistAddres(immedVal, codingData);
+		distance = getDistAddres(immed, codingData);
 		mask = tempHex;
 		tempMask = mask & distance;
 	}
@@ -223,22 +222,25 @@ long int Icase(char * str ,char * commandSTR, fileCodingStruct *codingData){    
 	code |= tempMask; /*this is the coding for each case*/
 	
 
-	return code;
+	pushCode(code, codingData); 
+	return 0;
 
 }
 
 long int Jcase(char * str ,char * commandSTR, fileCodingStruct *codingData){    /*this function isnt ready yet*/
 	/*Extracting each register from the string*/
+	int tempHex = 0x00FFFFFF;
+
+	char reg1[REG_LENGHT];
+	short reg1Val;
+	long int code;
+	int opcode;
+	long int mask;
+	int distance;
+
+	removeDollar(str, reg1);
+
 	if(!isLabel(str)){ 									
-		int tempHex = 0x00FFFFFF;
-
-		char reg1[REG_LENGHT];
-		short reg1Val;
-		long int code;
-		int opcode;
-		long int mask;
-
-		removeDollar(str, reg1);
 
 		/*convert the string to an integer */
 		reg1Val = atoi(reg1);
@@ -253,13 +255,18 @@ long int Jcase(char * str ,char * commandSTR, fileCodingStruct *codingData){    
 		mask = tempHex;
 		mask = mask & reg1Val;
 		code |= mask;
-		return code;
+
+		pushCode(code, codingData); 
+	
 	}
 	else {
+		distance = getDistAddres(reg1 , codingData);
 
-		return 0;
-		/* this is lable case*/
+
+		
 	}
+
+	return 0;
 	
 }
 

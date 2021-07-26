@@ -6,6 +6,5 @@ fileCompiler.o: fileCompiler.c fileCompiler.h data.h
 	gcc -c -g -ansi -pedantic -Wall fileCompiler.c -o fileCompiler.o
 data.o: data.c data.h
 	gcc -c -g -ansi -pedantic -Wall data.c -o data.o
-
-toBinary.o: toBinary.c toBinary.h command_table.h
+toBinary.o: toBinary.c toBinary.h command_table.h fileCompiler.h data.h
 	gcc -c -g -ansi -pedantic -Wall toBinary.c -o toBinary.o

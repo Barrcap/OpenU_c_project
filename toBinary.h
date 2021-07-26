@@ -9,17 +9,17 @@ static char strREG3[2];
 
 /*declarations*/
 
-long int Rcase(char * str ,char * commandSTR);
-long int Icase(char * str ,char * commandSTR);
-long int Jcase(char * str ,char * commandSTR);
+struct fileCodingStruct;
 
-void bin(unsigned n);
+
+
+void binPrint(unsigned n);
 int isLabel(char * str);
-int toBinary(char * str ,char * commandSTR);
+int toBinary(char * str ,char * commandSTR, struct fileCodingStruct *codingData);
 int findfunct(char * str);
 int findOpcode(char * str);
-long int Rcase(char * str ,char * commandSTR);
-long int Icase(char * str ,char * commandSTR);
-long int Jcase(char * str ,char * commandSTR);
+long int Rcase(char * str ,char * commandSTR, struct fileCodingStruct *codingData);
+long int Icase(char * str ,char * commandSTR, struct fileCodingStruct *codingData);
+long int Jcase(char * str ,char * commandSTR, struct fileCodingStruct *codingData);
 
 void removeDollar(char *str, char *strREG);

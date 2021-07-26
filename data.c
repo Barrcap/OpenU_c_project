@@ -74,3 +74,18 @@ void resetCounterParams(fileCodingStruct *codingData)
 	codingData->dc = 0;
 	codingData->sourceLine = 1;
 }
+
+int getLabelAdress(char *lableName, fileCodingStruct *codingData)
+{
+	return 0;
+}
+
+int getIC(fileCodingStruct codingData)
+{
+	return 0;
+}
+
+void pushCode(long int code, fileCodingStruct *codingData)
+{
+	
+}

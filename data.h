@@ -41,7 +41,7 @@ typedef struct symbolCell
 	Each cell represents a line in the table.
 */
 	char name[LABLE_SIZE];
-	int value;
+	int adress;
 	unsigned int placing : 1; /* 0-code image, 1-data image */
 	unsigned int visibility : 2; /* 0-internal, 1-entry, 2-extern */
 
@@ -66,6 +66,7 @@ typedef struct fileCodingStruct
 	int icf; /* amount of instruction commands*/
 	int dcf; /* amount of data commands */
 	int sourceLine;
+	long int code;
 
 	char fileName[FILE_NAME_SIZE];
 }fileCodingStruct;
@@ -75,5 +76,10 @@ int createTables(fileCodingStruct *codingData);
 int expandTable(int tableType, fileCodingStruct *codingData);
 void freeTables(fileCodingStruct *codingData);
 
-
 void resetCounterParams(fileCodingStruct *codingData);
+
+/* if label exists, returns adress, if not returns -1 */
+int getLabelAdress(char *lableName, fileCodingStruct *codingData);
+
+int getIC(fileCodingStruct codingData);
+void pushCode(long int code, fileCodingStruct *codingData);

@@ -102,7 +102,6 @@ int encodingLineTake1(char *line, struct fileCodingStruct *codingData)
 	char operands[LINE_LENGTH] = {0};
 
 	int returnVal;
-	long int code;
 
 	returnVal = seperateArguments(line, lable, command, operands, codingData);
 
@@ -123,10 +122,8 @@ int encodingLineTake1(char *line, struct fileCodingStruct *codingData)
 
 	/* Deal with encoding function */
 
-	/*printError("NOT ERROR - Coding line:", codingData); ############# for testing */
-	code = toBinary(operands, command);
-	/*binPrint(code); ########################################### for testing */
-
+	/*printError("NOT ERROR - Coding line:", codingData); ############################*/
+	toBinary(operands, command, codingData);
 
 
 	return 0;

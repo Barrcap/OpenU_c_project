@@ -4,6 +4,8 @@
 
 #include "toBinary.h"
 #include "command_table.h"
+#include "data.h"
+#include "fileCompiler.h"
 
 
 
@@ -28,24 +30,29 @@ int isLabel(char * str){
 		return 1;
 }
 
-int toBinary(char * str ,char * commandSTR) {
+int toBinary(char * str ,char * commandSTR, fileCodingStruct *codingData) {
 	long int code;
 	int i = 0;
 	while(strcmp(commandSTR, lines[i].command)){
 		i++;
 	}
 	if(i <= 7){
-		code = Rcase(str,commandSTR);
+		code = Rcase(str,commandSTR, codingData);
 	}
 	else if (i >= 8 && i <= 22){
-		code = Icase(str,commandSTR);
+		code = Icase(str,commandSTR, codingData);
 	}
 	else if (i >= 23 && i <=26 ){
-		code = Jcase(str,commandSTR);
+		code = Jcase(str,commandSTR, codingData);
 	}
-	else return -1;
+	else
+	{
+		printError("invalid command",codingData);
+		return 1;
+	}
 
-	return code;
+	pushCode(code, codingData);
+	return 0;
 
 }
 
@@ -105,7 +112,7 @@ int findOpcode(char * str){
 
 
 
-long int Rcase(char * str ,char * commandSTR){
+long int Rcase(char * str ,char * commandSTR, fileCodingStruct *codingData){
 	/*Extracting each register from the string*/
 	char reg1[REG_LENGHT] = {0};
 	char reg2[REG_LENGHT] = {0};
@@ -159,7 +166,7 @@ long int Rcase(char * str ,char * commandSTR){
 
 }
 
-long int Icase(char * str ,char * commandSTR){            /* this method isnt ready yet*/ /*have to chek complete to 2 method*/
+long int Icase(char * str ,char * commandSTR, fileCodingStruct *codingData){            /* this method isnt ready yet*/ /*have to chek complete to 2 method*/
 	/*Extracting each register from the string*/
 	int tempHex = 0x00FFFFFF;
 	char * tempReg1  = strtok(str,",");
@@ -214,7 +221,7 @@ long int Icase(char * str ,char * commandSTR){            /* this method isnt re
 
 }
 
-long int Jcase(char * str ,char * commandSTR){    /*this function isnt ready yet*/
+long int Jcase(char * str ,char * commandSTR, fileCodingStruct *codingData){    /*this function isnt ready yet*/
 	/*Extracting each register from the string*/
 	if(!isLabel(str)){ 									
 		int tempHex = 0x00FFFFFF;

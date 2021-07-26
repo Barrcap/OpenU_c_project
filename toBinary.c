@@ -111,16 +111,10 @@ int findfunct(char * str){
 	int x;
 	int i;
 	int res = ERROR;
-	
-	
 
 	for(i=0; i<8; i++){
 		if((x = strcmp(str, lines[i].command)) == 0){
 			res = lines[i].funct;
-			printf("####THIS IS FUNCT NUMBER\n" );
-			printf("%s\n", str );
-			printf("%s\n", lines[i].command );
-			printf("####THIS IS FUNCT NUMBER\n" );
 		}
 	}
 	
@@ -136,10 +130,6 @@ int findOpcode(char * str){
 	for(i=0; i<28; i++){
 		if((x = strcmp(str, lines[i].command)) == 0){
 			res = lines[i].opcode;
-			printf("####THIS IS opcode NUMBER\n" );
-			printf("%s\n", str );
-			printf("%d\n", lines[i].opcode );
-			printf("####THIS IS opcode NUMBER\n" );
 		}
 	}
 	
@@ -180,15 +170,6 @@ long int Rcase_toBinary(char * str ,char * commandSTR){
 	mask = findfunct(commandSTR);  /*this mask initialize funct in each case and thats the only diffrence in this case*/
 	mask <<= 6;
 	code |= mask;
-	/*TESTS*/
-	printf("%s\n",tempReg1 );
-	printf("%s\n",tempReg2 );
-	printf("%s\n",tempReg3 );
-	printf("%d\n",reg1Val );
-	printf("%d\n",reg2Val );
-	printf("%d\n",reg3Val );
-	printf("%s\n",reg1 );
-	/*TESTS*/
 	return code;
 
 
@@ -233,9 +214,9 @@ long int Icase(char * str ,char * commandSTR){            /* this method isnt re
 
 }
 
-long int Jcase(char * str ,char * commandSTR){
+long int Jcase(char * str ,char * commandSTR){    /*this function isnt ready yet*/
 	/*Extracting each register from the string*/
-	if(!isLabel()){
+	if(!isLabel()){ 									/* i have to write  function who can find if this is label*/
 		int tempHex = 0x00FFFFFF;
 		char * reg1 = removeDollar(str,1);
 		/*convert the string to an integer */

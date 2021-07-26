@@ -35,7 +35,6 @@ int fileCompiler(char *fileName)
 	reachedEOF = 0;
 	while (!reachedEOF)
 	{
-		/*printf("#######\tReading line #%i:\n", codingData.sourceLine); / *#############*/
 		if (readFileLine(file, line, &reachedEOF, &codingData) == 0)
 			errorCounter += encodingLineTake1(line, &codingData);
 		else
@@ -102,21 +101,16 @@ int encodingLineTake1(char *line, struct fileCodingStruct *codingData)
 
 	int returnVal;
 
-	/* Todo - add lable and command lengh validation */
-
 	returnVal = seperateArguments(line, lable, command, operands, codingData);
 
 	if (returnVal != 0)
 	{
 		if (returnVal == 1)
-			/* seperateArguments detected an error */
 			return 1;
 		else
-			/* seperateArgument detected empty line/comment line */
 			return 0;
 	}
 
-	/* Todo - seperateArguments */
 	/* now lable, command, and operands strings are seperated*/
 	/* Todo - content validation for label */
 
@@ -154,20 +148,17 @@ int seperateArguments(char *line, char *lable, char *command, char *operands, st
 	if (line[start] == 0)
 		/* line contains only white notes */
 	{
-		/*printError("TEST - NOT ERROR - detected blank line", codingData); / *###################*/
 		return 2;
 	}
 
 	if (line[start] == ';')
 		/* comment line */
 	{
-		/*printError("TEST - NOT ERROR - detected comment", codingData); / *###################*/
 		return 3;
 	}
 
 	if (line[end-1] == ':')
 	{
-		/*printError("TEST - NOT ERROR - detected lable", codingData); / *###################*/
 		/* First argument is a label */
 		if (end-start > LABLE_SIZE)
 		{

@@ -11,12 +11,12 @@
 taking to account also 1 white note, and room for NULL at the end (total 8 chars less than LINE_LENGTH.*/
 #define COMMA_START_SIGN 
 
-
+/*
 #define I_TABLE 0
 #define D_TABLE 1
 #define S_TABLE 2
-
-/*enum table_types {I_TABLE, D_TABLE, S_TABLE};*/
+*/
+enum table_types {I_TABLE, D_TABLE, S_TABLE};
 
 
 typedef struct dataCell

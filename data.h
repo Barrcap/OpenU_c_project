@@ -34,7 +34,7 @@ typedef struct fileCodingStruct
 /*	
 	General structure that contains all 3 data tables and relevant valiables for encoding.
 	will be crated when starting to work on a file, made in order to easily give relevant
-	fucntions easy access to the data.
+	fucntions easy access to the data. 
 */
 
 	symbolLink *symbolLinkHead;

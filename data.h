@@ -4,19 +4,16 @@
 	actual value is our virtual machine's memory (2^25) */
 #define TABLE_BUFFER 20
 #define LINE_LENGTH 80
-#define LABLE_SIZE 31
+#define LABEL_SIZE 31
 #define COMMAND_SIZE 10
-/*#define OPERANDS_SIZE (LINE_LENGTH-8)
- longest operand possible is a string after .asciz command (6 chars).
-taking to account also 1 white note, and room for NULL at the end (total 8 chars less than LINE_LENGTH.*/
-#define COMMA_START_SIGN 
+#define DB 1
+#define DH 2
+#define DW 4
 
-/* 
-#define I_TABLE 0
-#define D_TABLE 1
-#define S_TABLE 2
-*/
+
 enum table_types {I_TABLE, D_TABLE, S_TABLE};
+enum sTable_placing {CODE_IMAGE, DATA_IMAGE};
+enum sTable_visibility {INTERN, ENTRY, EXTERN};
 
 
 typedef struct dataCell
@@ -27,7 +24,7 @@ typedef struct dataCell
 	int adress;
 	char sourceCode[LINE_LENGTH];
 	long int machineCode; /* using only 32 bits */
-	unsigned int wasCoded : 1;
+	unsigned int wasCoded : 1; /* relevant for instructions table */
 	unsigned int byteAmount : 3;
 /*	byteAmount is relevant for data table, represents how many bytes are used
 	out of machineCode's 4 relevant bytes: 1-one byte, 2-half word, 4-word */
@@ -40,7 +37,7 @@ typedef struct symbolCell
 /*	Structure for Symbol Table.
 	Each cell represents a line in the table.
 */
-	char name[LABLE_SIZE];
+	char name[LABEL_SIZE];
 	int adress;
 	unsigned int placing : 1; /* 0-code image, 1-data image */
 	unsigned int visibility : 2; /* 0-internal, 1-entry, 2-extern */
@@ -78,12 +75,16 @@ int createTables(fileCodingStruct *codingData);
 int expandTable(int tableType, fileCodingStruct *codingData);
 void freeTables(fileCodingStruct *codingData);
 
-void addToTable(fileCodingStruct *codingData, int tableType, ...);
+/*void addToiTable(long int machineCode);*/
+
+
 
 void resetCounterParams(fileCodingStruct *codingData);
 
 /* if label exists, returns adress, if not returns -1 */
-int getLabelAdress(char *lableName, fileCodingStruct *codingData);
+int getLabelAdress(char *labelName, fileCodingStruct *codingData);
 
 int getIC(fileCodingStruct *codingData);
+
 void pushCode(long int code, fileCodingStruct *codingData);
+int pushLable(char *label, int placing, fileCodingStruct *codingData);

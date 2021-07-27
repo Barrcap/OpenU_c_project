@@ -6,6 +6,7 @@
 #define LINE_LENGTH 80
 #define LABEL_SIZE 31
 #define COMMAND_SIZE 10
+#define START_LINE 100
 #define DB 1
 #define DH 2
 #define DW 4
@@ -58,9 +59,12 @@ typedef struct fileCodingStruct
 	int dTableSize;
 	int sTableSize;
 
+	int iCurrIndex;
+	int dCurrIndex;
+	int sCurrIndex; /* symbol table counter */
+
 	int ic; /* instruction commands counter */
 	int dc; /* data commands counter */
-	int sc; /* symbol table counter */
 	int icf; /* amount of instruction commands*/
 	int dcf; /* amount of data commands */
 	int sourceLine;
@@ -72,7 +76,7 @@ typedef struct fileCodingStruct
 
 
 int createTables(fileCodingStruct *codingData);
-int expandTable(int tableType, fileCodingStruct *codingData);
+int expandTableIfNeeded(int tableType, fileCodingStruct *codingData);
 void freeTables(fileCodingStruct *codingData);
 
 /*void addToiTable(long int machineCode);*/
@@ -86,5 +90,6 @@ int getLabelAdress(char *labelName, fileCodingStruct *codingData);
 
 int getIC(fileCodingStruct *codingData);
 
-void pushCode(long int code, fileCodingStruct *codingData);
+int pushCode(long int code, fileCodingStruct *codingData);
 int pushLable(char *label, int placing, fileCodingStruct *codingData);
+void finalizeSymbolTable(fileCodingStruct *codingData);

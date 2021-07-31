@@ -13,15 +13,15 @@
 
 
 enum table_types {I_TABLE, D_TABLE, S_TABLE};
-enum sTable_placing {CODE_IMAGE, DATA_IMAGE};
-enum sTable_visibility {INTERN, ENTRY, EXTERN};
+enum image_type {CODE_IMAGE, DATA_IMAGE};
+enum symbol_visibility {INTERN, ENTRY, EXTERN};
 
 
 typedef struct dataCell
 {
-/*	Structure for Instruction Table and Data Table.
-	Each cell represents a line the table.
-*/
+	/*	Structure for Instruction Table and Data Table.
+		Each cell represents a line the table.
+	*/
 	int adress;
 	char sourceCode[LINE_LENGTH];
 	long int machineCode; /* using only 32 bits */
@@ -33,17 +33,18 @@ typedef struct dataCell
 }dataCell;
 
 
-typedef struct symbolCell
+typedef struct symbolLink
 {
-/*	Structure for Symbol Table.
-	Each cell represents a line in the table.
-*/
+	/*	Structure for Symbol Table.
+		Each cell represents a line in the table.
+	*/
 	char name[LABEL_SIZE];
 	int adress;
 	unsigned int placing : 1; /* 0-code image, 1-data image */
 	unsigned int visibility : 2; /* 0-internal, 1-entry, 2-extern */
+	symbolLink *next;
 
-}symbolCell;
+}symbolLink;
 
 typedef struct fileCodingStruct
 {
@@ -52,16 +53,19 @@ typedef struct fileCodingStruct
 	will be crated when starting to work on a file, made in order to easily give relevant
 	fucntions easy access to the data.
 */
+	/* not relevant, to be deleted: ##################################################### */
 	dataCell *iTable; /* Instructions Table */
 	dataCell *dTable; /* Data Table */
-	symbolCell *sTable;
+	symbolLink *sTable;
 	int iTableSize;
 	int dTableSize;
 	int sTableSize;
-
 	int iCurrIndex;
 	int dCurrIndex;
 	int sCurrIndex; /* symbol table counter */
+	/* not relevant, to be deleted end ##################################################### */
+
+	symbolLink *symbolLinkHead;
 
 	int ic; /* instruction commands counter */
 	int dc; /* data commands counter */
@@ -75,21 +79,27 @@ typedef struct fileCodingStruct
 }fileCodingStruct;
 
 
-int createTables(fileCodingStruct *codingData);
-int expandTableIfNeeded(int tableType, fileCodingStruct *codingData);
-void freeTables(fileCodingStruct *codingData);
-
-/*void addToiTable(long int machineCode);*/
 
 
+void freeSymbolTable (fileCodingStruct *codingData);
 
 void resetCounterParams(fileCodingStruct *codingData);
-
-/* if label exists, returns adress, if not returns -1 */
-int getLabelAdress(char *labelName, fileCodingStruct *codingData);
-
+void advanceImageCounter(int imageType, fileCodingStruct *codingData);
 int getIC(fileCodingStruct *codingData);
 
-int pushCode(long int code, fileCodingStruct *codingData);
+int analyzeCommand(char *commandName, int *imageType, int *commandImageBytes, fileCodingStruct *codingData);
+
 int pushLable(char *label, int placing, fileCodingStruct *codingData);
+int getLabelAdress(char *labelName, fileCodingStruct *codingData);
 void finalizeSymbolTable(fileCodingStruct *codingData);
+
+
+
+
+
+
+
+
+/* not relevant, to be deleted: ##################################################### */
+int pushCode(long int code, fileCodingStruct *codingData);
+/* not relevant, to be deleted end ##################################################### */

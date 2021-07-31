@@ -5,6 +5,7 @@
 #include "data.h"
 #include "fileCompiler.h"
 #include "toBinary.h"
+#include "command_table.h"
 
 
 
@@ -26,12 +27,14 @@ int fileCompiler(char *fileName)
 
 	/* initialize file data's both basic values, and all 3 data tables */
 	resetCounterParams(&codingData);
+
 	strcpy(codingData.fileName, fileName);
 
+	/*
 	if (createTables(&codingData) != 0)
 	{
 		printf("Failed allocating memory for %s! aborting file compilation.\n", fileName);
-	}
+	}		to be deleted ######################### */
 
 	/* First time going over source code */
 	reachedEOF = 0;
@@ -63,7 +66,8 @@ int fileCompiler(char *fileName)
 
 
 
-	freeTables(&codingData);
+	/*freeTables(&codingData);    to be deleted ######################### */
+	freeSymbolTable(&codingData);
 	fclose(file);
 
 	return errorCounter;
@@ -96,38 +100,43 @@ int readFileLine(FILE *file, char *line, int *reachedEOF, fileCodingStruct *codi
 }
 
 int encodingLineTake1(char *line, struct fileCodingStruct *codingData)
-{
+{	/*
+	retuns 0 on success, 1 on compiling error, and -1 on memrory allocation error */
 	char lable[LABEL_SIZE] = {0};
 	char command[COMMAND_SIZE] = {0};
 	char operands[LINE_LENGTH] = {0};
 
-	int returnVal;
+	int returnVal, imageType, commandImageBytes;
 
 	/*long int code=0; / *#######################################*/
 
 	returnVal = seperateArguments(line, lable, command, operands, codingData);
-
 	if (returnVal != 0)
 	{
-		if (returnVal == 1)
+		if (returnVal == 1) /* error detected */
 			return 1;
 		else
-			return 0;
+			return 0; /* blank or comment line */
 	}
 
 	/* now lable, command, and operands strings are seperated*/
+
+	if (!analyzeCommand(command, &imageType, &commandImageBytes, codingData))
+	{
+		printError("illegal command", codingData);
+		return 1;
+	}
+
 	/* Todo - content validation for label */
 
+	/* Todo - make sure command doesn't have spaces at beginning/end */
+	if (strcmp(label,""))
+	{
+		
+		if (!pushLabel(label, imageType, codingData))
+			return 1;
+	}
 
-
-	/* Todo - content validtation for command and operands  */
-
-	/* Deal with encoding function */
-
-	printError("\033[1m\033[33mNOT ERROR - Coding line:\033[0m", codingData);
-	/*code = codingData->code;*/
-	toBinary(operands, command, codingData);
-	binPrint(codingData->code);
 
 
 	return 0;
@@ -135,6 +144,15 @@ int encodingLineTake1(char *line, struct fileCodingStruct *codingData)
 
 int encodingLineTake2(char *line, struct fileCodingStruct *codingData)
 {
+
+	/* Todo - content validtation for operands  */
+	/* Deal with encoding function */
+
+	printError("\033[1m\033[33mNOT ERROR - Coding line:\033[0m", codingData);
+	/*code = codingData->code;*/
+	toBinary(operands, command, codingData);
+	binPrint(codingData->code);
+
 	return 0;
 }
 

@@ -6,132 +6,87 @@
 #include "data.h"
 #include "fileCompiler.h" /* move printError here? ############################## */
 
-int createTables(fileCodingStruct *codingData)
+
+
+void freeSymbolTable(fileCodingStruct *codingData)
 {
+	symbolLink *curr, *next;
+	curr = codingData->symbolLinkHead;
 
-	codingData->iTable = (dataCell*) calloc(TABLE_BUFFER, sizeof(dataCell));
-	codingData->iTableSize = TABLE_BUFFER;
-	codingData->iCurrIndex = 0;
-	if (codingData->iTable == NULL)
-		return 1;
-
-	codingData->dTable = (dataCell*) calloc(TABLE_BUFFER, sizeof(dataCell));
-	codingData->dTableSize = TABLE_BUFFER;
-	codingData->dCurrIndex = 0;
-	if (codingData->dTable == NULL)
-		return 1;
-
-	codingData->sTable = (symbolCell*) calloc(TABLE_BUFFER, sizeof(symbolCell));
-	codingData->sTableSize = TABLE_BUFFER;
-	codingData->sCurrIndex = 0;
-	if (codingData->sTable == NULL)
-		return 1;
-
-	return 0;
-}
-
-
-void freeTables(fileCodingStruct *codingData)
-{
-
-	free(codingData->iTable);
-	free(codingData->dTable);
-	free(codingData->sTable);
-	
-}
-
-int expandTableIfNeeded(int tableType, fileCodingStruct *codingData)
-{	/* function gets table type with general struct and expand relevant table if needed.
-	return 0 is succeeded, 1 if failed. */
-	switch (tableType)
+	while (curr)
 	{
-		case I_TABLE:
-
-			if (codingData->iCurrIndex < codingData->iTableSize)
-				return 0; /* no need to expand table */
-
-			codingData->iTableSize += TABLE_BUFFER;
-			codingData->iTable = (dataCell*) realloc(codingData->iTable, codingData->iTableSize);
-			if (codingData->iTable == NULL)
-				return 1; /* failed to allocate more memory */
-
-			break;
-
-		case D_TABLE:
-
-			if (codingData->dCurrIndex < codingData->dTableSize)
-				return 0; /* no need to expand table */
-
-			codingData->dTableSize += TABLE_BUFFER;
-			codingData->dTable = (dataCell*) realloc(codingData->dTable, codingData->dTableSize);
-			if (codingData->dTable == NULL)
-				return 1; /* failed to allocate more memory */
-
-			break;
-
-		case S_TABLE:
-
-			if (codingData->sCurrIndex < codingData->sTableSize)
-				return 0; /* no need to expand table */
-
-			codingData->sTableSize += TABLE_BUFFER;
-			codingData->sTable = (symbolCell*) realloc(codingData->sTable, codingData->sTableSize);
-			if (codingData->sTable == NULL)
-				return 1; /* failed to allocate more memory */
-
-			break;
+		next = curr->next;
+		free(curr);
+		curr = next;
 	}
-
-	return 0;
 }
-
 
 void resetCounterParams(fileCodingStruct *codingData)
 {
 	codingData->ic = 100;
-	codingData->dc = 4;
+	codingData->dc = 0;
 	codingData->sourceLine = 1;
 }
 
-int getLabelAdress(char *lableName, fileCodingStruct *codingData)
+void advanceImageCounter(int imageType, fileCodingStruct *codingData)
 {
-	return 0;
+	switch (imageType)
+	{
+		case CODE_IMAGE:
+
+			break;
+
+		case DATA_IMAGE:
+
+			break;
+	}
 }
 
 int getIC(fileCodingStruct *codingData)
 {
-	return 0;
+	return codingData->ic;
 }
 
-int pushCode(long int code, fileCodingStruct *codingData)
+int analyzeCommand(char *commandName, int *imageType, int *commandImageBytes, fileCodingStruct *codingData)
 {
-	if (expandTableIfNeeded(I_TABLE, codingData))
-		return -1; /* failed expanding table */
+	int i;
 
-	codingData->iTable[codingData->iCurrIndex].adress = codingData->ic;
-	codingData->iCurrIndex ++;
-	codingData->ic += 4;
+	for (i=0; i++; i<COMMAND_NUM)
+		if (strcmp(commandName,lines[i]) == 0)
+		{
+			*imageType = CODE_IMAGE;
+			*commandImageBytes = 4;
+			return 0;
+		}
 
+	for (i=0; i++; i<DATA_COMMANDS)
+		if (strcmp(commandName,dataCommands[i]) == 0)
+		{
+			*imageType = DATA_IMAGE;
+			return 0;
+		}
 
-	return 0;
-
-	/* Temprorary until start using tables: ############################### * /
-	codingData->code = code;*/
+	return 1;
 }
 
 int pushLable(char *label, int placing, fileCodingStruct *codingData)
 {/*	
-	returns 0 on success, 1 if found error, -1 if failed to realloc symbol table size */
+	returns 0 on success, 1 if found error, -1 if failed to add link to symbol table */
 	int i=0;
 	/*char *errorString[LINE_LENGTH];
 	char *sourceLineString[20];*/
 
+	symbolLink *currLink, *lastLink;
+
+	currLink = codingData->symbolLinkHead;
+	lastLink = currLink;
+
 	/* checking if label was already defined: */
-	for (i=0; i<codingData->sCurrIndex; i++) 
+	while (currLink) 
 	{
-		if (strcmp(label,codingData->sTable[i].name) == 0)
+		if (strcmp(label,currLink->name) == 0)
 		{
-			/* label was already defined, so visibility value was defined as well */
+			/* label was already defined */
 			switch (codingData->sTable[i].visibility)
 			{
 				case INTERN:
@@ -144,43 +99,82 @@ int pushLable(char *label, int placing, fileCodingStruct *codingData)
 					return 1;
 					break;
 
-				case ENTRY:
-					if (placing == CODE_IMAGE)
-						codingData->sTable[i].adress = codingData->ic;
-
-					if (placing == DATA_IMAGE)
-						codingData->sTable[i].adress = codingData->dc;
-					return 0;
-					break;
 			}/* switch case ends*/
 		}
+
+		lastLink = currLink;
+		currLink = lastLink->next;
 	}
-	/* looking for label loop ended.
-	i=sCurrIndex, pointing to next available spot in the table */
+	/* label wasn't defined yet, lastLink is pointing at last link, if exists */
 
-	if (expandTableIfNeeded(S_TABLE, codingData))
-		return -1; /* failed expanding table */
+	if (codingData->symbolLinkHead == NULL)
+	{	/* definging now the first lable in symbolLink list */
+		codingData->symbolLinkHead == (symbolLink*) calloc(1,sizeof(symbolLink));
+		currLink = codingData->symbolLinkHead;
+	}
+	else
+	{
+		lastLink->next = (symbolLink*) calloc(1,sizeof(symbolLink));
+		currLink = lastLink->next;
+	}
 
-	strcpy(codingData->sTable[i].name, label);
+	/* currLink is now pointing on new created link */
+
+	if (currLink == NULL)
+		exit(EXIT_FAILURE); /* failed allocating memory for new symbol link */
+
+	strcpy(currLink->name, label);
 	if (placing == CODE_IMAGE)
-		codingData->sTable[i].adress = codingData->ic;
+		currLink->adress = codingData->ic;
 
 	if (placing == DATA_IMAGE)
-		codingData->sTable[i].adress = codingData->dc;
+		currLink->adress = codingData->dc;
 
-	codingData->sTable[i].placing = placing;
-	codingData->sTable[i].visibility = INTERN;
+	currLink->placing = placing;
+	currLink->visibility = INTERN;
 
 	return 0;
 }
 
-void finalizeSymbolTable(fileCodingStruct *codingData)
-{
-	int i=0;
+int getLabelAdress(char *lableName, fileCodingStruct *codingData)
+{	/* returns label's adress, if label doesn't exist returns -1 */
+	symbolLink *currLink;
 
-	for (i=0; i<codingData->sCurrIndex; i++)
+	currLink = codingData->symbolLinkHead;
+
+	while (currLink)
 	{
-		if (codingData->sTable[i].placing == DATA_IMAGE)
-			codingData->sTable[i].adress += codingData->icf;
+		if (strcmp(lableName,currLink->name) == 0)
+			return currLink->adress;
+
+		currLink = currLink->next
 	}
+	return -1;
+}
+
+void finalizeSymbolTable(fileCodingStruct *codingData)
+{	/* icf is next available adress */
+	symbolLink *currLink;
+
+	currLink = codingData->symbolLinkHead;
+
+	while (currLink)
+	{
+		if (currLink->placing == DATA_IMAGE)
+			currLink->adress += codingData->icf;
+
+		currLink = currLink->next;
+	}
+}
+
+
+
+
+int pushCode(long int code, fileCodingStruct *codingData)
+{
+	
+	return 0;
+
+	/* Temprorary until start using tables: ############################### * /
+	codingData->code = code;*/
 }

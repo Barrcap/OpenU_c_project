@@ -1,4 +1,5 @@
 #define COMMAND_NUM 27
+#define DATA_COMMANDS 6
 
 typedef struct s1
 {
@@ -10,6 +11,8 @@ typedef struct s1
 	int opcode;
 
 }line;
+
+typedef char dataCommand[DATA_COMMAND_LENGHT];
 
 
 line lines[] = {
@@ -41,6 +44,16 @@ line lines[] = {
 	{"la",		'J'	,6	,0	,31},
 	{"call",	'J'	,6	,0	,32},
 	{"stop",	'J'	,7	,0	,63}
+};
+
+dataCommand dataCommands[] = 
+{
+	".dh",
+	".dw",
+	".db",
+	".asciz",
+	".entry",
+	".extern"
 };
 
 

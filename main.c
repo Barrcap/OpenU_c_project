@@ -7,7 +7,7 @@
 int main(int argc, char const *argv[])
 {
 	
-	int i, j, isDuplicate, errorCounter =0;
+	int i, j, isDuplicate, errorCounter=0;
 	char fileName[FILE_NAME_SIZE];
 	if (argc == 1)
 		printf("No files were recieved for compilation!\n");

@@ -15,6 +15,7 @@ int encodingLineTake1(char *line, struct fileCodingStruct *codingData);
 int encodingLineTake2(char *line, struct fileCodingStruct *codingData);
 int seperateArguments(char *line, char *lable, char *command, char *operands, struct fileCodingStruct *codingData);
 int operandPointers(char *line, int *start, int *end);
+int countOperands(char *operands); /* Todo */
 
 /*###################################################################################*/
 long int roiEncoding(char *command, char *operands); /*dummy function Roi's encoding function */

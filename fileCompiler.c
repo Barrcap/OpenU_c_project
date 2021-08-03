@@ -137,7 +137,11 @@ int encodingLineTake1(char *line, struct fileCodingStruct *codingData)
 			return 1;
 	}
 
+	if (imageType == CODE_IMAGE)
+		codingData->ic += 4;
 
+	if (imageType == DATA_IMAGE) /* stopped here */
+		codingData->dc += commandImageBytes * countOperands(operands);
 
 	return 0;
 }
@@ -245,6 +249,12 @@ int operandPointers(char *line, int *start, int *end)
 
 	return 0;
 
+}
+
+int countOperands(char *operands)
+{
+	/* Todo */
+	return 0;
 }
 
 

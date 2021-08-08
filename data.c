@@ -5,6 +5,8 @@
 
 #include "data.h"
 #include "fileCompiler.h" /* move printError here? ############################## */
+#include "commandTable.h"
+
 
 
 
@@ -51,16 +53,16 @@ int analyzeCommand(char *commandName, int *imageType, int *commandImageBytes, fi
 {
 	int i;
 
-	for (i=0; i++; i<COMMAND_NUM)
-		if (strcmp(commandName,lines[i]) == 0)
+	for (i=0; i<COMMAND_NUM; i++)
+		if (strcmp(commandName,lines[i].command) == 0)
 		{
 			*imageType = CODE_IMAGE;
 			*commandImageBytes = 4;
 			return 0;
 		}
 
-	for (i=0; i++; i<DATA_COMMANDS)
-		if (strcmp(commandName,dataCommands[i]) == 0)
+	for (i=0; i<DATA_COMMANDS; i++)
+		if (strcmp(commandName,dataCommands[i].name) == 0)
 		{
 			*imageType = DATA_IMAGE;
 			return 0;
@@ -69,10 +71,9 @@ int analyzeCommand(char *commandName, int *imageType, int *commandImageBytes, fi
 	return 1;
 }
 
-int pushLable(char *label, int placing, fileCodingStruct *codingData)
+int pushLable(char *lable, int placing, fileCodingStruct *codingData)
 {/*	
-	returns 0 on success, 1 if found error, -1 if failed to add link to symbol table */
-	int i=0;
+	returns 0 on success, 1 if found error */
 	/*char *errorString[LINE_LENGTH];
 	char *sourceLineString[20];*/
 
@@ -81,13 +82,13 @@ int pushLable(char *label, int placing, fileCodingStruct *codingData)
 	currLink = codingData->symbolLinkHead;
 	lastLink = currLink;
 
-	/* checking if label was already defined: */
+	/* checking if lable was already defined: */
 	while (currLink) 
 	{
-		if (strcmp(label,currLink->name) == 0)
+		if (strcmp(lable,currLink->name) == 0)
 		{
-			/* label was already defined */
-			switch (codingData->sTable[i].visibility)
+			/* lable was already defined */
+			switch (currLink->visibility)
 			{
 				case INTERN:
 					printError("Label already defined", codingData);
@@ -105,11 +106,12 @@ int pushLable(char *label, int placing, fileCodingStruct *codingData)
 		lastLink = currLink;
 		currLink = lastLink->next;
 	}
-	/* label wasn't defined yet, lastLink is pointing at last link, if exists */
+	/* lable wasn't defined yet, lastLink is pointing at last link, if exists */
+	
 
 	if (codingData->symbolLinkHead == NULL)
 	{	/* definging now the first lable in symbolLink list */
-		codingData->symbolLinkHead == (symbolLink*) calloc(1,sizeof(symbolLink));
+		codingData->symbolLinkHead = (symbolLink*) calloc(1,sizeof(symbolLink));
 		currLink = codingData->symbolLinkHead;
 	}
 	else
@@ -123,7 +125,7 @@ int pushLable(char *label, int placing, fileCodingStruct *codingData)
 	if (currLink == NULL)
 		exit(EXIT_FAILURE); /* failed allocating memory for new symbol link */
 
-	strcpy(currLink->name, label);
+	strcpy(currLink->name, lable);
 	if (placing == CODE_IMAGE)
 		currLink->adress = codingData->ic;
 
@@ -137,7 +139,7 @@ int pushLable(char *label, int placing, fileCodingStruct *codingData)
 }
 
 int getLabelAdress(char *lableName, fileCodingStruct *codingData)
-{	/* returns label's adress, if label doesn't exist returns -1 */
+{	/* returns lable's adress, if lable doesn't exist returns -1 */
 	symbolLink *currLink;
 
 	currLink = codingData->symbolLinkHead;
@@ -147,7 +149,7 @@ int getLabelAdress(char *lableName, fileCodingStruct *codingData)
 		if (strcmp(lableName,currLink->name) == 0)
 			return currLink->adress;
 
-		currLink = currLink->next
+		currLink = currLink->next;
 	}
 	return -1;
 }

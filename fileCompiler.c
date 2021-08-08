@@ -5,7 +5,7 @@
 #include "data.h"
 #include "fileCompiler.h"
 #include "toBinary.h"
-#include "command_table.h"
+#include "commandTable.h"
 
 
 
@@ -17,6 +17,7 @@ int fileCompiler(char *fileName)
 	int reachedEOF, errorCounter = 0;
 	fileCodingStruct codingData;
 
+	/*symbolLink *currLink; / *##############################*/
 
 	file = fopen(fileName, "r");
 
@@ -27,14 +28,10 @@ int fileCompiler(char *fileName)
 
 	/* initialize file data's both basic values, and all 3 data tables */
 	resetCounterParams(&codingData);
+	codingData.symbolLinkHead = NULL;
 
 	strcpy(codingData.fileName, fileName);
 
-	/*
-	if (createTables(&codingData) != 0)
-	{
-		printf("Failed allocating memory for %s! aborting file compilation.\n", fileName);
-	}		to be deleted ######################### */
 
 	/* First time going over source code */
 	reachedEOF = 0;
@@ -50,9 +47,26 @@ int fileCompiler(char *fileName)
 		codingData.sourceLine ++;
 	}
 
+
+	printf("Great Success!! Finished Take1! \n"); /* #################################### */
+
+	/*printf("$$$ Labels in SybmbolTable are: $$$\n"); / * #################################### * /
+	currLink = codingData.symbolLinkHead;
+	while (currLink)
+	{
+		printf("%s\n", currLink->name);
+
+		currLink = currLink->next;
+	} */
+
+	/*printf("finalizeSymbolTable: \n"); / * #################################### * /
+	finalizeSymbolTable(&codingData);*/
+
 	
 
-	/* Second time going over source code *  /
+	/* Second time going over source code */
+
+	/*
 	fseek(file, 0, SEEK_SET);
 	resetCounterParams(&codingData);
 	reachedEOF = 0;
@@ -65,8 +79,6 @@ int fileCompiler(char *fileName)
 	
 
 
-
-	/*freeTables(&codingData);    to be deleted ######################### */
 	freeSymbolTable(&codingData);
 	fclose(file);
 
@@ -101,7 +113,7 @@ int readFileLine(FILE *file, char *line, int *reachedEOF, fileCodingStruct *codi
 
 int encodingLineTake1(char *line, struct fileCodingStruct *codingData)
 {	/*
-	retuns 0 on success, 1 on compiling error, and -1 on memrory allocation error */
+	retuns 0 on success, 1 on compiling error */
 	char lable[LABEL_SIZE] = {0};
 	char command[COMMAND_SIZE] = {0};
 	char operands[LINE_LENGTH] = {0};
@@ -121,35 +133,74 @@ int encodingLineTake1(char *line, struct fileCodingStruct *codingData)
 
 	/* now lable, command, and operands strings are seperated*/
 
-	if (!analyzeCommand(command, &imageType, &commandImageBytes, codingData))
+	/*printf("line %i - ", codingData->sourceLine);
+	printf("Saperated:\tlable:'%s'\tcommand:'%s'\toperands:'%s'\n", lable, command, operands); ######################*/
+
+	if (analyzeCommand(command, &imageType, &commandImageBytes, codingData))
 	{
 		printError("illegal command", codingData);
 		return 1;
 	}
 
-	/* Todo - content validation for label */
 
+
+	/* Todo - content validtation for operands  */
+
+	/* Todo - content validation for lable */
+
+	lable[strlen(lable)-1] = 0; /* removing ':' at end of lable */
 	/* Todo - make sure command doesn't have spaces at beginning/end */
-	if (strcmp(label,""))
+	if (strcmp(lable,""))
 	{
-		
-		if (!pushLabel(label, imageType, codingData))
+		if (pushLable(lable, imageType, codingData))
+		{
+			printf("returning because of pushLable\n");
 			return 1;
+		}
 	}
 
 	if (imageType == CODE_IMAGE)
 		codingData->ic += 4;
 
 	if (imageType == DATA_IMAGE) /* stopped here */
-		codingData->dc += commandImageBytes * countOperands(operands);
+	{
+		if (strcmp(".asciz",command) == 0)
+			codingData->dc += commandImageBytes * getStringLenght(operands);
+		else
+		{
+			
+			codingData->dc += commandImageBytes * countOperands(operands);
+		}
+	}
 
 	return 0;
 }
 
 int encodingLineTake2(char *line, struct fileCodingStruct *codingData)
 {
+	char lable[LABEL_SIZE] = {0};
+	char command[COMMAND_SIZE] = {0};
+	char operands[LINE_LENGTH] = {0};
 
-	/* Todo - content validtation for operands  */
+	int returnVal, imageType, commandImageBytes;
+
+
+	returnVal = seperateArguments(line, lable, command, operands, codingData);
+	if (returnVal != 0)
+	{
+		if (returnVal == 1) /* error detected */
+			return 1;
+		else
+			return 0; /* blank or comment line */
+	}
+	/* now lable, command, and operands strings are seperated*/
+
+	if (!analyzeCommand(command, &imageType, &commandImageBytes, codingData))
+	{
+		printError("illegal command", codingData);
+		return 1;
+	}
+
 	/* Deal with encoding function */
 
 	printError("\033[1m\033[33mNOT ERROR - Coding line:\033[0m", codingData);
@@ -224,7 +275,7 @@ int seperateArguments(char *line, char *lable, char *command, char *operands, st
 	line[end] = 0;
 	strcpy(command, line+start);
 	start = end+1;
-
+	operandPointers(line, &start, &end);
 	if (start < LINE_LENGTH)
 		/* if went out of line's array or start is pointing to the array's NULL, operands will remain NULL */
 		strcpy(operands, line+start);
@@ -253,8 +304,24 @@ int operandPointers(char *line, int *start, int *end)
 
 int countOperands(char *operands)
 {
-	/* Todo */
-	return 0;
+	int i=0, commaCounter = 0;
+
+	while (operands[i] != 0)
+	{
+		if (operands[i] == ',')
+			commaCounter ++;
+
+		i++;
+	}
+
+	return commaCounter+1;
+}
+
+int getStringLenght(char *operands)
+{
+	/*recieves string in the format "string"
+	lenght take into considaration place for NULL, and ignores quatation marks */
+	return strlen(operands)-1;
 }
 
 

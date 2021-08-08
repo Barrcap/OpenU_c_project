@@ -17,7 +17,7 @@ int fileCompiler(char *fileName)
 	int reachedEOF, errorCounter = 0;
 	fileCodingStruct codingData;
 
-	/*symbolLink *currLink; / *##############################*/
+	symbolLink *currLink; /*##############################*/
 
 	file = fopen(fileName, "r");
 
@@ -50,23 +50,28 @@ int fileCompiler(char *fileName)
 
 	printf("Great Success!! Finished Take1! \n"); /* #################################### */
 
-	/*printf("$$$ Labels in SybmbolTable are: $$$\n"); / * #################################### * /
+	finalizeSymbolTable(&codingData);
+
+
+
+	
+	printf("$$$ Labels in SybmbolTable are: $$$\n"); /* #################################### */
 	currLink = codingData.symbolLinkHead;
 	while (currLink)
 	{
-		printf("%s\n", currLink->name);
+		printf("name: '%s'\t", currLink->name);
+		printf("adress: '%i'\n", currLink->adress);
 
 		currLink = currLink->next;
-	} */
+	}
 
-	/*printf("finalizeSymbolTable: \n"); / * #################################### * /
-	finalizeSymbolTable(&codingData);*/
+
 
 	
 
 	/* Second time going over source code */
 
-	/*
+	
 	fseek(file, 0, SEEK_SET);
 	resetCounterParams(&codingData);
 	reachedEOF = 0;
@@ -75,7 +80,7 @@ int fileCompiler(char *fileName)
 		if (readFileLine(file, line, &reachedEOF, &codingData) == 0)
 			errorCounter += encodingLineTake2(line, &codingData);
 		codingData.sourceLine ++;
-	}*/
+	}
 	
 
 
@@ -195,7 +200,7 @@ int encodingLineTake2(char *line, struct fileCodingStruct *codingData)
 	}
 	/* now lable, command, and operands strings are seperated*/
 
-	if (!analyzeCommand(command, &imageType, &commandImageBytes, codingData))
+	if (analyzeCommand(command, &imageType, &commandImageBytes, codingData))
 	{
 		printError("illegal command", codingData);
 		return 1;
@@ -203,10 +208,18 @@ int encodingLineTake2(char *line, struct fileCodingStruct *codingData)
 
 	/* Deal with encoding function */
 
-	printError("\033[1m\033[33mNOT ERROR - Coding line:\033[0m", codingData);
-	/*code = codingData->code;*/
-	toBinary(operands, command, codingData);
-	binPrint(codingData->code);
+	if (imageType == CODE_IMAGE)
+	{
+		printError("\033[1m\033[33mNOT ERROR - Coding line:\033[0m", codingData);
+		printf("lable: '%s'\tcommand: '%s'\toperands:'%s'\n", lable, command, operands);
+		toBinary(command, operands, codingData);
+	}
+
+	if (imageType == DATA_IMAGE)
+	{
+		printf("Theoratically coding command '%s' with operands '%s'\n", command, operands);
+	}
+
 
 	return 0;
 }

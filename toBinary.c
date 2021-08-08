@@ -1,16 +1,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
 #include "toBinary.h"
 #include "commandTable.h"
 #include "data.h"
 #include "fileCompiler.h"
-
-
-
-
-
+#include <ctype.h>
 
 
 /*function that prtinting integer in binary*/
@@ -26,24 +21,37 @@ int isLabel(char * str){
 
 	if (str[0] == '$')
 		return 0;
+	else if(str[0] == '-')              /*thats the only cases to be a register, all the rest cases is  lables */
+		return 0;
+	else if(isdigit(str[0]))
+		return 0;
 	else
 		return 1;
 }
 
+int getDistAddres(char * label, fileCodingStruct *codingData){
+	int destAdd = getLabelAdress(label, codingData);
+	int sourceAdd = getIC(codingData); /*find my address*/
+	int res = destAdd - sourceAdd; /*this is the clac to know where we have to go*/
+	return res;
+}
+
+
+
 int toBinary(char * str ,char * commandSTR, fileCodingStruct *codingData) {
-	long int code;
+	int res;
 	int i = 0;
 	while(strcmp(commandSTR, lines[i].command)){
 		i++;
 	}
 	if(i <= 7){
-		code = Rcase(str,commandSTR, codingData);
+		res = Rcase(str,commandSTR, codingData);
 	}
 	else if (i >= 8 && i <= 22){
-		code = Icase(str,commandSTR, codingData);
+		res = Icase(str,commandSTR, codingData);
 	}
 	else if (i >= 23 && i <=26 ){
-		code = Jcase(str,commandSTR, codingData);
+		res = Jcase(str,commandSTR, codingData);
 	}
 	else
 	{
@@ -51,9 +59,7 @@ int toBinary(char * str ,char * commandSTR, fileCodingStruct *codingData) {
 		return 1;
 	}
 
-	pushCode(code, codingData);
-	return 0;
-
+	return res;
 }
 
 /*void removeDollar(char * str,int occation, char *strREG1, char *strREG2, char strREG3)*/
@@ -61,23 +67,7 @@ void removeDollar(char *str, char *strREG){
 
 	strREG[0] = str[1];
 	strREG[1] = str[2];
-	/*
-	switch(occation){
-		case 1:
-		strREG1[0] = str[1];
-		strREG1[1] = str[2];
-		return strREG1;
-		case 2:
-		strREG2[0] = str[1];
-		strREG2[1] = str[2];
-		return strREG2;
-		case 3:
-		strREG3[0] = str[1];
-		strREG3[1] = str[2];
-		return strREG3;
-		default :
-		printf("You entered wrong case");
-	}*/
+	
 }
 
 int findfunct(char * str){
@@ -161,44 +151,49 @@ long int Rcase(char * str ,char * commandSTR, fileCodingStruct *codingData){
 	mask = findfunct(commandSTR);  /*this mask initialize funct in each case and thats the only diffrence in this case*/
 	mask <<= 6;
 	code |= mask;
-	return code;
 
+	pushCode(code, codingData); 
+	return 0;
 
 }
 
 long int Icase(char * str ,char * commandSTR, fileCodingStruct *codingData){            /* this method isnt ready yet*/ /*have to chek complete to 2 method*/
-	/*Extracting each register from the string*/
-	int tempHex = 0x00FFFFFF;
+	long int tempHex = 0x0000FFFF;    /*this varieble helps to initilaize immed field */
 	char * tempReg1  = strtok(str,",");
 	char * immed = strtok(NULL,",");
 	char * tempReg2 = strtok(NULL,",");
-	/*removing the '$ from the strings and saving in new pointer */
-
 	char reg1[REG_LENGHT] = {0};
 	char reg2[REG_LENGHT] = {0};
-
 	int reg1Val;
 	int reg2Val;
-
 	short immedVal;
 	long int code;
 	int opcode;
 	long int mask;
-
+	long int tempMask;  /*this varieabl containes the val on each case*/
+	short distance;  /*the distance form labels*/
 	removeDollar(tempReg1, reg1);
 	removeDollar(tempReg2, reg2);
+
 
 	/*convert the string to an integer */
 	reg1Val = atoi(reg1);
 	reg2Val = atoi(reg2);
-	immedVal = atoi(immed);
+		/*this way we are checking what case we are (register or lables) */
+	if(!isLabel(immed)){
+		immedVal = atoi(immed);
+		mask = tempHex;
+		tempMask = mask & immedVal;
+	}
+	else{
+		distance = getDistAddres(immed, codingData);
+		mask = tempHex;
+		tempMask = mask & distance;
+	}
 
 	code = 0;
 	opcode = findOpcode(commandSTR);
 	mask = opcode; 
-
-
-
 	mask <<=  26;
 	code |= mask;
 	mask = reg1Val;
@@ -207,63 +202,63 @@ long int Icase(char * str ,char * commandSTR, fileCodingStruct *codingData){    
 	mask = reg2Val;
 	mask <<= 16;
 	code |= mask;
-	if((opcode >= 10 && opcode <= 14) || (opcode >= 19 && opcode <= 24)){
-		mask = tempHex;
-		mask = mask & immedVal;
-		code |= mask;
-	}
-	else if(opcode >= 15 && opcode <= 18){
-		/*no clear how to write this code for this time*/
-		/*we need lable table*/
-	}
+	code |= tempMask; /*this is the coding for each case*/
+	
 
-	return code;
+	pushCode(code, codingData); 
+	return 0;
 
 }
 
 long int Jcase(char * str ,char * commandSTR, fileCodingStruct *codingData){    /*this function isnt ready yet*/
 	/*Extracting each register from the string*/
+	long int tempHex = 0x00FFFFFF; /*this varieble helps to initilaize immed field */
+	char address[REG_LENGHT];
+	short reg1Val;
+	long int code;
+	int opcode;
+	long int mask;
+	int addressVal;
+
+	
+
 	if(!isLabel(str)){ 									
-		int tempHex = 0x00FFFFFF;
-
-		char reg1[REG_LENGHT];
-		short reg1Val;
-		long int code;
-		int opcode;
-		long int mask;
-
-		removeDollar(str, reg1);
-
+		removeDollar(str, address);
 		/*convert the string to an integer */
-		reg1Val = atoi(reg1);
+		reg1Val = atoi(address);
 		code = 0;
 		opcode = findOpcode(commandSTR);
 		mask = opcode; 
 		mask <<=  26;
 		code |= mask;
 		mask = 1;        /*this is register case*/
-		mask <<= 21;
+		mask <<= 25;
 		code |= mask;
 		mask = tempHex;
 		mask = mask & reg1Val;
 		code |= mask;
-		return code;
+
+		pushCode(code, codingData); 
+		return 0;
+	
 	}
 	else {
+		addressVal = getLabelAdress(str , codingData);
+		code = 0;
+		opcode = findOpcode(commandSTR);
+		mask = opcode; 
+		mask <<=  26;
+		code |= mask;
+		mask = tempHex;
+		mask = mask & addressVal;
+		code |= mask;
 
+		pushCode(code, codingData); 
 		return 0;
-		/* this is lable case*/
+
+		
 	}
+
+	return 0;
 	
 }
-
-
-/*
-int main (){
-	char string [] = "$3,$4,$5";
-	char commandString [] = "move";
-	int test = Rcase(string,commandString);
-	printf("%d\n", test);
-	bin(test);
-	return 0;
-}*/

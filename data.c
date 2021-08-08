@@ -72,7 +72,7 @@ int analyzeCommand(char *commandName, int *imageType, int *commandImageBytes, fi
 	return 1;
 }
 
-int pushLable(char *lable, int placing, fileCodingStruct *codingData)
+int pushLable(char *lable, int placing, int visibility, fileCodingStruct *codingData)
 {/*	
 	returns 0 on success, 1 if found error */
 	/*char *errorString[LINE_LENGTH];
@@ -97,8 +97,13 @@ int pushLable(char *lable, int placing, fileCodingStruct *codingData)
 					break;
 
 				case EXTERN:
-					printError("Label already defined as extern", codingData);
-					return 1;
+					if (visibility == INTERN)
+					{
+						printError("Label already defined as extern", codingData);
+						return 1;
+					}
+					if (visibility == EXTERN)
+						return 0;
 					break;
 
 			}/* switch case ends*/
@@ -127,14 +132,32 @@ int pushLable(char *lable, int placing, fileCodingStruct *codingData)
 		exit(EXIT_FAILURE); /* failed allocating memory for new symbol link */
 
 	strcpy(currLink->name, lable);
-	if (placing == CODE_IMAGE)
-		currLink->adress = codingData->ic;
 
-	if (placing == DATA_IMAGE)
-		currLink->adress = codingData->dc;
+	if (visibility == INTERN)
+	{
+		if (placing == CODE_IMAGE)
+			currLink->adress = codingData->ic;
 
-	currLink->placing = placing;
-	currLink->visibility = INTERN;
+		if (placing == DATA_IMAGE)
+			currLink->adress = codingData->dc;
+
+		currLink->placing = placing;
+	}
+
+	if (visibility == EXTERN)
+		currLink->adress = 0;
+	
+	currLink->visibility = visibility;
+
+	return 0;
+}
+
+int pushExternLable(char *lable, fileCodingStruct *codingData)
+{/*	
+	returns 0 on success, 1 if found error */
+
+	
+
 
 	return 0;
 }
@@ -162,7 +185,7 @@ void finalizeSymbolTable(fileCodingStruct *codingData)
 	symbolLink *currLink;
 
 	currLink = codingData->symbolLinkHead;
-
+	codingData->icf = codingData->ic;
 	while (currLink)
 	{
 		if (currLink->placing == DATA_IMAGE)

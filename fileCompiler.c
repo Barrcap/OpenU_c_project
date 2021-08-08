@@ -50,6 +50,7 @@ int fileCompiler(char *fileName)
 
 	printf("Great Success!! Finished Take1! \n"); /* #################################### */
 
+	printf("ICF: %i\n", codingData.icf);
 	finalizeSymbolTable(&codingData);
 
 
@@ -157,17 +158,20 @@ int encodingLineTake1(char *line, struct fileCodingStruct *codingData)
 	/* Todo - make sure command doesn't have spaces at beginning/end */
 	if (strcmp(lable,""))
 	{
-		if (pushLable(lable, imageType, codingData))
-		{
-			printf("returning because of pushLable\n");
+		if (pushLable(lable, imageType, INTERN, codingData))
 			return 1;
-		}
+	}
+
+	if ((strcmp(".extern",command) == 0))
+	{
+		if (pushLable(operands, imageType, EXTERN, codingData))
+			return 1;
 	}
 
 	if (imageType == CODE_IMAGE)
 		codingData->ic += 4;
 
-	if (imageType == DATA_IMAGE) /* stopped here */
+	if (imageType == DATA_IMAGE)
 	{
 		if (strcmp(".asciz",command) == 0)
 			codingData->dc += commandImageBytes * getStringLenght(operands);

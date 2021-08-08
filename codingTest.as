@@ -1,7 +1,7 @@
 MAIN:	add		$3,$5,$9
 LOOP:	ori		$9,-5,$2
-;		la		val1
-		la		STR
+		la		val1
+;		la		STR
 		jmp		Next
 ;Next:	move	$20,$4
 		bgt		$4,$2,END
@@ -16,4 +16,4 @@ LIST:	.db		6,-9
 		.dh		27056
 .entry	K
 K:		.dw		31,-12
-;.extern	val1
+.extern	val1

@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdio.h> /* can be removed with fileCompiler.h? ######################*/
 
+
 #include "data.h"
 #include "fileCompiler.h" /* move printError here? ############################## */
 #include "commandTable.h"
@@ -143,6 +144,7 @@ int getLabelAdress(char *lableName, fileCodingStruct *codingData)
 	symbolLink *currLink;
 
 	currLink = codingData->symbolLinkHead;
+
 
 	while (currLink)
 	{

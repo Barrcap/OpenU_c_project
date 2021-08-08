@@ -62,7 +62,7 @@ int getIC(fileCodingStruct *codingData);
 int analyzeCommand(char *commandName, int *imageType, int *commandImageBytes, fileCodingStruct *codingData);
 
 
-int pushLable(char *label, int placing, fileCodingStruct *codingData);
+int pushLable(char *lable, int placing, int visibility, fileCodingStruct *codingData);
 int getLabelAdress(char *labelName, fileCodingStruct *codingData);
 void finalizeSymbolTable(fileCodingStruct *codingData);
 

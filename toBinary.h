@@ -19,6 +19,7 @@ int toBinary(char * commandSTR, char * operands , struct fileCodingStruct *codin
 int findfunct(char * str);
 int findOpcode(char * str);
 long int Rcase(char * str ,char * commandSTR, struct fileCodingStruct *codingData);
+long int RRcase(char * str ,char * commandSTR, struct fileCodingStruct *codingData);
 long int Icase(char * str ,char * commandSTR, struct fileCodingStruct *codingData);
 long int Jcase(char * str ,char * commandSTR, struct fileCodingStruct *codingData);
 

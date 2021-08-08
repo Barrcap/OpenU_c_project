@@ -44,8 +44,11 @@ int toBinary(char * commandSTR, char * operands, fileCodingStruct *codingData) {
 	while(strcmp(commandSTR, lines[i].command)){
 		i++;
 	}
-	if(i <= 7){
+	if(i <= 4){
 		res = Rcase(operands,commandSTR, codingData);
+	}
+	else if (i >= 5 && i <= 7){
+		res = RRcase(operands,commandSTR, codingData);
 	}
 	else if (i >= 8 && i <= 22){
 		res = Icase(operands,commandSTR, codingData);
@@ -146,6 +149,49 @@ long int Rcase(char * str ,char * commandSTR, fileCodingStruct *codingData){
 	mask <<= 16;
 	code |= mask;
 	mask = reg3Val;
+	mask <<= 11;
+	code |= mask;
+	mask = findfunct(commandSTR);  /*this mask initialize funct in each case and thats the only diffrence in this case*/
+	mask <<= 6;
+	code |= mask;
+
+	pushCode(code, codingData); 
+	return 0;
+
+}
+
+long int RRcase(char * str ,char * commandSTR, fileCodingStruct *codingData){
+	/*Extracting each register from the string*/
+	char reg1[REG_LENGHT] = {0};
+	char reg2[REG_LENGHT] = {0};
+
+	unsigned int reg1Val;
+	unsigned int reg2Val;
+
+	long int code;
+	long int mask; 
+
+	char * tempReg1  = strtok(str,",");
+	char * tempReg2 = strtok(NULL,",");
+
+	removeDollar(tempReg1, reg1);
+	removeDollar(tempReg2, reg2);
+
+	reg1Val = atoi(reg1);
+	reg2Val = atoi(reg2);
+
+	/*coding to binary*/
+	code = 0;
+	mask = findOpcode(commandSTR);        /*this is the case with opcode = 1*/ 
+	mask <<=  26;
+	code |= mask;
+	mask = reg1Val;
+	mask <<= 21;
+	code |= mask;
+	mask = reg2Val;
+	mask <<= 16;
+	code |= mask;
+	mask = 0;
 	mask <<= 11;
 	code |= mask;
 	mask = findfunct(commandSTR);  /*this mask initialize funct in each case and thats the only diffrence in this case*/

@@ -74,7 +74,7 @@ void finalizeSymbolTable(fileCodingStruct *codingData);
 
 
 /* not relevant, to be deleted: ##################################################### */
-int pushCode(long int code, fileCodingStruct *codingData);
+void pushCode(long int code, fileCodingStruct *codingData);
 /* not relevant, to be deleted end ##################################################### */
 
 

@@ -6,6 +6,7 @@
 #include "data.h"
 #include "fileCompiler.h" /* move printError here? ############################## */
 #include "commandTable.h"
+#include "toBinary.h" /* to be removed? ############################  */
 
 
 
@@ -173,11 +174,10 @@ void finalizeSymbolTable(fileCodingStruct *codingData)
 
 
 
-int pushCode(long int code, fileCodingStruct *codingData)
+void pushCode(long int code, fileCodingStruct *codingData)
 {
+	binPrint(code);
 	
-	return 0;
-
 	/* Temprorary until start using tables: ############################### * /
 	codingData->code = code;*/
 }

@@ -38,20 +38,20 @@ int getDistAddres(char * label, fileCodingStruct *codingData){
 
 
 
-int toBinary(char * str ,char * commandSTR, fileCodingStruct *codingData) {
+int toBinary(char * commandSTR, char * operands, fileCodingStruct *codingData) {
 	int res;
 	int i = 0;
 	while(strcmp(commandSTR, lines[i].command)){
 		i++;
 	}
 	if(i <= 7){
-		res = Rcase(str,commandSTR, codingData);
+		res = Rcase(operands,commandSTR, codingData);
 	}
 	else if (i >= 8 && i <= 22){
-		res = Icase(str,commandSTR, codingData);
+		res = Icase(operands,commandSTR, codingData);
 	}
 	else if (i >= 23 && i <=26 ){
-		res = Jcase(str,commandSTR, codingData);
+		res = Jcase(operands,commandSTR, codingData);
 	}
 	else
 	{

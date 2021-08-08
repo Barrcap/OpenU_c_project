@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include <string.h>
 #include "main.h"
+#include "fileCompiler.h"
+#include "data.h"
 
 int main(int argc, char const *argv[])
 {
 	
-	int i, j, isDuplicate;
+	int i, j, isDuplicate, errorCounter=0;
 	char fileName[FILE_NAME_SIZE];
 	if (argc == 1)
 		printf("No files were recieved for compilation!\n");
@@ -24,14 +26,16 @@ int main(int argc, char const *argv[])
 				if (validateFileName(fileName) != 0)
 					printf("%s is not a valid assembly file name!\n", fileName);
 				else
-					compileFile(fileName);
+					errorCounter += fileCompiler(fileName);
 			}
 
 		}
 	}
 
+	if (errorCounter > 0)
+		printf("compilation failed with %i errors!\n", errorCounter);
 
-	return 0;
+	return errorCounter;
 }
 
 
@@ -46,9 +50,4 @@ int validateFileName(char *fileName)
 				return 0;
 	}
 	return 1;
-}
-
-void compileFile(char *fileName) /* ToDo */
-{
-	printf("'%s' was just theoreticallty compiled!\n", fileName);
 }

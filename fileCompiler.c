@@ -6,6 +6,7 @@
 #include "fileCompiler.h"
 #include "toBinary.h"
 #include "commandTable.h"
+#include "validation.h"
 
 
 
@@ -139,8 +140,7 @@ int encodingLineTake1(char *line, struct fileCodingStruct *codingData)
 
 	/* now lable, command, and operands strings are seperated*/
 
-	/*printf("line %i - ", codingData->sourceLine);
-	printf("Saperated:\tlable:'%s'\tcommand:'%s'\toperands:'%s'\n", lable, command, operands); ######################*/
+
 
 	if (analyzeCommand(command, &imageType, &commandImageBytes, codingData))
 	{
@@ -155,9 +155,15 @@ int encodingLineTake1(char *line, struct fileCodingStruct *codingData)
 	/* Todo - content validation for lable */
 
 	lable[strlen(lable)-1] = 0; /* removing ':' at end of lable */
-	/* Todo - make sure command doesn't have spaces at beginning/end */
+
+
+	printf("line %i - ", codingData->sourceLine);
+	printf("Saperated:\tlable:'%s'\tcommand:'%s'\toperands:'%s'\n", lable, command, operands); /*######################*/
+
 	if (strcmp(lable,""))
 	{
+		if (validateLabel(lable, codingData))
+		return 1;
 		if (pushLable(lable, imageType, INTERN, codingData))
 			return 1;
 	}

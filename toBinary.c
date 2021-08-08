@@ -1,16 +1,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
 #include "toBinary.h"
 #include "commandTable.h"
 #include "data.h"
 #include "fileCompiler.h"
-
-
-
-
-
+#include <ctype.h>
 
 
 /*function that prtinting integer in binary*/
@@ -25,6 +20,10 @@ void binPrint(unsigned long int n)
 int isLabel(char * str){
 
 	if (str[0] == '$')
+		return 0;
+	else if(str[0] == '-')              /*thats the only cases to be a register, all the rest cases is  lables */
+		return 0;
+	else if(isdigit(str[0]))
 		return 0;
 	else
 		return 1;
@@ -68,23 +67,7 @@ void removeDollar(char *str, char *strREG){
 
 	strREG[0] = str[1];
 	strREG[1] = str[2];
-	/*
-	switch(occation){
-		case 1:
-		strREG1[0] = str[1];
-		strREG1[1] = str[2];
-		return strREG1;
-		case 2:
-		strREG2[0] = str[1];
-		strREG2[1] = str[2];
-		return strREG2;
-		case 3:
-		strREG3[0] = str[1];
-		strREG3[1] = str[2];
-		return strREG3;
-		default :
-		printf("You entered wrong case");
-	}*/
+	
 }
 
 int findfunct(char * str){
@@ -175,8 +158,7 @@ long int Rcase(char * str ,char * commandSTR, fileCodingStruct *codingData){
 }
 
 long int Icase(char * str ,char * commandSTR, fileCodingStruct *codingData){            /* this method isnt ready yet*/ /*have to chek complete to 2 method*/
-	/*Extracting each register from the string*/
-	int tempHex = 0x00FFFFFF;
+	long int tempHex = 0x0000FFFF;    /*this varieble helps to initilaize immed field */
 	char * tempReg1  = strtok(str,",");
 	char * immed = strtok(NULL,",");
 	char * tempReg2 = strtok(NULL,",");
@@ -192,6 +174,7 @@ long int Icase(char * str ,char * commandSTR, fileCodingStruct *codingData){    
 	short distance;  /*the distance form labels*/
 	removeDollar(tempReg1, reg1);
 	removeDollar(tempReg2, reg2);
+
 
 	/*convert the string to an integer */
 	reg1Val = atoi(reg1);
@@ -229,39 +212,49 @@ long int Icase(char * str ,char * commandSTR, fileCodingStruct *codingData){    
 
 long int Jcase(char * str ,char * commandSTR, fileCodingStruct *codingData){    /*this function isnt ready yet*/
 	/*Extracting each register from the string*/
-	int tempHex = 0x00FFFFFF;
-
-	char reg1[REG_LENGHT];
+	long int tempHex = 0x00FFFFFF; /*this varieble helps to initilaize immed field */
+	char address[REG_LENGHT];
 	short reg1Val;
 	long int code;
 	int opcode;
 	long int mask;
-	int distance;
+	int addressVal;
 
-	removeDollar(str, reg1);
+	
 
 	if(!isLabel(str)){ 									
-
+		removeDollar(str, address);
 		/*convert the string to an integer */
-		reg1Val = atoi(reg1);
+		reg1Val = atoi(address);
 		code = 0;
 		opcode = findOpcode(commandSTR);
 		mask = opcode; 
 		mask <<=  26;
 		code |= mask;
 		mask = 1;        /*this is register case*/
-		mask <<= 21;
+		mask <<= 25;
 		code |= mask;
 		mask = tempHex;
 		mask = mask & reg1Val;
 		code |= mask;
 
 		pushCode(code, codingData); 
+		return 0;
 	
 	}
 	else {
-		distance = getDistAddres(reg1 , codingData);
+		addressVal = getLabelAdress(str , codingData);
+		code = 0;
+		opcode = findOpcode(commandSTR);
+		mask = opcode; 
+		mask <<=  26;
+		code |= mask;
+		mask = tempHex;
+		mask = mask & addressVal;
+		code |= mask;
 
+		pushCode(code, codingData); 
+		return 0;
 
 		
 	}
@@ -269,14 +262,3 @@ long int Jcase(char * str ,char * commandSTR, fileCodingStruct *codingData){    
 	return 0;
 	
 }
-
-
-/*
-int main (){
-	char string [] = "$3,$4,$5";
-	char commandString [] = "move";
-	int test = Rcase(string,commandString);
-	printf("%d\n", test);
-	bin(test);
-	return 0;
-}*/

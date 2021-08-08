@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 #include "toBinary.h"
-#include "command_table.h"
+#include "commandTable.h"
 #include "data.h"
 #include "fileCompiler.h"
 

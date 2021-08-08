@@ -27,7 +27,6 @@ int fileCompiler(char *fileName)
 	
 
 	/* initialize file data's both basic values, and all 3 data tables */
-	codingData.sc = 0; /* symbol table counter */
 	resetCounterParams(&codingData);
 	codingData.symbolLinkHead = NULL;
 

@@ -3,7 +3,6 @@
 #include <string.h>
 #include <stdio.h> /* can be removed with fileCompiler.h? ######################*/
 
-
 #include "data.h"
 #include "fileCompiler.h" /* move printError here? ############################## */
 #include "commandTable.h"
@@ -151,6 +150,7 @@ int getLabelAdress(char *lableName, fileCodingStruct *codingData)
 		if (strcmp(lableName,currLink->name) == 0)
 			return currLink->adress;
 
+
 		currLink = currLink->next;
 	}
 	return -1;
@@ -170,6 +170,7 @@ void finalizeSymbolTable(fileCodingStruct *codingData)
 		currLink = currLink->next;
 	}
 }
+
 
 
 

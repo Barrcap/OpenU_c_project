@@ -41,7 +41,6 @@ typedef struct fileCodingStruct
 
 	int ic; /* instruction commands counter */
 	int dc; /* data commands counter */
-	int sc; /* symbol table counter */
 	int icf; /* amount of instruction commands*/
 	int dcf; /* amount of data commands */
 	int sourceLine;
@@ -54,7 +53,6 @@ typedef struct fileCodingStruct
 
 
 
-
 void freeSymbolTable (fileCodingStruct *codingData);
 
 void resetCounterParams(fileCodingStruct *codingData);
@@ -62,6 +60,7 @@ void advanceImageCounter(int imageType, fileCodingStruct *codingData);
 int getIC(fileCodingStruct *codingData);
 
 int analyzeCommand(char *commandName, int *imageType, int *commandImageBytes, fileCodingStruct *codingData);
+
 
 int pushLable(char *label, int placing, fileCodingStruct *codingData);
 int getLabelAdress(char *labelName, fileCodingStruct *codingData);

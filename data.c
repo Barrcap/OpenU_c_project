@@ -66,6 +66,7 @@ int analyzeCommand(char *commandName, int *imageType, int *commandImageBytes, fi
 		if (strcmp(commandName,dataCommands[i].name) == 0)
 		{
 			*imageType = DATA_IMAGE;
+			*commandImageBytes = dataCommands[i].bytes;
 			return 0;
 		}
 

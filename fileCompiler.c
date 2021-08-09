@@ -53,20 +53,25 @@ int fileCompiler(char *fileName)
 	finalizeSymbolTable(&codingData);
 
 
+	{	/* for debugging - using SHOW_SYMBOL/IC/DC macros */
 
-	if (SHOW_SYMBOL_TABLE)
-	{
-		printf("$$$ %s: Labels in SybmbolTable are: $$$\n", fileName); /* #################################### */
-		currLink = codingData.symbolLinkHead;
-		while (currLink)
+		if (SHOW_FINAL_COUNTERS)
+			printf(BOLDRED"$$$\t ICF:%i  DCF:%i \t$$$\n"RESET, codingData.icf, codingData.dcf);
+
+
+		if (SHOW_SYMBOL_TABLE)
 		{
-			printf("name: '%s'\t", currLink->name);
-			printf("adress: '%i'\n", currLink->adress);
+			printf(BOLDYELLOW"$$$ %s: SybmbolTable: $$$\n"RESET, fileName); /* #################################### */
+			currLink = codingData.symbolLinkHead;
+			while (currLink)
+			{
+				printf("name: '%s'\t", currLink->name);
+				printf("adress: '%i'\n", currLink->adress);
 
-			currLink = currLink->next;
+				currLink = currLink->next;
+			}
 		}
 	}
-
 
 
 	
@@ -195,7 +200,7 @@ int encodingLineTake1(char *line, struct fileCodingStruct *codingData)
 
 
 	{	/* for debugging - using SHOW_IC/DC macros */
-		if (SHOW_IC || SHOW_DC)
+		if ((SHOW_TAKE == 1) && (SHOW_IC || SHOW_DC))
 		{
 			if (SHOW_IC && imageType == CODE_IMAGE)
 				printf(BOLDRED"\tic: %i->", codingData->ic); /* #####################################3##################### */
@@ -216,13 +221,13 @@ int encodingLineTake1(char *line, struct fileCodingStruct *codingData)
 		if (strcmp(".asciz",command) == 0)
 			codingData->dc += commandImageBytes * getStringLenght(operands);
 
-		else
+		else /*if (strcmp(".entry",command)*strcmp(".extern",command) != 0)*/
 			codingData->dc += commandImageBytes * countOperands(operands);
 		
 	}
 
 	{	/* for debugging - using SHOW_IC/DC macros */
-		if (SHOW_IC || SHOW_DC)
+		if ((SHOW_TAKE == 1) && (SHOW_IC || SHOW_DC))
 		{
 			if (SHOW_IC && imageType == CODE_IMAGE)
 				printf("%i\n"RESET, codingData->ic); /* #####################################3##################### */

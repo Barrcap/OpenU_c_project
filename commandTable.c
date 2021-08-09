@@ -34,10 +34,10 @@ line lines[COMMAND_NUM] =
 
 dataCommand dataCommands[DATA_COMMANDS] = 
 {
-	{".dh",		8},
-	{".dw",		9},
-	{".db",		10},
-	{".asciz",	11},
-	{".entry",	0},
-	{".extern",	0}
+	{".dh",		8, 2},
+	{".dw",		9, 4},
+	{".db",		10, 1},
+	{".asciz",	11, 1},
+	{".entry",	0, 0},
+	{".extern",	0, 0}
 };

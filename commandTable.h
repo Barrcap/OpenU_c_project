@@ -16,6 +16,7 @@ typedef struct dataCommand
 {
 	char name[DATA_COMMAND_LENGHT];
 	int occation;
+	int bytes;
 
 }dataCommand;
 

@@ -51,20 +51,21 @@ int fileCompiler(char *fileName)
 
 	printf("Great Success!! Finished Take1! \n"); /* #################################### */
 
-	printf("ICF: %i\n", codingData.icf);
 	finalizeSymbolTable(&codingData);
 
 
 
-	
-	printf("$$$ Labels in SybmbolTable are: $$$\n"); /* #################################### */
-	currLink = codingData.symbolLinkHead;
-	while (currLink)
+	if (SHOW_SYMBOL_TABLE)
 	{
-		printf("name: '%s'\t", currLink->name);
-		printf("adress: '%i'\n", currLink->adress);
+		printf("$$$ %s: Labels in SybmbolTable are: $$$\n", fileName); /* #################################### */
+		currLink = codingData.symbolLinkHead;
+		while (currLink)
+		{
+			printf("name: '%s'\t", currLink->name);
+			printf("adress: '%i'\n", currLink->adress);
 
-		currLink = currLink->next;
+			currLink = currLink->next;
+		}
 	}
 
 
@@ -220,14 +221,20 @@ int encodingLineTake2(char *line, struct fileCodingStruct *codingData)
 
 	if (imageType == CODE_IMAGE)
 	{
-		printError("\033[1m\033[33mNOT ERROR - Coding line:\033[0m", codingData);
-		printf("lable: '%s'\tcommand: '%s'\toperands:'%s'\n", lable, command, operands);
-		toBinary(command, operands, codingData);
+		if (SHOW_ENCODING)
+		{
+			printError("\033[1m\033[33mNOT ERROR - Coding line:\033[0m", codingData);
+			printf("lable: '%s'\tcommand: '%s'\toperands:'%s'\n", lable, command, operands);
+			toBinary(command, operands, codingData);
+		}
 	}
 
 	if (imageType == DATA_IMAGE)
 	{
-		printf("Theoratically coding command '%s' with operands '%s'\n", command, operands);
+		if (SHOW_ENCODING)
+		{
+			printf("Theoratically coding command '%s' with operands '%s'\n", command, operands);
+		}
 	}
 
 

@@ -1,3 +1,7 @@
+#define SHOW_SYMBOL_TABLE 1
+#define SHOW_ENCODING 0
+
+
 #define RESET "\033[0m" /* print color for printError */
 #define RED "\033[31m" /* print color for printError */
 #define BOLDRED     "\033[1m\033[31m"      /* Bold Red */

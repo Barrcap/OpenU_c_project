@@ -29,6 +29,14 @@ typedef struct symbolLink
 
 }symbolLink;
 
+typedef struct dataImageStruct
+{
+	char *image;
+	int currIndex;
+	int size;
+
+}dataImageStruct;
+
 typedef struct fileCodingStruct
 {
 /*	
@@ -41,8 +49,8 @@ typedef struct fileCodingStruct
 
 	int ic; /* instruction commands counter */
 	int dc; /* data commands counter */
-	int icf; /* amount of instruction commands*/
-	int dcf; /* amount of data commands */
+	int icf; /* amount of bytes in code image)*/
+	int dcf; /* amount of bytes in data image */
 	int sourceLine;
 
 	long int code; /* Temprorary until start using tables ############################### */

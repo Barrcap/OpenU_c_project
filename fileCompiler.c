@@ -142,6 +142,23 @@ int encodingLineTake1(char *line, struct fileCodingStruct *codingData)
 	/* now lable, command, and operands strings are seperated*/
 
 
+	{	/* for debugging - using SHOW_LABLE/COMMAND/OPERANDS macros */
+		if (SHOW_TAKE == 1)
+		{
+			printf(BOLDYELLOW"line %i:"RESET, codingData->sourceLine);
+
+			if (SHOW_LABLE)
+				printf("\tlable:"BOLDWHITE"'%s'"RESET, lable);
+			if (SHOW_COMMAND)
+				printf("\tcommand:"BOLDWHITE"'%s'"RESET, command);
+			if(SHOW_OPERANDS)
+				printf("\toperands:"BOLDWHITE"'%s'"RESET, operands);
+
+			printf("\n");
+		}
+	}
+	
+
 
 	if (analyzeCommand(command, &imageType, &commandImageBytes, codingData))
 	{
@@ -175,19 +192,51 @@ int encodingLineTake1(char *line, struct fileCodingStruct *codingData)
 			return 1;
 	}
 
+
+
+
+
+
+
+	{	/* for debugging - using SHOW_IC/DC macros */
+		if (SHOW_IC || SHOW_DC)
+		{
+			if (SHOW_IC && imageType == CODE_IMAGE)
+				printf(BOLDRED"\tic: %i->", codingData->ic); /* #####################################3##################### */
+			if (SHOW_DC && imageType == DATA_IMAGE)
+				printf(BOLDRED"\tdc:%i->", codingData->dc); /* #####################################3##################### */
+		}
+	}
+
+
 	if (imageType == CODE_IMAGE)
+	{
 		codingData->ic += 4;
+		
+	}
 
 	if (imageType == DATA_IMAGE)
 	{
 		if (strcmp(".asciz",command) == 0)
 			codingData->dc += commandImageBytes * getStringLenght(operands);
+
 		else
-		{
-			
 			codingData->dc += commandImageBytes * countOperands(operands);
+		
+	}
+
+	{	/* for debugging - using SHOW_IC/DC macros */
+		if (SHOW_IC || SHOW_DC)
+		{
+			if (SHOW_IC && imageType == CODE_IMAGE)
+				printf("%i\n"RESET, codingData->ic); /* #####################################3##################### */
+			if (SHOW_DC && imageType == DATA_IMAGE)
+				printf("%i\n"RESET, codingData->dc); /* #####################################3##################### */
 		}
 	}
+
+
+
 
 	return 0;
 }
@@ -197,6 +246,8 @@ int encodingLineTake2(char *line, struct fileCodingStruct *codingData)
 	char lable[LABEL_SIZE] = {0};
 	char command[COMMAND_SIZE] = {0};
 	char operands[LINE_LENGTH] = {0};
+
+	/*dataImageStruct dataImage; ########################## continue here*/
 
 	int returnVal, imageType, commandImageBytes;
 
@@ -211,6 +262,22 @@ int encodingLineTake2(char *line, struct fileCodingStruct *codingData)
 	}
 	/* now lable, command, and operands strings are seperated*/
 
+	{	/* for debugging - using SHOW_LABLE/COMMAND/OPERANDS macros */
+		if (SHOW_TAKE == 2)
+		{
+			printf(BOLDYELLOW"line %i:"RESET, codingData->sourceLine);
+
+			if (SHOW_LABLE)
+				printf("\tlable:"BOLDWHITE"'%s'"RESET, lable);
+			if (SHOW_COMMAND)
+				printf("\tcommand:"BOLDWHITE"'%s'"RESET, command);
+			if(SHOW_OPERANDS)
+				printf("\toperands:"BOLDWHITE"'%s'"RESET, operands);
+
+			printf("\n");
+		}
+	}
+
 	if (analyzeCommand(command, &imageType, &commandImageBytes, codingData))
 	{
 		printError("illegal command", codingData);
@@ -223,8 +290,8 @@ int encodingLineTake2(char *line, struct fileCodingStruct *codingData)
 	{
 		if (SHOW_ENCODING)
 		{
-			printError("\033[1m\033[33mNOT ERROR - Coding line:\033[0m", codingData);
-			printf("lable: '%s'\tcommand: '%s'\toperands:'%s'\n", lable, command, operands);
+			/*printError("\033[1m\033[33mNOT ERROR - Coding line:\033[0m", codingData);
+			printf("lable: '%s'\tcommand: '%s'\toperands:'%s'\n", lable, command, operands);*/
 			toBinary(command, operands, codingData);
 		}
 	}

@@ -152,15 +152,6 @@ int pushLable(char *lable, int placing, int visibility, fileCodingStruct *coding
 	return 0;
 }
 
-int pushExternLable(char *lable, fileCodingStruct *codingData)
-{/*	
-	returns 0 on success, 1 if found error */
-
-	
-
-
-	return 0;
-}
 
 int getLabelAdress(char *lableName, fileCodingStruct *codingData)
 {	/* returns lable's adress, if lable doesn't exist returns -1 */
@@ -186,6 +177,7 @@ void finalizeSymbolTable(fileCodingStruct *codingData)
 
 	currLink = codingData->symbolLinkHead;
 	codingData->icf = codingData->ic;
+	codingData->dcf = codingData->dc;
 	while (currLink)
 	{
 		if (currLink->placing == DATA_IMAGE)

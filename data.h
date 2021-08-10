@@ -12,7 +12,7 @@
 #define DW 4
 
 
-enum image_type {CODE_IMAGE, DATA_IMAGE};
+enum image_type {CODE_IMAGE, DATA_IMAGE, NONE};
 enum symbol_visibility {INTERN, ENTRY, EXTERN};
 
 
@@ -23,7 +23,7 @@ typedef struct symbolLink
 	*/
 	char name[LABEL_SIZE];
 	int adress;
-	unsigned int placing : 1; /* 0-code image, 1-data image */
+	unsigned int placing : 2; /* 0-code image, 1-data image */
 	unsigned int visibility : 2; /* 0-internal, 1-entry, 2-extern */
 	struct symbolLink *next;
 
@@ -31,7 +31,7 @@ typedef struct symbolLink
 
 typedef struct dataImageStruct
 {
-	char *image;
+	char *array;
 	int currIndex;
 	int size;
 
@@ -46,6 +46,7 @@ typedef struct fileCodingStruct
 */
 
 	symbolLink *symbolLinkHead;
+	dataImageStruct *dataImage;
 
 	int ic; /* instruction commands counter */
 	int dc; /* data commands counter */
@@ -62,6 +63,8 @@ typedef struct fileCodingStruct
 
 
 void freeSymbolTable (fileCodingStruct *codingData);
+void createDataImage(fileCodingStruct *codingData);
+void freeDataImage(fileCodingStruct *codingData);
 
 void resetCounterParams(fileCodingStruct *codingData);
 void advanceImageCounter(int imageType, fileCodingStruct *codingData);

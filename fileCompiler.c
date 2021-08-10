@@ -16,6 +16,7 @@ int fileCompiler(char *fileName)
 	char line[LINE_LENGTH+1];
 	int reachedEOF, errorCounter = 0;
 	fileCodingStruct codingData;
+	
 
 	symbolLink *currLink; /*##############################*/
 
@@ -48,10 +49,9 @@ int fileCompiler(char *fileName)
 	}
 
 
-	printf("Great Success!! Finished Take1! \n"); /* #################################### */
+	printf("\nGreat Success!! Finished Take1! \n\n"); /* #################################### */
 
 	finalizeSymbolTable(&codingData);
-
 
 	{	/* for debugging - using SHOW_SYMBOL/IC/DC macros */
 
@@ -61,24 +61,28 @@ int fileCompiler(char *fileName)
 
 		if (SHOW_SYMBOL_TABLE)
 		{
-			printf(BOLDYELLOW"$$$ %s: SybmbolTable: $$$\n"RESET, fileName); /* #################################### */
+			printf(BOLDYELLOW"$$$ %s: SybmbolTable after Take1: $$$\n"RESET, fileName); /* #################################### */
 			currLink = codingData.symbolLinkHead;
 			while (currLink)
 			{
 				printf("name: '%s'\t", currLink->name);
-				printf("adress: '%i'\n", currLink->adress);
+				printf("adress: '%i'\t", currLink->adress);
+				printf("Attributes: ");
+				if (currLink->placing == CODE_IMAGE) printf("code ");
+				if (currLink->placing == DATA_IMAGE) printf("data ");
+				if (currLink->visibility == ENTRY) printf("entry");
+				if (currLink->visibility == EXTERN) printf("external");
+
+				printf("\n");
 
 				currLink = currLink->next;
 			}
 		}
 	}
 
-
-	
-
 	/* Second time going over source code */
 
-	
+	createDataImage(&codingData);
 	fseek(file, 0, SEEK_SET);
 	resetCounterParams(&codingData);
 	reachedEOF = 0;
@@ -90,7 +94,32 @@ int fileCompiler(char *fileName)
 	}
 	
 
+	printf("\nGreat Success!! Finished Take2! \n\n"); /* #################################### */
+	{	/* for debugging - using SHOW_SYMBOL/IC/DC macros */
 
+		if (SHOW_SYMBOL_TABLE)
+		{
+			printf(BOLDYELLOW"$$$ %s: SybmbolTable after Take2: $$$\n"RESET, fileName); /* #################################### */
+			currLink = codingData.symbolLinkHead;
+			while (currLink)
+			{
+				printf("name: '%s'\t", currLink->name);
+				printf("adress: '%i'\t", currLink->adress);
+				printf("Attributes: ");
+				if (currLink->placing == CODE_IMAGE) printf("code ");
+				if (currLink->placing == DATA_IMAGE) printf("data ");
+				if (currLink->visibility == ENTRY) printf("entry");
+				if (currLink->visibility == EXTERN) printf("external");
+
+				printf("\n");
+
+				currLink = currLink->next;
+			}
+		}
+	}
+
+
+	freeDataImage(&codingData);
 	freeSymbolTable(&codingData);
 	fclose(file);
 
@@ -182,7 +211,7 @@ int encodingLineTake1(char *line, struct fileCodingStruct *codingData)
 	lable[strlen(lable)-1] = 0; /* removing ':' at end of lable */
 	/* Todo - make sure command doesn't have spaces at beginning/end */
 	if (strcmp(lable,""))
-	{
+	{	/* lable was defined */
 		if (pushLable(lable, imageType, INTERN, codingData))
 			return 1;
 	}
@@ -248,9 +277,9 @@ int encodingLineTake2(char *line, struct fileCodingStruct *codingData)
 	char command[COMMAND_SIZE] = {0};
 	char operands[LINE_LENGTH] = {0};
 
-	/*dataImageStruct dataImage; ########################## continue here*/
-
 	int returnVal, imageType, commandImageBytes;
+
+
 
 
 	returnVal = seperateArguments(line, lable, command, operands, codingData);
@@ -285,6 +314,12 @@ int encodingLineTake2(char *line, struct fileCodingStruct *codingData)
 		return 1;
 	}
 
+	if ((strcmp(".entry",command) == 0))
+	{
+		if (pushLable(operands, imageType, ENTRY, codingData))
+			return 1;
+	}
+
 	/* Deal with encoding function */
 
 	if (imageType == CODE_IMAGE)
@@ -302,6 +337,7 @@ int encodingLineTake2(char *line, struct fileCodingStruct *codingData)
 		if (SHOW_ENCODING)
 		{
 			printf("Theoratically coding command '%s' with operands '%s'\n", command, operands);
+			/*pushDataCommand(command, operands, codingData);*/
 		}
 	}
 

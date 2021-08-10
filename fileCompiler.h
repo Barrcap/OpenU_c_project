@@ -6,7 +6,7 @@
 #define SHOW_DC				1
 #define SHOW_FINAL_COUNTERS	1
 
-#define SHOW_TAKE			1 /* can be 0,1,2 */
+#define SHOW_TAKE			0 /* can be 0,1,2 */
 #define SHOW_ENCODING		0 /* Barr: right now triggers toBinary */
 
 

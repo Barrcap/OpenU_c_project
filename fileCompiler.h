@@ -1,4 +1,4 @@
-#define SHOW_SYMBOL_TABLE	1
+#define SHOW_SYMBOL_TABLE	0	
 #define SHOW_LABLE			0
 #define SHOW_COMMAND		1
 #define SHOW_OPERANDS		1
@@ -6,8 +6,8 @@
 #define SHOW_DC				0
 #define SHOW_FINAL_COUNTERS	0
 
-#define SHOW_TAKE			2 /* can be 0,1,2 */
-#define SHOW_ENCODING		1 /* Barr: right now triggers toBinary */
+#define SHOW_TAKE			0 /* can be 0,1,2 */
+#define SHOW_ENCODING		0 /* Barr: right now triggers toBinary */
 
 
 #define RESET "\033[0m" /* print color for printError */

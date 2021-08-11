@@ -15,6 +15,7 @@ int fileCompiler(char *fileName)
 {
 	FILE *sourceFile;
 	char line[LINE_LENGTH+1];
+	char objectFileName[FILE_NAME_SIZE];
 	int reachedEOF, errorCounter = 0;
 	fileCodingStruct codingData;
 	
@@ -24,8 +25,11 @@ int fileCompiler(char *fileName)
 	sourceFile = fopen(fileName, "r");
 
 	if (sourceFile == NULL)
+	{
 	/*	failed to open source file */
+		printf("Failed to open %s\n",fileName);
 		return 1;
+	}
 	
 
 	/* initialize file data's both basic values, and all 3 data tables */
@@ -47,6 +51,15 @@ int fileCompiler(char *fileName)
 			errorCounter ++;
 		}
 		codingData.sourceLine ++;
+	}
+
+
+	if (errorCounter != 0)
+	{
+		printf("Found errors in Take1, aborting compilation for %s\n", fileName); /* ########## */
+		freeSymbolTable(&codingData);
+		fclose(sourceFile);
+		return errorCounter;
 	}
 
 
@@ -83,9 +96,32 @@ int fileCompiler(char *fileName)
 
 	/* Second time going over source code */
 
-	createDataImage(&codingData);
 	fseek(sourceFile, 0, SEEK_SET);
+
+	strcpy(objectFileName, fileName);
+	/* change .as to .ob */
+	objectFileName[strlen(objectFileName)-2] = 'o';
+	objectFileName[strlen(objectFileName)-1] = 'b';
+
+	codingData.objectFile = fopen(objectFileName, "w");
+	if (codingData.objectFile == NULL)
+	{
+		printf("Failed to open %s for writing\n",objectFileName);
+		freeSymbolTable(&codingData);
+		fclose(sourceFile);
+		return 1;
+	}
+	fprintf(codingData.objectFile, "%i %i\n", codingData.icf-100+4, codingData.dcf);
+
+	/*printf("Fake error, delete file!\n");
+	deleteFile(objectFileName, &codingData);
+	return 1;*/
+
+	createDataImage(&codingData);
 	resetCounterParams(&codingData);
+
+	/* #######################################################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ */
+
 	reachedEOF = 0;
 	while (!reachedEOF)
 	{
@@ -122,6 +158,9 @@ int fileCompiler(char *fileName)
 
 	freeDataImage(&codingData);
 	freeSymbolTable(&codingData);
+	fclose(codingData.objectFile);
+	if (errorCounter != 0)
+		remove(objectFileName);
 	fclose(sourceFile);
 
 	return errorCounter;
@@ -459,7 +498,6 @@ int getStringLenght(char *operands)
 	lenght take into considaration place for NULL, and ignores quatation marks */
 	return strlen(operands)-1;
 }
-
 
 /*##################################################################################*/
 long int roiEncoding(char *command, char *operands) /*dummy function Roi's encoding function */

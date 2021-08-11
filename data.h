@@ -1,7 +1,4 @@
 #define FILE_NAME_SIZE 40
-/*#define MACHINE_CODE_MAX_SIZE 1000  Supports roughly 250 lines of code 
-	MACHINE_CODE_MAX_SIZE is in bytes.
-	actual value is our virtual machine's memory (2^25) */
 #define TABLE_BUFFER 20
 #define LINE_LENGTH 80
 #define LABEL_SIZE 31
@@ -50,7 +47,7 @@ typedef struct fileCodingStruct
 
 	int ic; /* instruction commands counter */
 	int dc; /* data commands counter */
-	int icf; /* amount of bytes in code image)*/
+	int icf; /* amount of bytes in code image */
 	int dcf; /* amount of bytes in data image */
 	int sourceLine;
 

@@ -13,7 +13,7 @@
 
 int fileCompiler(char *fileName)
 {
-	FILE *file;
+	FILE *sourceFile;
 	char line[LINE_LENGTH+1];
 	int reachedEOF, errorCounter = 0;
 	fileCodingStruct codingData;
@@ -21,10 +21,10 @@ int fileCompiler(char *fileName)
 
 	symbolLink *currLink; /*##############################*/
 
-	file = fopen(fileName, "r");
+	sourceFile = fopen(fileName, "r");
 
-	if (file == NULL)
-	/*	failed to open file */
+	if (sourceFile == NULL)
+	/*	failed to open source file */
 		return 1;
 	
 
@@ -39,7 +39,7 @@ int fileCompiler(char *fileName)
 	reachedEOF = 0;
 	while (!reachedEOF)
 	{
-		if (readFileLine(file, line, &reachedEOF, &codingData) == 0)
+		if (readFileLine(sourceFile, line, &reachedEOF, &codingData) == 0)
 			errorCounter += encodingLineTake1(line, &codingData);
 		else
 		{
@@ -84,12 +84,12 @@ int fileCompiler(char *fileName)
 	/* Second time going over source code */
 
 	createDataImage(&codingData);
-	fseek(file, 0, SEEK_SET);
+	fseek(sourceFile, 0, SEEK_SET);
 	resetCounterParams(&codingData);
 	reachedEOF = 0;
 	while (!reachedEOF)
 	{
-		if (readFileLine(file, line, &reachedEOF, &codingData) == 0)
+		if (readFileLine(sourceFile, line, &reachedEOF, &codingData) == 0)
 			errorCounter += encodingLineTake2(line, &codingData);
 		codingData.sourceLine ++;
 	}
@@ -122,7 +122,7 @@ int fileCompiler(char *fileName)
 
 	freeDataImage(&codingData);
 	freeSymbolTable(&codingData);
-	fclose(file);
+	fclose(sourceFile);
 
 	return errorCounter;
 }

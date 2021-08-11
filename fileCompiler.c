@@ -17,6 +17,7 @@ int fileCompiler(char *fileName)
 	char line[LINE_LENGTH+1];
 	int reachedEOF, errorCounter = 0;
 	fileCodingStruct codingData;
+	
 
 	symbolLink *currLink; /*##############################*/
 
@@ -49,31 +50,40 @@ int fileCompiler(char *fileName)
 	}
 
 
-	printf("Great Success!! Finished Take1! \n"); /* #################################### */
+	printf("\nGreat Success!! Finished Take1! \n\n"); /* #################################### */
 
-	printf("ICF: %i\n", codingData.icf);
 	finalizeSymbolTable(&codingData);
 
+	{	/* for debugging - using SHOW_SYMBOL/IC/DC macros */
+
+		if (SHOW_FINAL_COUNTERS)
+			printf(BOLDRED"$$$\t ICF:%i  DCF:%i \t$$$\n"RESET, codingData.icf, codingData.dcf);
 
 
-	
-	printf("$$$ Labels in SybmbolTable are: $$$\n"); /* #################################### */
-	currLink = codingData.symbolLinkHead;
-	while (currLink)
-	{
-		printf("name: '%s'\t", currLink->name);
-		printf("adress: '%i'\n", currLink->adress);
+		if (SHOW_SYMBOL_TABLE)
+		{
+			printf(BOLDYELLOW"$$$ %s: SybmbolTable after Take1: $$$\n"RESET, fileName); /* #################################### */
+			currLink = codingData.symbolLinkHead;
+			while (currLink)
+			{
+				printf("name: '%s'\t", currLink->name);
+				printf("adress: '%i'\t", currLink->adress);
+				printf("Attributes: ");
+				if (currLink->placing == CODE_IMAGE) printf("code ");
+				if (currLink->placing == DATA_IMAGE) printf("data ");
+				if (currLink->visibility == ENTRY) printf("entry");
+				if (currLink->visibility == EXTERN) printf("external");
 
-		currLink = currLink->next;
+				printf("\n");
+
+				currLink = currLink->next;
+			}
+		}
 	}
-
-
-
-	
 
 	/* Second time going over source code */
 
-	
+	createDataImage(&codingData);
 	fseek(file, 0, SEEK_SET);
 	resetCounterParams(&codingData);
 	reachedEOF = 0;
@@ -85,7 +95,32 @@ int fileCompiler(char *fileName)
 	}
 	
 
+	printf("\nGreat Success!! Finished Take2! \n\n"); /* #################################### */
+	{	/* for debugging - using SHOW_SYMBOL/IC/DC macros */
 
+		if (SHOW_SYMBOL_TABLE)
+		{
+			printf(BOLDYELLOW"$$$ %s: SybmbolTable after Take2: $$$\n"RESET, fileName); /* #################################### */
+			currLink = codingData.symbolLinkHead;
+			while (currLink)
+			{
+				printf("name: '%s'\t", currLink->name);
+				printf("adress: '%i'\t", currLink->adress);
+				printf("Attributes: ");
+				if (currLink->placing == CODE_IMAGE) printf("code ");
+				if (currLink->placing == DATA_IMAGE) printf("data ");
+				if (currLink->visibility == ENTRY) printf("entry");
+				if (currLink->visibility == EXTERN) printf("external");
+
+				printf("\n");
+
+				currLink = currLink->next;
+			}
+		}
+	}
+
+
+	freeDataImage(&codingData);
 	freeSymbolTable(&codingData);
 	fclose(file);
 
@@ -141,6 +176,22 @@ int encodingLineTake1(char *line, struct fileCodingStruct *codingData)
 	/* now lable, command, and operands strings are seperated*/
 
 
+	{	/* for debugging - using SHOW_LABLE/COMMAND/OPERANDS macros */
+		if (SHOW_TAKE == 1)
+		{
+			printf(BOLDYELLOW"line %i:"RESET, codingData->sourceLine);
+
+			if (SHOW_LABLE)
+				printf("\tlable:"BOLDWHITE"'%s'"RESET, lable);
+			if (SHOW_COMMAND)
+				printf("\tcommand:"BOLDWHITE"'%s'"RESET, command);
+			if(SHOW_OPERANDS)
+				printf("\toperands:"BOLDWHITE"'%s'"RESET, operands);
+
+			printf("\n");
+		}
+	}
+	
 
 	if (analyzeCommand(command, &imageType, &commandImageBytes, codingData))
 	{
@@ -161,9 +212,11 @@ int encodingLineTake1(char *line, struct fileCodingStruct *codingData)
 	printf("Saperated:\tlable:'%s'\tcommand:'%s'\toperands:'%s'\n", lable, command, operands); /*######################*/
 
 	if (strcmp(lable,""))
-	{
+	{	/* lable was defined */
+		
 		if (validateLabel(lable, codingData))
 		return 1;
+
 		if (pushLable(lable, imageType, INTERN, codingData))
 			return 1;
 	}
@@ -174,19 +227,51 @@ int encodingLineTake1(char *line, struct fileCodingStruct *codingData)
 			return 1;
 	}
 
+
+
+
+
+
+
+	{	/* for debugging - using SHOW_IC/DC macros */
+		if ((SHOW_TAKE == 1) && (SHOW_IC || SHOW_DC))
+		{
+			if (SHOW_IC && imageType == CODE_IMAGE)
+				printf(BOLDRED"\tic: %i->", codingData->ic); /* #####################################3##################### */
+			if (SHOW_DC && imageType == DATA_IMAGE)
+				printf(BOLDRED"\tdc:%i->", codingData->dc); /* #####################################3##################### */
+		}
+	}
+
+
 	if (imageType == CODE_IMAGE)
+	{
 		codingData->ic += 4;
+		
+	}
 
 	if (imageType == DATA_IMAGE)
 	{
 		if (strcmp(".asciz",command) == 0)
 			codingData->dc += commandImageBytes * getStringLenght(operands);
-		else
-		{
-			
+
+		else /*if (strcmp(".entry",command)*strcmp(".extern",command) != 0)*/
 			codingData->dc += commandImageBytes * countOperands(operands);
+		
+	}
+
+	{	/* for debugging - using SHOW_IC/DC macros */
+		if ((SHOW_TAKE == 1) && (SHOW_IC || SHOW_DC))
+		{
+			if (SHOW_IC && imageType == CODE_IMAGE)
+				printf("%i\n"RESET, codingData->ic); /* #####################################3##################### */
+			if (SHOW_DC && imageType == DATA_IMAGE)
+				printf("%i\n"RESET, codingData->dc); /* #####################################3##################### */
 		}
 	}
+
+
+
 
 	return 0;
 }
@@ -200,6 +285,8 @@ int encodingLineTake2(char *line, struct fileCodingStruct *codingData)
 	int returnVal, imageType, commandImageBytes;
 
 
+
+
 	returnVal = seperateArguments(line, lable, command, operands, codingData);
 	if (returnVal != 0)
 	{
@@ -210,24 +297,53 @@ int encodingLineTake2(char *line, struct fileCodingStruct *codingData)
 	}
 	/* now lable, command, and operands strings are seperated*/
 
+	{	/* for debugging - using SHOW_LABLE/COMMAND/OPERANDS macros */
+		if (SHOW_TAKE == 2)
+		{
+			printf(BOLDYELLOW"line %i:"RESET, codingData->sourceLine);
+
+			if (SHOW_LABLE)
+				printf("\tlable:"BOLDWHITE"'%s'"RESET, lable);
+			if (SHOW_COMMAND)
+				printf("\tcommand:"BOLDWHITE"'%s'"RESET, command);
+			if(SHOW_OPERANDS)
+				printf("\toperands:"BOLDWHITE"'%s'"RESET, operands);
+
+			printf("\n");
+		}
+	}
+
 	if (analyzeCommand(command, &imageType, &commandImageBytes, codingData))
 	{
 		printError("illegal command", codingData);
 		return 1;
 	}
 
+	if ((strcmp(".entry",command) == 0))
+	{
+		if (pushLable(operands, imageType, ENTRY, codingData))
+			return 1;
+	}
+
 	/* Deal with encoding function */
 
 	if (imageType == CODE_IMAGE)
 	{
-		printError("\033[1m\033[33mNOT ERROR - Coding line:\033[0m", codingData);
-		printf("lable: '%s'\tcommand: '%s'\toperands:'%s'\n", lable, command, operands);
-		toBinary(command, operands, codingData);
+		if (SHOW_ENCODING)
+		{
+			/*printError("\033[1m\033[33mNOT ERROR - Coding line:\033[0m", codingData);
+			printf("lable: '%s'\tcommand: '%s'\toperands:'%s'\n", lable, command, operands);*/
+			toBinary(command, operands, codingData);
+		}
 	}
 
 	if (imageType == DATA_IMAGE)
 	{
-		printf("Theoratically coding command '%s' with operands '%s'\n", command, operands);
+		if (SHOW_ENCODING)
+		{
+			printf("Theoratically coding command '%s' with operands '%s'\n", command, operands);
+			/*pushDataCommand(command, operands, codingData);*/
+		}
 	}
 
 

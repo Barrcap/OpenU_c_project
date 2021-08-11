@@ -24,6 +24,23 @@ void freeSymbolTable(fileCodingStruct *codingData)
 	}
 }
 
+void createDataImage(fileCodingStruct *codingData)
+{
+	codingData->dataImage = (dataImageStruct*) calloc(1,sizeof(dataImageStruct));
+	if (codingData->dataImage == NULL)
+		exit(EXIT_FAILURE); /* failed allocating memory for dataImage struct */
+
+	codingData->dataImage->array = (char*) calloc(codingData->dcf,sizeof(char));
+	if (codingData->dataImage->array == NULL)
+		exit(EXIT_FAILURE); /* failed allocating memory for dataImage's array */
+}
+
+void freeDataImage(fileCodingStruct *codingData)
+{
+	free(codingData->dataImage->array);
+	free(codingData->dataImage);
+}
+
 void resetCounterParams(fileCodingStruct *codingData)
 {
 	codingData->ic = 100;
@@ -65,7 +82,14 @@ int analyzeCommand(char *commandName, int *imageType, int *commandImageBytes, fi
 	for (i=0; i<DATA_COMMANDS; i++)
 		if (strcmp(commandName,dataCommands[i].name) == 0)
 		{
-			*imageType = DATA_IMAGE;
+			/**imageType = DATA_IMAGE;*/
+			/* check if .entry or .extern */
+			if (strcmp(".entry",dataCommands[i].name)*strcmp(".extern",dataCommands[i].name) == 0)
+				*imageType = NONE;
+			else
+				*imageType = DATA_IMAGE;
+
+			*commandImageBytes = dataCommands[i].bytes;
 			return 0;
 		}
 
@@ -92,6 +116,13 @@ int pushLable(char *lable, int placing, int visibility, fileCodingStruct *coding
 			switch (currLink->visibility)
 			{
 				case INTERN:
+
+					if (visibility == ENTRY) /* visibility of new label */
+					{
+						currLink->visibility = ENTRY;
+						return 0;
+					}
+
 					printError("Label already defined", codingData);
 					return 1;
 					break;
@@ -114,6 +145,12 @@ int pushLable(char *lable, int placing, int visibility, fileCodingStruct *coding
 	}
 	/* lable wasn't defined yet, lastLink is pointing at last link, if exists */
 	
+	if (visibility == ENTRY) /* visibility of new label */
+	{
+		printError("entry command for undefined lable", codingData);
+		return 1;
+	}
+
 
 	if (codingData->symbolLinkHead == NULL)
 	{	/* definging now the first lable in symbolLink list */
@@ -145,22 +182,16 @@ int pushLable(char *lable, int placing, int visibility, fileCodingStruct *coding
 	}
 
 	if (visibility == EXTERN)
+	{
 		currLink->adress = 0;
+		currLink->placing = NONE;
+	}
 	
 	currLink->visibility = visibility;
 
 	return 0;
 }
 
-int pushExternLable(char *lable, fileCodingStruct *codingData)
-{/*	
-	returns 0 on success, 1 if found error */
-
-	
-
-
-	return 0;
-}
 
 int getLabelAdress(char *lableName, fileCodingStruct *codingData)
 {	/* returns lable's adress, if lable doesn't exist returns -1 */
@@ -186,6 +217,7 @@ void finalizeSymbolTable(fileCodingStruct *codingData)
 
 	currLink = codingData->symbolLinkHead;
 	codingData->icf = codingData->ic;
+	codingData->dcf = codingData->dc;
 	while (currLink)
 	{
 		if (currLink->placing == DATA_IMAGE)

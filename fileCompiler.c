@@ -208,9 +208,6 @@ int encodingLineTake1(char *line, struct fileCodingStruct *codingData)
 	lable[strlen(lable)-1] = 0; /* removing ':' at end of lable */
 
 
-	printf("line %i - ", codingData->sourceLine);
-	printf("Saperated:\tlable:'%s'\tcommand:'%s'\toperands:'%s'\n", lable, command, operands); /*######################*/
-
 	if (strcmp(lable,""))
 	{	/* lable was defined */
 		

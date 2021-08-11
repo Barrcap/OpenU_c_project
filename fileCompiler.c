@@ -193,7 +193,6 @@ int encodingLineTake1(char *line, struct fileCodingStruct *codingData)
 	}
 	
 
-
 	if (analyzeCommand(command, &imageType, &commandImageBytes, codingData))
 	{
 		printError("illegal command", codingData);
@@ -214,8 +213,10 @@ int encodingLineTake1(char *line, struct fileCodingStruct *codingData)
 
 	if (strcmp(lable,""))
 	{	/* lable was defined */
+		
 		if (validateLabel(lable, codingData))
 		return 1;
+
 		if (pushLable(lable, imageType, INTERN, codingData))
 			return 1;
 	}

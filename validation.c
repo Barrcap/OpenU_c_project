@@ -12,7 +12,6 @@
  {
  	int i =0;   /*this is index varieble for while loop*/ 
  	int is_command =0;
- 	char label_without_colon[29];  /*this is the maxinmun possible length */
 	/*usefull to cheak if the label is command*/
 
  		/*if the first letter isnt alph print error*/ 
@@ -58,11 +57,10 @@
  	return count;
  }
 
- int isCorrectImmed(char * immed)   
+ int isCorrectImmed(char * immed, struct fileCodingStruct *codingData)   
  {
  	char tempImmed [80];    /*80 is the max possible length of a string*/
- 	char strPtr[80];   /*pointer for srtol*/
- 	int num;
+ 	char * strPtr;   /*pointer for srtol*/
  	int strPtr_index = 0;   
  	int index = 0;
  	int boolean = 0;
@@ -72,7 +70,7 @@
  			/*we are check the first part of the string for abc0 case*/
  	while(index < strlen(tempImmed)){
  		if(isspace(tempImmed[index])){
- 			i++;
+ 			index++;
  		}
  		else if((tempImmed[index] == '-') || (tempImmed[index] == '+')){
 
@@ -82,7 +80,7 @@
  			}
  				
  			boolean = 1;
- 			i++;
+ 			index++;
  		}
  		else if(isdigit(tempImmed[index])){
  			break;
@@ -93,13 +91,13 @@
  		}	
  	}
 
- 	num = strtol(tempImmed, &strPtr, 10);   /*now the first part of the string is a number and the secound is unknowed*/
+ 	strtol(tempImmed, &strPtr, 10);   /*now the first part of the string is a number and the secound is unknowed*/
  	
  	if(strPtr != NULL){     /*its mark that the secound field is with alphbetic letters or with white letters*/
  			if(isspace(strPtr[strPtr_index])){   /*if the first letter is white letter we have to chek if all the part is white spaces*/
  				while(strPtr_index < strlen(strPtr)){
  					if(isspace(strPtr[strPtr_index])){
- 						i++;
+ 						index++;
  					}
  					else{      /*if its nnot white letter, the only possible case is invalid letter*/
  						printError("immed value is incorrect", codingData);
@@ -243,7 +241,7 @@
 			immed = strtok(NULL,",");
 			reg3 = strtok(NULL,",");
 
-			if(isCorrectReg(reg1, codingData) && isCorrectImmed(immed) && isCorrectReg(reg3, codingData)){
+			if(isCorrectReg(reg1, codingData) && isCorrectImmed(immed, codingData) && isCorrectReg(reg3, codingData)){
 				return 0;
 			}
 			else
@@ -261,7 +259,7 @@
 				reg2 = strtok(NULL,",");
 				string = strtok(NULL,",");
 
-				if(isCorrectReg(reg1, codingData) && validateLabel(string) && isCorrectReg(reg3, codingData)){
+				if(isCorrectReg(reg1, codingData) && validateLabel(string, codingData) && isCorrectReg(reg3, codingData)){
 					return 0;
 				}
 				else
@@ -273,7 +271,7 @@
   					return 1;
   				}
 
-  				if(!isCorrectReg(tempOperands) || !validateLabel(tempOperands)){  /*we are cheaking if the string is not valid*/
+  				if(!isCorrectReg(tempOperands, codingData) || !validateLabel(tempOperands, codingData)){  /*we are cheaking if the string is not valid*/
   					printError("invalid number of commas", codingData);
   					return 1;
   				}
@@ -285,7 +283,7 @@
   					return 1;
   				}
 
-  				if(!validateLabel(tempOperands)){  /*we are cheaking if the string is not valid*/
+  				if(!validateLabel(tempOperands, codingData)){  /*we are cheaking if the string is not valid*/
   					printError("invalid number of commas", codingData);
   					return 1;
   				}
@@ -310,7 +308,9 @@
   	}
 
 
-  	return 0;
+  	
 
   }
+  return 0;
+}
 

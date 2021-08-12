@@ -93,7 +93,7 @@ int analyzeCommand(char *commandName, int *imageType, int *commandImageBytes, fi
 				*imageType = DATA_IMAGE;
 
 			*commandImageBytes = dataCommands[i].bytes;
-			codingData->validationCase = lines[i].validationCase;
+			codingData->validationCase = dataCommands[i].validationCase;
 			return 0;
 		}
 

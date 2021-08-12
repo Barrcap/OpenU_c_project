@@ -242,8 +242,10 @@ int encodingLineTake1(char *line, struct fileCodingStruct *codingData)
 
 
 	/* Todo - content validtation for operands  */
+	if (VALIDATE_OPERANDS && validateOperands(operands, codingData->validationCase, codingData))
+		return 1;
 
-	/* Todo - content validation for lable */
+
 
 	lable[strlen(lable)-1] = 0; /* removing ':' at end of lable */
 
@@ -251,8 +253,11 @@ int encodingLineTake1(char *line, struct fileCodingStruct *codingData)
 	if (strcmp(lable,""))
 	{	/* lable was defined */
 		
-		if (validateLabel(lable, codingData))
-		return 1;
+		if (VALIDATE_LABLE && validateLabel(lable, codingData)) /* Lable validation */
+		{
+
+			return 1;
+		}
 
 		if (pushLable(lable, imageType, INTERN, codingData))
 			return 1;

@@ -6,7 +6,7 @@ typedef struct s1
 {
 	char command[30];
 	char action;
-	int occation;
+	int validationCase;
 	int funct;
 	int opcode;
 
@@ -15,7 +15,7 @@ typedef struct s1
 typedef struct dataCommand
 {
 	char name[DATA_COMMAND_LENGHT];
-	int occation;
+	int validationCase;
 	int bytes;
 
 }dataCommand;

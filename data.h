@@ -49,8 +49,7 @@ typedef struct fileCodingStruct
 	int dc; /* data commands counter */
 	int icf; /* amount of bytes in code image */
 	int dcf; /* amount of bytes in data image */
-	int sourceLine;
-	int validationCase;
+	int sourceLine, validationCase, imageType, commandImageBytes;
 
 	long int code; /* Temprorary until start using tables ############################### */
 
@@ -65,10 +64,9 @@ void createDataImage(fileCodingStruct *codingData);
 void freeDataImage(fileCodingStruct *codingData);
 
 void resetCounterParams(fileCodingStruct *codingData);
-void advanceImageCounter(int imageType, fileCodingStruct *codingData);
 int getIC(fileCodingStruct *codingData);
 
-int analyzeCommand(char *commandName, int *imageType, int *commandImageBytes, fileCodingStruct *codingData);
+int analyzeCommand(char *commandName, fileCodingStruct *codingData);
 
 
 int pushLable(char *lable, int placing, int visibility, fileCodingStruct *codingData);
@@ -76,14 +74,14 @@ int getLabelAdress(char *labelName, fileCodingStruct *codingData);
 void finalizeSymbolTable(fileCodingStruct *codingData);
 
 
-
-
-
-
-
-
-/* not relevant, to be deleted: ##################################################### */
 void pushCode(long int code, fileCodingStruct *codingData);
-/* not relevant, to be deleted end ##################################################### */
+
+void printError(char *errorString, struct fileCodingStruct *codingData);
 
 
+
+#define RESET "\033[0m" /* print color for printError */
+#define RED "\033[31m" /* print color for printError */
+#define BOLDRED     "\033[1m\033[31m"      /* Bold Red */
+#define BOLDYELLOW  "\033[1m\033[33m"      /* Bold Yellow */
+#define BOLDWHITE   "\033[1m\033[37m"      /* Bold White */

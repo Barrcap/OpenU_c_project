@@ -4,7 +4,6 @@
 #include <stdio.h> /* can be removed with fileCompiler.h? ######################*/
 
 #include "data.h"
-#include "fileCompiler.h" /* move printError here? ############################## */
 #include "commandTable.h"
 #include "toBinary.h" /* to be removed? ############################  */
 #include "debugFlags.h"
@@ -50,34 +49,21 @@ void resetCounterParams(fileCodingStruct *codingData)
 	codingData->sourceLine = 1;
 }
 
-void advanceImageCounter(int imageType, fileCodingStruct *codingData)
-{
-	switch (imageType)
-	{
-		case CODE_IMAGE:
-
-			break;
-
-		case DATA_IMAGE:
-
-			break;
-	}
-}
 
 int getIC(fileCodingStruct *codingData)
 {
 	return codingData->ic;
 }
 
-int analyzeCommand(char *commandName, int *imageType, int *commandImageBytes, fileCodingStruct *codingData)
+int analyzeCommand(char *commandName, fileCodingStruct *codingData)
 {
 	int i;
 
 	for (i=0; i<COMMAND_NUM; i++)
 		if (strcmp(commandName,lines[i].command) == 0)
 		{
-			*imageType = CODE_IMAGE;
-			*commandImageBytes = 4;
+			codingData->imageType = CODE_IMAGE;
+			codingData->commandImageBytes = 4;
 			codingData->validationCase = lines[i].validationCase;
 			return 0;
 		}
@@ -88,11 +74,11 @@ int analyzeCommand(char *commandName, int *imageType, int *commandImageBytes, fi
 			/**imageType = DATA_IMAGE;*/
 			/* check if .entry or .extern */
 			if (strcmp(".entry",dataCommands[i].name)*strcmp(".extern",dataCommands[i].name) == 0)
-				*imageType = NONE;
+				codingData->imageType = NONE;
 			else
-				*imageType = DATA_IMAGE;
+				codingData->imageType = DATA_IMAGE;
 
-			*commandImageBytes = dataCommands[i].bytes;
+			codingData->commandImageBytes = dataCommands[i].bytes;
 			codingData->validationCase = lines[i].validationCase;
 			return 0;
 		}
@@ -240,7 +226,7 @@ void pushCode(long int code, fileCodingStruct *codingData)
 	unsigned char mask;
 	long int codeForFile = code;
 
-	fprintf(codingData->objectFile,"%i ",codingData->ic);
+	fprintf(codingData->objectFile,"%04i ",codingData->ic);
 
 	for (i=0; i<4; i++)
 	{
@@ -268,4 +254,18 @@ void pushCode(long int code, fileCodingStruct *codingData)
 	
 	/* Temprorary until start using tables: ############################### * /
 	codingData->code = code;*/
+}
+
+void printTake(char *lable, char *command, char *operands, fileCodingStruct *codingData)
+{
+	printf(BOLDYELLOW"line %i:"RESET, codingData->sourceLine);
+
+	if (SHOW_LABLE)
+		printf("\tlable:"BOLDWHITE"'%s'"RESET, lable);
+	if (SHOW_COMMAND)
+		printf("\tcommand:"BOLDWHITE"'%s'"RESET, command);
+	if(SHOW_OPERANDS)
+		printf("\toperands:"BOLDWHITE"'%s'"RESET, operands);
+
+	printf("\n");
 }

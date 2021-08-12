@@ -7,6 +7,7 @@
 #include "toBinary.h"
 #include "commandTable.h"
 #include "validation.h"
+#include "debugFlags.h"
 
 
 
@@ -365,12 +366,9 @@ int encodingLineTake2(char *line, struct fileCodingStruct *codingData)
 
 	if (imageType == CODE_IMAGE)
 	{
-		if (SHOW_ENCODING)
-		{
-			/*printError("\033[1m\033[33mNOT ERROR - Coding line:\033[0m", codingData);
-			printf("lable: '%s'\tcommand: '%s'\toperands:'%s'\n", lable, command, operands);*/
-			toBinary(command, operands, codingData);
-		}
+		/*printError("\033[1m\033[33mNOT ERROR - Coding line:\033[0m", codingData);
+		printf("lable: '%s'\tcommand: '%s'\toperands:'%s'\n", lable, command, operands);*/
+		toBinary(command, operands, codingData);
 	}
 
 	if (imageType == DATA_IMAGE)
@@ -381,7 +379,11 @@ int encodingLineTake2(char *line, struct fileCodingStruct *codingData)
 			/*pushDataCommand(command, operands, codingData);*/
 		}
 	}
-
+	if (imageType == CODE_IMAGE) /* ############################################ */
+	{
+		codingData->ic += 4;
+		
+	}
 
 	return 0;
 }

@@ -225,7 +225,7 @@ int encodingLineTake2(char *line, struct fileCodingStruct *codingData)
 			return 1;
 	}
 
-	/* Deal with encoding function */
+	/* Deal with encoding functions */
 
 	if (codingData->imageType == CODE_IMAGE)
 		toBinary(command, operands, codingData);
@@ -240,12 +240,12 @@ int encodingLineTake2(char *line, struct fileCodingStruct *codingData)
 	}
 	
 	/* for debugging - using SHOW_IC/DC macros */
-	if ((SHOW_TAKE == 1) && (SHOW_IC || SHOW_DC)) printCountersBefore(codingData);
+	if ((SHOW_TAKE == 2) && (SHOW_IC || SHOW_DC)) printCountersBefore(codingData);
 
 	advanceImageCounter(command, operands, codingData);
 
 	/* for debugging - using SHOW_IC/DC macros */
-	if ((SHOW_TAKE == 1) && (SHOW_IC || SHOW_DC)) printCountersAfter(codingData);
+	if ((SHOW_TAKE == 2) && (SHOW_IC || SHOW_DC)) printCountersAfter(codingData);
 
 	return 0;
 }

@@ -218,8 +218,6 @@ void finalizeSymbolTable(fileCodingStruct *codingData)
 	}
 }
 
-
-
 void pushCode(long int code, fileCodingStruct *codingData)
 {
 	unsigned i;
@@ -237,11 +235,10 @@ void pushCode(long int code, fileCodingStruct *codingData)
 	}
 	fprintf(codingData->objectFile, "\n");
 
+	/* for debugging purpose */
+	if(SHOW_ENCODING) binPrint(code);
 
-	if(SHOW_ENCODING)
-		binPrint(code);
-
-	
+	/* for debugging purpose */
 	if (FILE_BINARY_PRINT)
 	{
 	    for (i = 1 << 31; i > 0; i = i / 2)
@@ -249,11 +246,6 @@ void pushCode(long int code, fileCodingStruct *codingData)
 	    fprintf(codingData->objectFile,"\n\n");
 	}
 
-
-
-	
-	/* Temprorary until start using tables: ############################### * /
-	codingData->code = code;*/
 }
 
 void printTake(char *lable, char *command, char *operands, fileCodingStruct *codingData)

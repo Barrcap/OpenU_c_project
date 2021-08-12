@@ -55,7 +55,7 @@ int fileCompiler(char *fileName)
 
 	if (errorCounter != 0)
 	{
-		printf("Found errors in Take1, aborting compilation for %s\n", fileName); /* ########## */
+		printf("Found errors in Take1, aborting compilation for %s\n", fileName); /* ############################ */
 		freeSymbolTable(&codingData);
 		fclose(sourceFile);
 		return errorCounter;
@@ -66,14 +66,12 @@ int fileCompiler(char *fileName)
 
 	finalizeSymbolTable(&codingData);
 
-	{	/* for debugging - using SHOW_SYMBOL/IC/DC macros */
-		if (SHOW_FINAL_COUNTERS)
-			printf(BOLDRED"$$$\t ICF:%i  DCF:%i \t$$$\n"RESET, codingData.icf, codingData.dcf);
-		if (SHOW_SYMBOL_TABLE)
-			printSymbolTable(fileName, &codingData);
-	}
+	/* for debugging - using SHOW_SYMBOL/IC/DC macros */
+	if (SHOW_FINAL_COUNTERS) printf(BOLDRED"$$$\t ICF:%i  DCF:%i \t$$$\n"RESET, codingData.icf, codingData.dcf);
+	if (SHOW_SYMBOL_TABLE) printSymbolTable(fileName, &codingData);
 
-	/* Second time going over source code */
+
+	/* Setting up for second read of source code: */
 
 	fseek(sourceFile, 0, SEEK_SET);
 
@@ -90,17 +88,14 @@ int fileCompiler(char *fileName)
 		fclose(sourceFile);
 		return 1;
 	}
-	fprintf(codingData.objectFile, "%i %i\n", codingData.icf-100+4, codingData.dcf);
 
-	/*printf("Fake error, delete file!\n");
-	deleteFile(objectFileName, &codingData);
-	return 1;*/
+	/* print IC and DC to object file */
+	fprintf(codingData.objectFile, "%i %i\n", codingData.icf-100+4, codingData.dcf);
 
 	createDataImage(&codingData);
 	resetCounterParams(&codingData);
 
-	/* #######################################################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ */
-
+	/* Second time going over source code */
 	reachedEOF = 0;
 	while (!reachedEOF)
 	{
@@ -111,11 +106,11 @@ int fileCompiler(char *fileName)
 	
 
 	printf("\nGreat Success!! Finished Take2! \n\n"); /* #################################### */
-	{	/* for debugging - using SHOW_SYMBOL/IC/DC macros */
+	
+	dataImageToFile(&codingData);
 
-		if (SHOW_SYMBOL_TABLE)
-			printSymbolTable(fileName, &codingData);
-	}
+	/* for debugging - using SHOW_SYMBOL/IC/DC macros */
+	if (SHOW_SYMBOL_TABLE) printSymbolTable(fileName, &codingData);
 
 
 	freeDataImage(&codingData);
@@ -232,11 +227,20 @@ int encodingLineTake2(char *line, struct fileCodingStruct *codingData)
 
 	if (codingData->imageType == DATA_IMAGE)
 	{
-		if (SHOW_ENCODING)
+		/* for debugging - printing data images's index */
+		if (SHOW_DATA_ARR_I) printf("\tdata image index: %i->", codingData->dataImage->currIndex);
+
+		if (strcmp(".asciz",command) == 0)
 		{
-			printf("Theoratically coding command '%s' with operands '%s'\n", command, operands);
-			/*pushDataCommand(command, operands, codingData);*/
+			pushDataStr(operands, codingData);
 		}
+		else /* command is .db/.dh/.dw */
+		{
+			pushDataInt(operands, countOperands(operands), codingData);
+		}
+
+		/* for debugging - printing data images's index */
+		if (SHOW_DATA_ARR_I) printf("%i\n", codingData->dataImage->currIndex);
 	}
 	
 	/* for debugging - using SHOW_IC/DC macros */
@@ -388,6 +392,8 @@ void advanceImageCounter(char *command, char *operands, fileCodingStruct *coding
 
 	if (codingData->imageType == DATA_IMAGE)
 	{
+		printf("(commandImageBytes is %i, ", codingData->commandImageBytes); /*##########################################*/
+		printf("operands count returned %i)", countOperands(operands)); /*##########################################*/
 		if (strcmp(".asciz",command) == 0)
 			codingData->dc += codingData->commandImageBytes * getStringLenght(operands);
 		else
@@ -422,6 +428,20 @@ void printSymbolTable(char *fileName, fileCodingStruct *codingData)
 
 		currLink = currLink->next;
 	}
+}
+
+void printTake(char *lable, char *command, char *operands, fileCodingStruct *codingData)
+{
+	printf(BOLDYELLOW"line %i:"RESET, codingData->sourceLine);
+
+	if (SHOW_LABLE)
+		printf("\tlable:"BOLDWHITE"'%s'"RESET, lable);
+	if (SHOW_COMMAND)
+		printf("\tcommand:"BOLDWHITE"'%s'"RESET, command);
+	if(SHOW_OPERANDS)
+		printf("\toperands:"BOLDWHITE"'%s'"RESET, operands);
+
+	printf("\n");
 }
 
 void printCountersBefore(fileCodingStruct *codingData)

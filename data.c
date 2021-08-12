@@ -27,11 +27,15 @@ void freeSymbolTable(fileCodingStruct *codingData)
 
 void createDataImage(fileCodingStruct *codingData)
 {
+
 	codingData->dataImage = (dataImageStruct*) calloc(1,sizeof(dataImageStruct));
 	if (codingData->dataImage == NULL)
 		exit(EXIT_FAILURE); /* failed allocating memory for dataImage struct */
 
-	codingData->dataImage->array = (char*) calloc(codingData->dcf,sizeof(char));
+	codingData->dataImage->size = codingData->dcf;
+	codingData->dataImage->currIndex = 0;
+
+	codingData->dataImage->array = (char*) calloc(codingData->dataImage->size,sizeof(char));
 	if (codingData->dataImage->array == NULL)
 		exit(EXIT_FAILURE); /* failed allocating memory for dataImage's array */
 }
@@ -220,7 +224,7 @@ void finalizeSymbolTable(fileCodingStruct *codingData)
 
 void pushCode(long int code, fileCodingStruct *codingData)
 {
-	unsigned i;
+	int i;
 	unsigned char mask;
 	long int codeForFile = code;
 
@@ -248,16 +252,71 @@ void pushCode(long int code, fileCodingStruct *codingData)
 
 }
 
-void printTake(char *lable, char *command, char *operands, fileCodingStruct *codingData)
+void pushDataInt(char *operands, int argumentsAmount, fileCodingStruct *codingData)
 {
-	printf(BOLDYELLOW"line %i:"RESET, codingData->sourceLine);
+	long int val;
+	unsigned char mask;
+	int i, j;
+	
 
-	if (SHOW_LABLE)
-		printf("\tlable:"BOLDWHITE"'%s'"RESET, lable);
-	if (SHOW_COMMAND)
-		printf("\tcommand:"BOLDWHITE"'%s'"RESET, command);
-	if(SHOW_OPERANDS)
-		printf("\toperands:"BOLDWHITE"'%s'"RESET, operands);
+	val = atol( strtok(operands,",") );
 
-	printf("\n");
+	/*printf("\n"); / *##############################################3*/
+	for (i=0; i<argumentsAmount; i++)
+	{
+		/*printf("Big loop, i=%i\n", i); / *##############################################3*/
+		for (j=0; j<codingData->commandImageBytes; j++)
+		{
+			/*printf("Small loop, j=%i\n", j); / *##############################################3*/
+			mask = 0 | val;
+			if (codingData->dataImage->currIndex >= codingData->dataImage->size)
+			{
+				printError("BUG!!!! went out of Data Image array!!!!! (INT)", codingData);
+				return;
+			}
+			codingData->dataImage->array[codingData->dataImage->currIndex] = mask;
+			val >>= 8;
+			codingData->dataImage->currIndex ++;
+		}
+
+		if (i+1<argumentsAmount)
+			val = atol( strtok(NULL,",") );
+	}
+
+}
+
+void pushDataStr(char *operands, fileCodingStruct *codingData)
+{
+	int i;
+
+	for (i=1; i<strlen(operands)-1; i++)
+	{
+		if (codingData->dataImage->currIndex >= codingData->dataImage->size)
+		{
+			printError("BUG!!!! went out of Data Image array!!!!! (STR)", codingData);
+			return;
+		}
+		codingData->dataImage->array[codingData->dataImage->currIndex] = operands[i];
+		codingData->dataImage->currIndex ++;
+	}
+	codingData->dataImage->array[codingData->dataImage->currIndex] = 0;
+	codingData->dataImage->currIndex ++;
+}
+
+void dataImageToFile(fileCodingStruct *codingData)
+{
+	int i=0;
+
+	while (i<codingData->dataImage->size)
+	{
+		if (i%4 == 0)
+			fprintf(codingData->objectFile,"%04i ",codingData->icf + i);
+
+		fprintf(codingData->objectFile, "%02X ", codingData->dataImage->array[i]);
+
+		if (i%4 == 3)
+			fprintf(codingData->objectFile, "\n");
+		i++;
+	}
+
 }

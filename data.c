@@ -7,6 +7,8 @@
 #include "fileCompiler.h" /* move printError here? ############################## */
 #include "commandTable.h"
 #include "toBinary.h" /* to be removed? ############################  */
+#include "debugFlags.h"
+
 
 
 
@@ -231,7 +233,35 @@ void finalizeSymbolTable(fileCodingStruct *codingData)
 
 void pushCode(long int code, fileCodingStruct *codingData)
 {
-	binPrint(code);
+	unsigned i;
+	unsigned char mask;
+	long int codeForFile = code;
+
+	fprintf(codingData->objectFile,"%i ",codingData->ic);
+
+	for (i=0; i<4; i++)
+	{
+		mask = 0;
+		mask |= codeForFile;
+		fprintf(codingData->objectFile, "%02X ", mask);
+		codeForFile >>= 8;
+	}
+	fprintf(codingData->objectFile, "\n");
+
+
+	if(SHOW_ENCODING)
+		binPrint(code);
+
+	
+	if (FILE_BINARY_PRINT)
+	{
+	    for (i = 1 << 31; i > 0; i = i / 2)
+	        (code & i) ? fprintf(codingData->objectFile,"1") : fprintf(codingData->objectFile,"0");
+	    fprintf(codingData->objectFile,"\n\n");
+	}
+
+
+
 	
 	/* Temprorary until start using tables: ############################### * /
 	codingData->code = code;*/

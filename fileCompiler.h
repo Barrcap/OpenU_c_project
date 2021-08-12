@@ -1,15 +1,3 @@
-#define SHOW_SYMBOL_TABLE	1
-#define SHOW_LABLE			0
-#define SHOW_COMMAND		1
-#define SHOW_OPERANDS		1
-#define SHOW_IC				0
-#define SHOW_DC				0
-#define SHOW_FINAL_COUNTERS	0
-
-#define SHOW_TAKE			2 /* can be 0,1,2 */
-#define SHOW_ENCODING		1 /* Barr: right now triggers toBinary */
-
-
 #define RESET "\033[0m" /* print color for printError */
 #define RED "\033[31m" /* print color for printError */
 #define BOLDRED     "\033[1m\033[31m"      /* Bold Red */

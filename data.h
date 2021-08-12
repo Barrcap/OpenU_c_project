@@ -50,6 +50,7 @@ typedef struct fileCodingStruct
 	int icf; /* amount of bytes in code image */
 	int dcf; /* amount of bytes in data image */
 	int sourceLine;
+	int validationCase;
 
 	long int code; /* Temprorary until start using tables ############################### */
 

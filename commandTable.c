@@ -2,7 +2,7 @@
 
 line lines[COMMAND_NUM] = 
 {
-/*	command	action,case,opcode*/
+/*	command	action,case,funct,opcode*/
 	{"add",		'R'	,1	,1	,0},
 	{"sub",		'R'	,1	,2	,0},
 	{"and",		'R'	,1	,3	,0},

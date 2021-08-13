@@ -83,7 +83,7 @@ int analyzeCommand(char *commandName, fileCodingStruct *codingData)
 				codingData->imageType = DATA_IMAGE;
 
 			codingData->commandImageBytes = dataCommands[i].bytes;
-			codingData->validationCase = lines[i].validationCase;
+			codingData->validationCase = dataCommands[i].validationCase;
 			return 0;
 		}
 

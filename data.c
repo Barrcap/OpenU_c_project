@@ -257,9 +257,11 @@ void pushDataInt(char *operands, int argumentsAmount, fileCodingStruct *codingDa
 	long int val;
 	unsigned char mask;
 	int i, j;
-	
+	char operandsToRuin[LINE_LENGTH];
 
-	val = atol( strtok(operands,",") );
+	strcpy(operandsToRuin,operands);
+
+	val = atol( strtok(operandsToRuin,",") );
 
 	/*printf("\n"); / *##############################################3*/
 	for (i=0; i<argumentsAmount; i++)
@@ -306,13 +308,16 @@ void pushDataStr(char *operands, fileCodingStruct *codingData)
 void dataImageToFile(fileCodingStruct *codingData)
 {
 	int i=0;
+	char mask;
+
 
 	while (i<codingData->dataImage->size)
 	{
 		if (i%4 == 0)
 			fprintf(codingData->objectFile,"%04i ",codingData->icf + i);
 
-		fprintf(codingData->objectFile, "%02X ", codingData->dataImage->array[i]);
+		mask = codingData->dataImage->array[i];
+		fprintf(codingData->objectFile, "%02X ", (mask & 0xFF));
 
 		if (i%4 == 3)
 			fprintf(codingData->objectFile, "\n");

@@ -90,7 +90,7 @@ int fileCompiler(char *fileName)
 	}
 
 	/* print IC and DC to object file */
-	fprintf(codingData.objectFile, "%i %i\n", codingData.icf-100+4, codingData.dcf);
+	fprintf(codingData.objectFile, "%i %i\n", codingData.icf-100, codingData.dcf);
 
 	createDataImage(&codingData);
 	resetCounterParams(&codingData);
@@ -132,6 +132,7 @@ int encodingLineTake1(char *line, struct fileCodingStruct *codingData)
 
 	int returnVal;
 
+	/*printf("line to separate:\n'%s'\n", line); / *###############################################################*/
 	returnVal = seperateArguments(line, lable, command, operands, codingData);
 
 	if (returnVal == 1) /* error detected */
@@ -142,7 +143,7 @@ int encodingLineTake1(char *line, struct fileCodingStruct *codingData)
 	/* now lable, command, and operands strings are seperated*/
 
 	/* for debugging - using SHOW_LABLE/COMMAND/OPERANDS macros */
-	if (SHOW_TAKE == 1) printTake(lable, command, operands, codingData);
+	if (SHOW_TAKE == 1 || SHOW_TAKE == 3) printTake(lable, command, operands, codingData);
 	
 	if (analyzeCommand(command, codingData))
 	{
@@ -177,12 +178,12 @@ int encodingLineTake1(char *line, struct fileCodingStruct *codingData)
 
 
 	/* for debugging - using SHOW_IC/DC macros */
-	if ((SHOW_TAKE == 1) && (SHOW_IC || SHOW_DC)) printCountersBefore(codingData);
+	if ((SHOW_TAKE == 1 || SHOW_TAKE == 3) && (SHOW_IC || SHOW_DC)) printCountersBefore(codingData);
 
 	advanceImageCounter(command, operands, codingData);
 
 	/* for debugging - using SHOW_IC/DC macros */
-	if ((SHOW_TAKE == 1) && (SHOW_IC || SHOW_DC)) printCountersAfter(codingData);
+	if ((SHOW_TAKE == 1 || SHOW_TAKE == 3) && (SHOW_IC || SHOW_DC)) printCountersAfter(codingData);
 
 
 	return 0;
@@ -206,7 +207,7 @@ int encodingLineTake2(char *line, struct fileCodingStruct *codingData)
 	/* now lable, command, and operands strings are seperated*/
 	
 	/* for debugging - using SHOW_LABLE/COMMAND/OPERANDS macros */
-	if (SHOW_TAKE == 2) printTake(lable, command, operands, codingData);
+	if (SHOW_TAKE == 2 || SHOW_TAKE == 3) printTake(lable, command, operands, codingData);
 
 	if (analyzeCommand(command, codingData))
 	{
@@ -244,12 +245,12 @@ int encodingLineTake2(char *line, struct fileCodingStruct *codingData)
 	}
 	
 	/* for debugging - using SHOW_IC/DC macros */
-	if ((SHOW_TAKE == 2) && (SHOW_IC || SHOW_DC)) printCountersBefore(codingData);
+	if ((SHOW_TAKE == 2 || SHOW_TAKE == 3) && (SHOW_IC || SHOW_DC)) printCountersBefore(codingData);
 
 	advanceImageCounter(command, operands, codingData);
 
 	/* for debugging - using SHOW_IC/DC macros */
-	if ((SHOW_TAKE == 2) && (SHOW_IC || SHOW_DC)) printCountersAfter(codingData);
+	if ((SHOW_TAKE == 2 || SHOW_TAKE == 3) && (SHOW_IC || SHOW_DC)) printCountersAfter(codingData);
 
 	return 0;
 }
@@ -317,7 +318,7 @@ int seperateArguments(char *line, char *lable, char *command, char *operands, st
 		start = end+1;
 		
 
-		operandPointers(line, &start, &end);
+		reachedNULL = operandPointers(line, &start, &end);
 		if (line[start] == 0)
 		{
 			printError("missing command (only white notes after label)", codingData);
@@ -335,11 +336,23 @@ int seperateArguments(char *line, char *lable, char *command, char *operands, st
 
 	line[end] = 0;
 	strcpy(command, line+start);
+	if (reachedNULL)
+		return 0;
+	/*{
+		printf("detected new line right after command ##################################################\n");
+		return 0;
+	}*/
 	start = end+1;
+
+
 	operandPointers(line, &start, &end);
-	if (start < LINE_LENGTH)
-		/* if went out of line's array or start is pointing to the array's NULL, operands will remain NULL */
-		strcpy(operands, line+start);
+	/* start and end indexes now wrapping the operands start/end */
+	
+	/*printf("Im in! #######################################################################\n");*/
+	/* if went out of line's array or start is pointing to the array's NULL, operands will remain NULL */
+	if (isspace(line[end]))
+		line[end] = 0;
+	strcpy(operands, line+start);
 
 	return 0;
 }

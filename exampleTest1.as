@@ -8,7 +8,7 @@ Next:	move	$20,$4
 		sw		$0,$4,$10
 		bne		$31,$9,LOOP
 		call	val1
-		jmp		$4
+		jmp		$4  
 END:	stop
 STR:	.asciz	"aBcd"
 LIST:	.db		6,-9

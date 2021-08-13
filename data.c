@@ -234,7 +234,9 @@ void pushCode(long int code, fileCodingStruct *codingData)
 	{
 		mask = 0;
 		mask |= codeForFile;
-		fprintf(codingData->objectFile, "%02X ", mask);
+		fprintf(codingData->objectFile, "%02X", mask);
+		if (i<3)
+			fprintf(codingData->objectFile, " ");
 		codeForFile >>= 8;
 	}
 	fprintf(codingData->objectFile, "\n");
@@ -317,10 +319,12 @@ void dataImageToFile(fileCodingStruct *codingData)
 			fprintf(codingData->objectFile,"%04i ",codingData->icf + i);
 
 		mask = codingData->dataImage->array[i];
-		fprintf(codingData->objectFile, "%02X ", (mask & 0xFF));
+		fprintf(codingData->objectFile, "%02X", (mask & 0xFF));
 
 		if (i%4 == 3)
 			fprintf(codingData->objectFile, "\n");
+		else
+			fprintf(codingData->objectFile, " ");
 		i++;
 	}
 

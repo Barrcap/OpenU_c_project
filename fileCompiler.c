@@ -132,7 +132,6 @@ int encodingLineTake1(char *line, struct fileCodingStruct *codingData)
 
 	int returnVal;
 
-	/*printf("line to separate:\n'%s'\n", line); / *###############################################################*/
 	returnVal = seperateArguments(line, lable, command, operands, codingData);
 
 	if (returnVal == 1) /* error detected */
@@ -336,22 +335,31 @@ int seperateArguments(char *line, char *lable, char *command, char *operands, st
 
 	line[end] = 0;
 	strcpy(command, line+start);
-	if (reachedNULL)
+	if (reachedNULL) /* Nothings to parse after the command */
 		return 0;
-	/*{
-		printf("detected new line right after command ##################################################\n");
-		return 0;
-	}*/
+
 	start = end+1;
 
+	while (isspace(line[start]))
+		start++;
 
-	operandPointers(line, &start, &end);
+
+	/*printf("line[start] is now '%c'\n", line[start]); / *##########################################*/
+	/*end = lastCharIndex; / * end is now the index of last character of the operands */
+	/*while (isspace(line[end]))
+	{
+		printf("removing '%c'\n", line[end]); / *##########################################* /
+		line[end] = 0;
+		end --;
+	}*/
+	/**operandPointers(line, &start, &end);*/
 	/* start and end indexes now wrapping the operands start/end */
 	
-	/*printf("Im in! #######################################################################\n");*/
 	/* if went out of line's array or start is pointing to the array's NULL, operands will remain NULL */
-	if (isspace(line[end]))
-		line[end] = 0;
+	/*if (isspace(line[end]))
+		line[end] = 0;*/
+
+
 	strcpy(operands, line+start);
 
 	return 0;
@@ -405,8 +413,6 @@ void advanceImageCounter(char *command, char *operands, fileCodingStruct *coding
 
 	if (codingData->imageType == DATA_IMAGE)
 	{
-		printf("(commandImageBytes is %i, ", codingData->commandImageBytes); /*##########################################*/
-		printf("operands count returned %i)", countOperands(operands)); /*##########################################*/
 		if (strcmp(".asciz",command) == 0)
 			codingData->dc += codingData->commandImageBytes * getStringLenght(operands);
 		else
@@ -468,7 +474,7 @@ void printCountersBefore(fileCodingStruct *codingData)
 void printCountersAfter(fileCodingStruct *codingData)
 {
 	if (SHOW_IC && codingData->imageType == CODE_IMAGE)
-		printf("%i\n"RESET, codingData->ic); /* #####################################3##################### */
+		printf("%i\n"RESET, codingData->ic);
 	if (SHOW_DC && codingData->imageType == DATA_IMAGE)
-		printf("%i\n"RESET, codingData->dc); /* #####################################3##################### */
+		printf("%i\n"RESET, codingData->dc);
 }

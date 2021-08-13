@@ -412,59 +412,6 @@ int isCorrectReg(char * reg, struct fileCodingStruct *codingData)
 
 }
 
-int avner (char * reg, struct fileCodingStruct *codingData){
-	char tempReg [80];
-	char * strPtr;
- 	int i = 0;
- 	int strPtr_index = 0;
- 	int regVal;
-
-
- 	strcpy(tempReg,reg);
-
- 	if(strlen(tempReg) <=1){
- 		printError("missing value to the register", codingData);
- 		return 1;
- 	}
- 	/*we are cheaking if the is '$' in each of the registers*/
-	if(tempReg[i] != '$'){
-		printError("missing $ in one of the registers", codingData);
-		return 1;
-	}
-		/*we are checking idf the next letter after $ is digit*/
-	if(!isdigit(tempReg[i+2])){
-		printError("invalid reg", codingData);
-		return 1;
-	}
-
-			/*now we can use strtol*/
-	regVal = strtol(tempReg,&strPtr,10);
-
-	if(strPtr != NULL){     /*its mark that the secound field is with alphbetic letters or with white letters*/
- 			if(isspace(strPtr[strPtr_index])){   /*if the first letter is white letter we have to chek if all the part is white spaces*/
- 				while(strPtr_index < strlen(strPtr)){
- 					if(isspace(strPtr[strPtr_index])){
- 						i++;
- 					}
- 					else{      /*if its nnot white letter, the only possible case is invalid letter*/
- 						printError("invalid reg 1", codingData);
- 						return 1;		
- 					}
- 				}
- 			}
- 			
- 	}
-
- 	if((regVal < 0) || (regVal > 31)){
- 		printError("the value of the register is out of range", codingData);
- 		return 1;
- 	}
-
- 	else
- 		return 0;
-
-}
-
 /*this function check how mant commas we got in the string*/
 int howManyComma(char * str)
 {   

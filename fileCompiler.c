@@ -55,14 +55,14 @@ int fileCompiler(char *fileName)
 
 	if (errorCounter != 0)
 	{
-		printf("Found errors in Take1, aborting compilation for %s\n", fileName); /* ############################ */
+		if (SHOW_GENERAL) printf("Found errors in Take1, aborting compilation for %s\n", fileName); /* debug print */
 		freeSymbolTable(&codingData);
 		fclose(sourceFile);
 		return errorCounter;
 	}
 
 
-	printf("\nGreat Success!! Finished Take1! \n\n"); /* #################################### */
+	if (SHOW_GENERAL) printf("\nGreat Success!! Finished Take1! \n\n"); /* debug print */
 
 	finalizeSymbolTable(&codingData);
 
@@ -105,7 +105,7 @@ int fileCompiler(char *fileName)
 	}
 	
 
-	printf("\nGreat Success!! Finished Take2! \n\n"); /* #################################### */
+	if (SHOW_GENERAL) printf("\nGreat Success!! Finished Take2! \n\n"); /* debug print */
 	
 	dataImageToFile(&codingData);
 
@@ -343,23 +343,6 @@ int seperateArguments(char *line, char *lable, char *command, char *operands, st
 	while (isspace(line[start]))
 		start++;
 
-
-	/*printf("line[start] is now '%c'\n", line[start]); / *##########################################*/
-	/*end = lastCharIndex; / * end is now the index of last character of the operands */
-	/*while (isspace(line[end]))
-	{
-		printf("removing '%c'\n", line[end]); / *##########################################* /
-		line[end] = 0;
-		end --;
-	}*/
-	/**operandPointers(line, &start, &end);*/
-	/* start and end indexes now wrapping the operands start/end */
-	
-	/* if went out of line's array or start is pointing to the array's NULL, operands will remain NULL */
-	/*if (isspace(line[end]))
-		line[end] = 0;*/
-
-
 	strcpy(operands, line+start);
 
 	return 0;
@@ -431,7 +414,7 @@ void printSymbolTable(char *fileName, fileCodingStruct *codingData)
 {
 	symbolLink *currLink;
 
-	printf(BOLDYELLOW"$$$ %s: SybmbolTable after Take1: $$$\n"RESET, fileName); /* #################################### */
+	printf(BOLDYELLOW"$$$ %s: SybmbolTable after Take1: $$$\n"RESET, fileName);
 	currLink = codingData->symbolLinkHead;
 	while (currLink)
 	{

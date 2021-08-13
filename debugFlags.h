@@ -1,7 +1,6 @@
 #define DEBUG_MODE			0
 
 
-
 #define SHOW_SYMBOL_TABLE	(0*DEBUG_MODE)
 #define SHOW_LABLE			(0*DEBUG_MODE)
 #define SHOW_COMMAND		(1*DEBUG_MODE)
@@ -19,5 +18,4 @@
 
 #define VALIDATE_LABLE		(1*DEBUG_MODE)
 #define VALIDATE_OPERANDS	(1*DEBUG_MODE)
-
 

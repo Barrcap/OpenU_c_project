@@ -91,9 +91,10 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
   	char tempOperands[LINE_LENGTH];
   	strcpy(tempOperands, operands);      /*we need copy of the main string */
 
+  	printf("Case #%i\n", validCase);
   	switch(validCase){
 
-  		case 1: 
+  		case 1: /* 3 registers */
   			if(howManyComma(tempOperands) != 2){     /*in this case we need 3 registers' it means 2 commas in the string*/
   				printError("invalid number of commas", codingData);
   				return 1;
@@ -113,7 +114,7 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
 
 
 
-		case 2:
+		case 2: /* 2 registers */
 			if(howManyComma(tempOperands) != 1){     /*in this case we need 3 registers' it means 2 commas in the string*/
   				printError("invalid number of commas", codingData);
   				return 1;
@@ -129,7 +130,7 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
 			else
 				return 1;
 
-		case 3:	
+		case 3:	/* reg, immed, reg */
 			if(howManyComma(tempOperands) != 2){     /*in this case we need 3 registers' it means 2 commas in the string*/
   				printError("invalid number of commas", codingData);
   				return 1;
@@ -148,7 +149,7 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
 
 			
 
-			case 4:
+			case 4: /* reg, reg, label */
 				if(howManyComma(tempOperands) != 2){     /*in this case we need 3 parts of it means 2 commas in the string*/
   					printError("invalid number of commas", codingData);
   					return 1;
@@ -164,7 +165,7 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
 				else
 					return 1;
 				
-			case 5:
+			case 5: /* label or register */
 				if(howManyComma(tempOperands)){     /*in this case we need one part it means 0 commas in the string*/
   					printError("invalid number of commas", codingData);
   					return 1;
@@ -186,7 +187,7 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
 
   				return 0;
 
-  			case 6:	   
+  			case 6: /* label */
   				if(howManyComma(tempOperands)){     /*in this case we need one part it means 0 commas in the string*/
   					printError("invalid number of commas", codingData);
   					return 1;
@@ -198,7 +199,7 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
   				}
   				return 0;
 
-  			case 7:
+  			case 7: /* stop command, no operands */
   				if(howManyComma(tempOperands)){     /*in this case we need one part it means 0 commas in the string*/
   					printError("invalid number of commas", codingData);
   					return 1;
@@ -209,24 +210,24 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
   				}
   				return 0;
 
-  			case 8:
-  			case 9:
-  			case 10:
+  			case 8:		/* .dh */
+  			case 9:		/* .dw */
+  			case 10:	/* .db */
 
 
   				switch (validCase)
   				{
-  					case 8:  /*this is "db" case*/
-  						smallestVal = -128;
-  						biggestVal = 127;
+  					case 8:  /*this is "dh" case*/
+  						smallestVal = -32767;
+  						biggestVal = 32766;
   						break;
-  					case 9:   /*this is "dh" case*/
-  						smallestVal = -32768;
-  						biggestVal = 32767;
-  						break;
-  					case 10:  /*this is "dw" case*/
+  					case 9:   /*this is "dw" case*/
   						smallestVal = -2147483647;
-  						biggestVal = 2147483647;
+  						biggestVal = 2147483646;
+  						break;
+  					case 10:  /*this is "db" case*/
+  						smallestVal = -127;
+  						biggestVal = 126;
   						break;
   				}
 
@@ -258,7 +259,7 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
   					}
 
   					num = atoi(param);
-  					if(num < smallestVal || num >biggestVal){
+  					if(num <= smallestVal || num >= biggestVal){
   						printError("number is out of range", codingData);
   						return 1;
   					}
@@ -268,16 +269,20 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
   				return 0;
 
 
-  			case 11:
-  				if((tempOperands[0] != '"') || (tempOperands[strlen(tempOperands) -1] != '"' )){
+  			case 11: /* .asciz command */
+  				if(strlen(tempOperands)<2 || (tempOperands[0] != '"') || (tempOperands[strlen(tempOperands) -1] != '"' )){
   					printError("invalid string !", codingData);
   					return 1;
   				}
 
   				return 0;
 
+  			case 12: /* .extern and .entry commands  */
+
+  				return validateLabel(tempOperands, codingData);
+
   			default:
-  				printError("this is the wrong case !", codingData);		
+  				printf("Bug!!!!! invalid validation case passed to validateOperands function\n");
   				return 1;
 			
 
@@ -307,7 +312,7 @@ int isCorrectImmed(char * immed, struct fileCodingStruct *codingData)
  		else if((tempImmed[index] == '-') || (tempImmed[index] == '+')){
 
  			if(boolean == 1){
- 				printError("immed value is incorrect 1", codingData);  /*in this case this is the secound time that we are seeing + or -*/
+ 				printError("immed value is incorrect", codingData);  /*in this case this is the secound time that we are seeing + or -*/
  				return 1;
  			}
  				
@@ -318,7 +323,7 @@ int isCorrectImmed(char * immed, struct fileCodingStruct *codingData)
  			break;
  		}
  		else{
- 			printError("immed value is incorrect 2", codingData);
+ 			printError("immed value is incorrect", codingData);
  			return 1;
  		}	
  	}

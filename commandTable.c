@@ -38,6 +38,6 @@ dataCommand dataCommands[DATA_COMMANDS] =
 	{".dw",		9, 4},
 	{".db",		10, 1},
 	{".asciz",	11, 1},
-	{".entry",	0, 0},
-	{".extern",	0, 0}
+	{".entry",	12, 0},
+	{".extern",	12, 0}
 };

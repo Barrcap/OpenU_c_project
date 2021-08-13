@@ -11,16 +11,26 @@
 
 int validateLabel(char *label, struct fileCodingStruct *codingData)
 {
-	int i =0;   /*this is index varieble for while loop*/ 
+	int i =0;  /*this is index for label*/
+	int j = 0; /*this is index for command array*/
+	int k = 0; /*this is index for "label_without_spaces*/    
 	int is_command =0;
-	/*usefull to cheak if the label is command*/
+
+	char label_without_spaces[80] = {0};
+
+	/*clean white lettters*/
+	while(isspace(label[i])){
+ 		i++;
+ 			
+ 	}
 
 		/*if the first letter isnt alph print error*/ 
-	if(!isalpha(label[0]))
+	if(!isalpha(label[i]))
 	{     
 		printError("First letter isn't alph letter", codingData);
 		return 1;
 	}
+	
 			/*in thisx case the string is to long*/
 	if(strlen(label) >= LABEL_SIZE)
 	{      
@@ -28,15 +38,29 @@ int validateLabel(char *label, struct fileCodingStruct *codingData)
 		return 1;
 	}
 
+	/*we have to copy the string without the spaces because we want to compare strings*/
+	while(i < strlen(label)){
+
+		/*now we cant seeing white letters anymore cuz we getting this string with now white letters initioaly*/
+		if(isspace(label[i])){
+			printError("Can not use white letter at the middle of the label !", codingData);
+			return 1;
+		}
+
+		label_without_spaces[k] = label[i];
+		i++;
+		k++;
+	}
+
 		/*cheaking if the name of the label is command*/
-	while(i <= COMMAND_NUM)
+	while(j <= COMMAND_NUM)
 	{
-		if(strcmp(label, lines[i].command) == 0)
+		if(strcmp(label_without_spaces, lines[j].command) == 0)
 		{
 			is_command = 1;
 			break;
 		}
-		i++;
+		j++;
 	}
 	if(is_command)
 	{
@@ -67,7 +91,6 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
   	char tempOperands[LINE_LENGTH];
   	strcpy(tempOperands, operands);      /*we need copy of the main string */
 
-  	printf("Going to case #%d:\n", validCase);
   	switch(validCase){
 
   		case 1: 
@@ -81,12 +104,13 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
 			reg2 = strtok(NULL,",");
 			reg3 = strtok(NULL,",");
 			
-			if(isCorrectReg(reg1, codingData) && isCorrectReg(reg2, codingData) && isCorrectReg(reg3, codingData)){ /**/
+
+			if(!isCorrectReg(reg1, codingData) && !isCorrectReg(reg2, codingData) && !isCorrectReg(reg3, codingData))
 				return 0;
-			}
 
 			else
 				return 1;
+
 
 
 		case 2:
@@ -99,10 +123,9 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
   			reg1  = strtok(tempOperands,",");
 			reg2 = strtok(NULL,",");
 
-			if(isCorrectReg(reg1, codingData) && isCorrectReg(reg2, codingData)){
-				return 0;
-			}
-
+			if(!isCorrectReg(reg1, codingData) && !isCorrectReg(reg2, codingData)){
+				return 0; 
+			}	
 			else
 				return 1;
 
@@ -117,7 +140,7 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
 			immed = strtok(NULL,",");
 			reg3 = strtok(NULL,",");
 
-			if(isCorrectReg(reg1, codingData) && isCorrectImmed(immed, codingData) && isCorrectReg(reg3, codingData)){
+			if(!isCorrectReg(reg1, codingData) && !isCorrectImmed(immed, codingData) && !isCorrectReg(reg3, codingData)){
 				return 0;
 			}
 			else
@@ -127,15 +150,15 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
 
 			case 4:
 				if(howManyComma(tempOperands) != 2){     /*in this case we need 3 parts of it means 2 commas in the string*/
-  				printError("invalid number of commas", codingData);
-  				return 1;
-
+  					printError("invalid number of commas", codingData);
+  					return 1;
+  				}	
   				/*we are split the string to 3 parts in this case*/
   				reg1 = strtok(tempOperands,",");
 				reg2 = strtok(NULL,",");
 				string = strtok(NULL,",");
 
-				if(isCorrectReg(reg1, codingData) && validateLabel(string, codingData) && isCorrectReg(reg3, codingData)){
+				if(!isCorrectReg(reg1, codingData) && !isCorrectReg(reg2, codingData) && !validateLabel(string, codingData)){
 					return 0;
 				}
 				else
@@ -262,10 +285,10 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
 
 
   	
-
+  	return 0;
   }
-  return 0;
-}
+  
+
 
 int isCorrectImmed(char * immed, struct fileCodingStruct *codingData)   
 {
@@ -274,7 +297,6 @@ int isCorrectImmed(char * immed, struct fileCodingStruct *codingData)
  	int strPtr_index = 0;   
  	int index = 0;
  	int boolean = 0;
-
  	strcpy(tempImmed,immed);   /*have to this because we dont want to destroied the original string*/
 
  			/*we are check the first part of the string for abc0 case*/
@@ -302,18 +324,24 @@ int isCorrectImmed(char * immed, struct fileCodingStruct *codingData)
  	}
 
  	strtol(tempImmed, &strPtr, 10);   /*now the first part of the string is a number and the secound is unknowed*/
- 	
- 	if(strPtr != NULL){     /*its mark that the secound field is with alphbetic letters or with white letters*/
+
+ 	if(strPtr[0] != 0){     /*its mark that the secound field is with alphbetic letters or with white letters*/
  			if(isspace(strPtr[strPtr_index])){   /*if the first letter is white letter we have to chek if all the part is white spaces*/
  				while(strPtr_index < strlen(strPtr)){
  					if(isspace(strPtr[strPtr_index])){
- 						index++;
+ 						strPtr_index++;
  					}
+
  					else{      /*if its nnot white letter, the only possible case is invalid letter*/
  						printError("immed value is incorrect 3", codingData);
  						return 1;		
  					}
  				}
+ 			}
+
+ 			else{
+ 				printError("immed value is incorrect 3", codingData);
+ 				return 1;		
  			}
  			
  	}
@@ -328,7 +356,7 @@ int isCorrectReg(char * reg, struct fileCodingStruct *codingData)
  	int j = 0;
  	int i = 0;
  	int spaces_boolean = 0;
- 	char reg_without_dollar[10]; /* check buffer number ############################### */
+ 	char reg_without_dollar[10]={0}; /* check buffer number ############################### */
 
  	if(strlen(reg) <=1){
  		printError("missing value to the register", codingData);
@@ -373,9 +401,6 @@ int isCorrectReg(char * reg, struct fileCodingStruct *codingData)
 
  	/*check the value of the register*/ 
  	regVal = atoi(reg_without_dollar);
- 	printf("###############\n");
- 	printf("%d\n", regVal );
- 	printf("###############\n");
  		/*we are cheaking if the value is on range*/
  	if((regVal < 0) || (regVal > 31)){
  		printError("the value of the register is out of range", codingData);
@@ -414,9 +439,6 @@ int avner (char * reg, struct fileCodingStruct *codingData){
 
 			/*now we can use strtol*/
 	regVal = strtol(tempReg,&strPtr,10);
-	printf("###############\n");
- 	printf("%d\n", regVal );
- 	printf("###############\n");
 
 	if(strPtr != NULL){     /*its mark that the secound field is with alphbetic letters or with white letters*/
  			if(isspace(strPtr[strPtr_index])){   /*if the first letter is white letter we have to chek if all the part is white spaces*/
@@ -440,8 +462,6 @@ int avner (char * reg, struct fileCodingStruct *codingData){
 
  	else
  		return 0;
-
- 
 
 }
 

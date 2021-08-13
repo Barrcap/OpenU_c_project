@@ -282,7 +282,11 @@ int readFileLine(FILE *file, char *line, int *reachedEOF, fileCodingStruct *codi
 
 int seperateArguments(char *line, char *lable, char *command, char *operands, struct fileCodingStruct *codingData)
 {
-	int start=0, end, reachedNULL;
+	int start=0, end, reachedNULL, lastCharIndex;
+
+	if (SHOW_LINE) printf("Parsing line: '%s'\n", line);
+
+	lastCharIndex = strlen(line)-1;
 
 	reachedNULL = operandPointers(line, &start, &end);
 
@@ -343,6 +347,12 @@ int seperateArguments(char *line, char *lable, char *command, char *operands, st
 	while (isspace(line[start]))
 		start++;
 
+	end = lastCharIndex;
+	while (isspace(line[end]))
+	{
+		line[end] = 0;
+		end --;
+	}
 	strcpy(operands, line+start);
 
 	return 0;

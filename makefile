@@ -10,5 +10,5 @@ toBinary.o: toBinary.c toBinary.h commandTable.h fileCompiler.h data.h
 	gcc -c -g -ansi -pedantic -Wall toBinary.c -o toBinary.o
 commandTable.o: commandTable.c commandTable.h
 	gcc -c -g -ansi -pedantic -Wall commandTable.c -o commandTable.o
-validation.o: validation.c validation.h
+validation.o: validation.c validation.h debugFlags.h
 	gcc -c -g -ansi -pedantic -Wall validation.c -o validation.o

@@ -6,7 +6,7 @@
 #include "fileCompiler.h"
 #include "commandTable.h"
 #include "data.h"
-
+#include "debugFlags.h"
 
 
 int validateLabel(char *label, struct fileCodingStruct *codingData)
@@ -46,6 +46,11 @@ int validateLabel(char *label, struct fileCodingStruct *codingData)
 			printError("Can not use white letter at the middle of the label !", codingData);
 			return 1;
 		}
+		if ( !(isalpha(label[i])||isdigit(label[i])) )
+		{
+			printError("Illegal label - invalid letter", codingData);
+			return 1;
+		}
 
 		label_without_spaces[k] = label[i];
 		i++;
@@ -56,6 +61,16 @@ int validateLabel(char *label, struct fileCodingStruct *codingData)
 	while(j <= COMMAND_NUM)
 	{
 		if(strcmp(label_without_spaces, lines[j].command) == 0)
+		{
+			is_command = 1;
+			break;
+		}
+		j++;
+	}
+	j=0;
+	while(j <= DATA_COMMANDS)
+	{
+		if(strcmp(label_without_spaces, dataCommands[j].name +1) == 0)
 		{
 			is_command = 1;
 			break;
@@ -91,7 +106,13 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
   	char tempOperands[LINE_LENGTH];
   	strcpy(tempOperands, operands);      /*we need copy of the main string */
 
-  	printf("Case #%i\n", validCase);
+  	if (validCase != 7 && tempOperands[0] == 0)
+  	{
+  		printError("Missing operands after command", codingData);
+  		return 1;
+  	}
+
+  	if (SHOW_VALID_CASE) printf("Case #%i\n", validCase); /* debug printing */
   	switch(validCase){
 
   		case 1: /* 3 registers */
@@ -100,10 +121,25 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
   				return 1;
   			}
 
-  			 /*we are split the string to 3 parts in this case*/
+  			 /*we are split the string to 3 parts in this case and making sure no operands are missing*/
   			reg1 = strtok(tempOperands,",");
+  			if (reg1 == NULL)
+  			{
+  				printError("Missing operands", codingData);
+  				return 1;
+  			}
 			reg2 = strtok(NULL,",");
+			if (reg2 == NULL)
+  			{
+  				printError("Missing operands", codingData);
+  				return 1;
+  			}
 			reg3 = strtok(NULL,",");
+			if (reg3 == NULL)
+  			{
+  				printError("Missing operands", codingData);
+  				return 1;
+  			}
 			
 
 			if(!isCorrectReg(reg1, codingData) && !isCorrectReg(reg2, codingData) && !isCorrectReg(reg3, codingData))
@@ -120,9 +156,19 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
   				return 1;
   			}	
 
-  			/*we are split the string to 2 parts in this case*/
+  			/*we are split the string to 2 parts in this case and making sure no operands are missing*/
   			reg1  = strtok(tempOperands,",");
+  			if (reg1 == NULL)
+  			{
+  				printError("Missing operands", codingData);
+  				return 1;
+  			}
 			reg2 = strtok(NULL,",");
+			if (reg2 == NULL)
+  			{
+  				printError("Missing operands", codingData);
+  				return 1;
+  			}
 
 			if(!isCorrectReg(reg1, codingData) && !isCorrectReg(reg2, codingData)){
 				return 0; 
@@ -136,10 +182,25 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
   				return 1;
   			}
 
-  			 /*we are split the string to 3 parts in this case*/
+  			 /*we are split the string to 3 parts in this case and making sure no operands are missing*/
   			reg1  = strtok(tempOperands,",");
+  			if (reg1 == NULL)
+  			{
+  				printError("Missing operands", codingData);
+  				return 1;
+  			}
 			immed = strtok(NULL,",");
+			if (immed == NULL)
+  			{
+  				printError("Missing operands", codingData);
+  				return 1;
+  			}
 			reg3 = strtok(NULL,",");
+			if (reg3 == NULL)
+  			{
+  				printError("Missing operands", codingData);
+  				return 1;
+  			}
 
 			if(!isCorrectReg(reg1, codingData) && !isCorrectImmed(immed, codingData) && !isCorrectReg(reg3, codingData)){
 				return 0;
@@ -154,10 +215,25 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
   					printError("invalid number of commas", codingData);
   					return 1;
   				}	
-  				/*we are split the string to 3 parts in this case*/
+  				/*we are split the string to 3 parts in this case and making sure no operands are missing*/
   				reg1 = strtok(tempOperands,",");
+  				if (reg1 == NULL)
+	  			{
+	  				printError("Missing operands", codingData);
+	  				return 1;
+	  			}
 				reg2 = strtok(NULL,",");
+				if (reg2 == NULL)
+	  			{
+	  				printError("Missing operands", codingData);
+	  				return 1;
+	  			}
 				string = strtok(NULL,",");
+				if (string == NULL)
+	  			{
+	  				printError("Missing operands", codingData);
+	  				return 1;
+	  			}
 
 				if(!isCorrectReg(reg1, codingData) && !isCorrectReg(reg2, codingData) && !validateLabel(string, codingData)){
 					return 0;
@@ -242,7 +318,13 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
   					
   				operands_number = howManyComma(tempOperands) + 1;    /*checking how many operands*/
 
+  				/* making sure no operands are missing */
   				param = strtok(tempOperands,",");
+  				if (param == NULL)
+	  			{
+	  				printError("Missing operands", codingData);
+	  				return 1;
+	  			}
 
   				if(isCorrectImmed(param,codingData)){     /*if its invalid param print error*/
   					printError("invalid number", codingData);
@@ -252,6 +334,11 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
   				for (i=1; i<operands_number; i++)
   				{
   					param = strtok(NULL,",");
+  					if (param == NULL)
+		  			{
+		  				printError("Invalid comma", codingData);
+		  				return 1;
+		  			}
 
   					if(isCorrectImmed(param,codingData)){     /*if its invalid param print error*/
   						printError("invalid number", codingData);
@@ -312,7 +399,7 @@ int isCorrectImmed(char * immed, struct fileCodingStruct *codingData)
  		else if((tempImmed[index] == '-') || (tempImmed[index] == '+')){
 
  			if(boolean == 1){
- 				printError("immed value is incorrect", codingData);  /*in this case this is the secound time that we are seeing + or -*/
+ 				printError("invalid immed value", codingData);  /*in this case this is the secound time that we are seeing + or -*/
  				return 1;
  			}
  				
@@ -323,7 +410,7 @@ int isCorrectImmed(char * immed, struct fileCodingStruct *codingData)
  			break;
  		}
  		else{
- 			printError("immed value is incorrect", codingData);
+ 			printError("invalid immed value", codingData);
  			return 1;
  		}	
  	}
@@ -338,14 +425,14 @@ int isCorrectImmed(char * immed, struct fileCodingStruct *codingData)
  					}
 
  					else{      /*if its nnot white letter, the only possible case is invalid letter*/
- 						printError("immed value is incorrect 3", codingData);
+ 						printError("invalid immed value", codingData);
  						return 1;		
  					}
  				}
  			}
 
  			else{
- 				printError("immed value is incorrect 3", codingData);
+ 				printError("invalid immed value", codingData);
  				return 1;		
  			}
  			
@@ -375,7 +462,7 @@ int isCorrectReg(char * reg, struct fileCodingStruct *codingData)
 
  	/*we are cheaking if the is '$' in each of the registers*/
 	if(reg[i] != '$'){
-		printError("missing $ in one of the registers", codingData);
+		printError("register not starting with $", codingData);
 		return 1;
 	}
 

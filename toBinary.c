@@ -266,7 +266,16 @@ long int Jcase(char * str ,char * commandSTR, fileCodingStruct *codingData){    
 	long int mask;
 	int addressVal;
 
-	
+	if(strcmp(commandSTR,"stop") == 0){    /*this is stop case*/
+		code = 0;
+		opcode = findOpcode(commandSTR);
+		mask = opcode; 
+		mask <<=  26;
+		code |= mask;
+
+		pushCode(code, codingData); 
+		return 0;
+	}
 
 	if(!isLabel(str)){ 									
 		removeDollar(str, address);

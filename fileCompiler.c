@@ -161,7 +161,7 @@ int encodingLineTake1(char *line, struct fileCodingStruct *codingData)
 	{	/* lable was defined */
 		
 		/* VALIDATE_LABLE is debugging flag to give us option to turn off validation */
-		if (VALIDATE_LABLE && validateLabel(lable, codingData))
+		if (VALIDATE_LABLE && validateLabel(lable, codingData, PRINT_ERROR))
 			return 1;
 
 		/* pushing lable to symbol table */

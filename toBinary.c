@@ -191,10 +191,10 @@ long int Rcase2param(char * str ,char * command, fileCodingStruct *codingData){
 	mask = reg1Val;
 	mask <<= 21;
 	code |= mask;
-	mask = reg2Val;
+	mask = 0;
 	mask <<= 16;
 	code |= mask;
-	mask = 0;
+	mask = reg2Val;
 	mask <<= 11;
 	code |= mask;
 	mask = findfunct(command);  /*coding funct in each case*/

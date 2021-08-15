@@ -43,7 +43,7 @@ typedef struct fileCodingStruct
 
 	symbolLink *symbolLinkHead;
 	dataImageStruct *dataImage;
-	FILE *objectFile;
+	FILE *objectFile, *extFile;
 
 	int ic; /* instruction commands counter */
 	int dc; /* data commands counter */
@@ -78,6 +78,7 @@ void pushCode(long int code, fileCodingStruct *codingData);
 void pushDataInt(char *operands, int argumentsAmount, fileCodingStruct *codingData);
 void pushDataStr(char *operands, fileCodingStruct *codingData);
 void dataImageToFile(fileCodingStruct *codingData);
+void pushExtUsage(char *label, fileCodingStruct *codingData);
 
 
 void printError(char *errorString, struct fileCodingStruct *codingData);

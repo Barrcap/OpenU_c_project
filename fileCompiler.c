@@ -17,6 +17,7 @@ int fileCompiler(char *fileName)
 	FILE *sourceFile;
 	char line[LINE_LENGTH+1];
 	char objectFileName[FILE_NAME_SIZE];
+	char extFileName[FILE_NAME_SIZE+1];
 	int reachedEOF, errorCounter = 0;
 	fileCodingStruct codingData;
 	
@@ -75,19 +76,24 @@ int fileCompiler(char *fileName)
 
 	fseek(sourceFile, 0, SEEK_SET);
 
-	strcpy(objectFileName, fileName);
-	/* change .as to .ob */
-	objectFileName[strlen(objectFileName)-2] = 'o';
-	objectFileName[strlen(objectFileName)-1] = 'b';
+													/*############################ here #############################*/
 
-	codingData.objectFile = fopen(objectFileName, "w");
-	if (codingData.objectFile == NULL)
-	{
-		printf("Failed to open %s for writing\n",objectFileName);
+	if (createObjectFile(objectFileName, &codingData))
+	{	/* failed creating file */
 		freeSymbolTable(&codingData);
 		fclose(sourceFile);
 		return 1;
 	}
+
+	if (createExtFile(extFileName, &codingData))
+	{	/* failed creating file */
+		freeSymbolTable(&codingData);
+		fclose(codingData.objectFile);
+		fclose(sourceFile);
+		return 1;
+	}
+
+
 
 	/* print IC and DC to object file */
 	fprintf(codingData.objectFile, "%i %i\n", codingData.icf-100, codingData.dcf);
@@ -110,18 +116,22 @@ int fileCompiler(char *fileName)
 	if (SHOW_SYMBOL_TABLE) printSymbolTable(fileName, &codingData);
 	
 	fclose(sourceFile);
+	fclose(codingData.extFile);
 
 	dataImageToFile(&codingData);
 	fclose(codingData.objectFile);
 
 	if (errorCounter == 0)
-		errorCounter = createSymbolTableFiles(&codingData);
+		errorCounter = createAndFillEnt(&codingData);
 
 
 	freeDataImage(&codingData);
 	freeSymbolTable(&codingData);
 	if (errorCounter != 0)
+	{
 		remove(objectFileName);
+		remove(extFileName);
+	}
 	
 
 	return errorCounter;
@@ -422,12 +432,52 @@ void advanceImageCounter(char *command, char *operands, fileCodingStruct *coding
 	}
 }
 
-int createSymbolTableFiles(struct fileCodingStruct *codingData)
+int createObjectFile(char *objectFileName, struct fileCodingStruct *codingData)
+{
+	strcpy(objectFileName, codingData->fileName);
+	/* change .as to .ob */
+	objectFileName[strlen(objectFileName)-2] = 'o';
+	objectFileName[strlen(objectFileName)-1] = 'b';
+
+	codingData->objectFile = fopen(objectFileName, "w");
+	if (codingData->objectFile == NULL)
+	{
+		printf("Failed to open %s for writing\n",objectFileName); /* with to printError ######################### */
+		return 1;
+	}
+
+	return 0;
+}
+
+int createExtFile(char *extFileName, struct fileCodingStruct *codingData)
+{
+	int lastCharIndex;
+
+	strcpy(extFileName, codingData->fileName);
+	/* change .as to .ext */
+	lastCharIndex = strlen(extFileName)-1;
+
+	extFileName[lastCharIndex-1]	= 'e';
+	extFileName[lastCharIndex]		= 'x';
+	extFileName[lastCharIndex+1]	= 't';
+	extFileName[lastCharIndex+2]	=  0;
+
+	codingData->extFile = fopen(extFileName, "w");
+	if (codingData->extFile == NULL)
+	{
+		printf("Failed to open %s for writing\n",extFileName);
+		return 1;
+	}
+
+	return 0;
+
+}
+
+int createAndFillEnt(struct fileCodingStruct *codingData)
 {
 	char entFileName[FILE_NAME_SIZE];
-	char extFileName[FILE_NAME_SIZE];
-
-	FILE *entFile, *extFile;
+	
+	FILE *entFile;
 	symbolLink *currLink;
 
 	int lastCharIndex;
@@ -440,12 +490,6 @@ int createSymbolTableFiles(struct fileCodingStruct *codingData)
 	entFileName[lastCharIndex+1]	= 't';
 	entFileName[lastCharIndex+2]	=  0;
 
-	strcpy(extFileName, entFileName);
-	/* change .ent to .ext */
-	extFileName[lastCharIndex]		= 'x';
-
-	/* now entFileName = "FILENAME.ent" and extFileName = "FILENAME.ext" */
-
 
 	entFile = fopen(entFileName, "w");
 	if (entFile == NULL)
@@ -454,29 +498,17 @@ int createSymbolTableFiles(struct fileCodingStruct *codingData)
 		return 1;
 	}
 
-	extFile = fopen(extFileName, "w");
-	if (extFile == NULL)
-	{
-		printf("Failed to open %s for writing\n",extFileName);
-		fclose(entFile);
-		return 1;
-	}
-
-
 	currLink = codingData->symbolLinkHead;
 	while (currLink)
 	{
 		if (currLink->visibility == ENTRY)
 			fprintf(entFile, "%s %04i\n", currLink->name, currLink->adress);
-		if (currLink->visibility == EXTERN)
-			fprintf(extFile, "%s %04i\n", currLink->name, currLink->adress);
 
 		currLink = currLink->next;
 	}
 
 
 	fclose(entFile);
-	fclose(extFile);
 	return 0;
 
 }
@@ -532,3 +564,21 @@ void printCountersAfter(fileCodingStruct *codingData)
 	if (SHOW_DC && codingData->imageType == DATA_IMAGE)
 		printf("%i\n"RESET, codingData->dc);
 }
+
+
+
+
+
+/*
+	currLink = codingData->symbolLinkHead;
+	while (currLink)
+	{
+		if (currLink->visibility == ENTRY)
+			fprintf(entFile, "%s %04i\n", currLink->name, currLink->adress);
+		if (currLink->visibility == EXTERN)
+			fprintf(extFile, "%s %04i\n", currLink->name, currLink->adress);
+
+		currLink = currLink->next;
+	}
+
+	*/

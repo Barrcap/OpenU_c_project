@@ -335,6 +335,11 @@ void dataImageToFile(fileCodingStruct *codingData)
 
 }
 
+void pushExtUsage(char *label, fileCodingStruct *codingData)
+{
+	fprintf(codingData->extFile, "%s %04i\n", label, codingData->ic);
+}
+
 void printError(char *errorString, struct fileCodingStruct *codingData)
 {
 	/*printf("%s:%i: %s\n", codingData->fileName, codingData->sourceLine, errorString);*/

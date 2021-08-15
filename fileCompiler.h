@@ -15,7 +15,9 @@ int countOperands(char *operands);
 int getStringLenght(char *operands);
 void advanceImageCounter(char *command, char *operands, struct fileCodingStruct *codingData);
 
-int createSymbolTableFiles(struct fileCodingStruct *codingData);
+int createObjectFile(char *objectFileName, struct fileCodingStruct *codingData);
+int createExtFile(char *extFileName, struct fileCodingStruct *codingData);
+int createAndFillEnt(struct fileCodingStruct *codingData);
 
 void printSymbolTable(char *fileName, struct fileCodingStruct *codingData);
 void printTake(char *lable, char *command, char *operands, struct fileCodingStruct *codingData);

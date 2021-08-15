@@ -1,11 +1,11 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
-#include <stdio.h> /* can be removed with fileCompiler.h? ######################*/
+#include <stdio.h>
 
 #include "data.h"
 #include "commandTable.h"
-#include "toBinary.h" /* to be removed? ############################  */
+#include "toBinary.h"
 #include "debugFlags.h"
 
 
@@ -198,7 +198,12 @@ int getLabelAdress(char *lableName, fileCodingStruct *codingData)
 	while (currLink)
 	{
 		if (strcmp(lableName,currLink->name) == 0)
-			return currLink->adress;
+		{
+			if (currLink->visibility == EXTERN)
+				return 0;
+			else
+				return currLink->adress;
+		}
 
 
 		currLink = currLink->next;
@@ -328,4 +333,21 @@ void dataImageToFile(fileCodingStruct *codingData)
 		i++;
 	}
 
+}
+
+void pushExtUsage(char *label, fileCodingStruct *codingData)
+{
+	fprintf(codingData->extFile, "%s %04i\n", label, codingData->ic);
+}
+
+void printError(char *errorString, struct fileCodingStruct *codingData)
+{
+	printf(BOLDWHITE "%s:%i: " RESET, codingData->fileName, codingData->sourceLine);
+	printf(BOLDRED "%s\n" RESET, errorString);
+}
+
+void printWarning(char *errorString, struct fileCodingStruct *codingData)
+{
+	printf(BOLDWHITE "%s:%i: " RESET, codingData->fileName, codingData->sourceLine);
+	printf(BOLDYELLOW "WARNING: %s\n" RESET, errorString);
 }

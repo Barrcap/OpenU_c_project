@@ -178,7 +178,7 @@ int encodingLineTake1(char *line, struct fileCodingStruct *codingData)
 		if (VALIDATE_LABLE && validateLabel(lable, codingData, PRINT_ERROR))
 			return 1;
 
-		if ((strcmp(".extern",command) == 0))
+		if ((strcmp(".extern",command) == 0) || (strcmp(".entry",command) == 0))
 			printWarning("Ignoring label definition before .extern command", codingData);
 		else
 		{

@@ -18,8 +18,8 @@
 		ori		$30,-2147483648,$31
 		nori	$17,2147483647,$20
 ;				reg		reg		label
-		bne		$23 , 	$23
-		beq
+		bne		$23 , 	$23,	LABE1
+		beq		
 		blt
 		bgt
 

@@ -81,6 +81,7 @@ void dataImageToFile(fileCodingStruct *codingData);
 
 
 void printError(char *errorString, struct fileCodingStruct *codingData);
+void printWarning(char *errorString, struct fileCodingStruct *codingData);
 
 
 

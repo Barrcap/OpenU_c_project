@@ -1,4 +1,5 @@
 
+LABEL: .extern abclabel
 .asc
 .asciz 3
 .asciz "

@@ -198,7 +198,12 @@ int getLabelAdress(char *lableName, fileCodingStruct *codingData)
 	while (currLink)
 	{
 		if (strcmp(lableName,currLink->name) == 0)
-			return currLink->adress;
+		{
+			if (currLink->visibility == EXTERN)
+				return 0;
+			else
+				return currLink->adress;
+		}
 
 
 		currLink = currLink->next;
@@ -328,4 +333,18 @@ void dataImageToFile(fileCodingStruct *codingData)
 		i++;
 	}
 
+}
+
+void printError(char *errorString, struct fileCodingStruct *codingData)
+{
+	/*printf("%s:%i: %s\n", codingData->fileName, codingData->sourceLine, errorString);*/
+	printf(BOLDWHITE "%s:%i: " RESET, codingData->fileName, codingData->sourceLine);
+	printf(BOLDRED "%s\n" RESET, errorString);
+}
+
+void printWarning(char *errorString, struct fileCodingStruct *codingData)
+{
+	/*printf("%s:%i: %s\n", codingData->fileName, codingData->sourceLine, errorString);*/
+	printf(BOLDWHITE "%s:%i: " RESET, codingData->fileName, codingData->sourceLine);
+	printf(BOLDYELLOW "WARNING: %s\n" RESET, errorString);
 }

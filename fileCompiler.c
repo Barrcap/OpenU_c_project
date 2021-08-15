@@ -106,19 +106,23 @@ int fileCompiler(char *fileName)
 	
 
 	if (SHOW_GENERAL) printf("\nGreat Success!! Finished Take2! \n\n"); /* debug print */
-	
-	dataImageToFile(&codingData);
-
 	/* for debugging - using SHOW_SYMBOL/IC/DC macros */
 	if (SHOW_SYMBOL_TABLE) printSymbolTable(fileName, &codingData);
+	
+	fclose(sourceFile);
+
+	dataImageToFile(&codingData);
+	fclose(codingData.objectFile);
+
+	if (errorCounter == 0)
+		errorCounter = createSymbolTableFiles(&codingData);
 
 
 	freeDataImage(&codingData);
 	freeSymbolTable(&codingData);
-	fclose(codingData.objectFile);
 	if (errorCounter != 0)
 		remove(objectFileName);
-	fclose(sourceFile);
+	
 
 	return errorCounter;
 }
@@ -164,9 +168,14 @@ int encodingLineTake1(char *line, struct fileCodingStruct *codingData)
 		if (VALIDATE_LABLE && validateLabel(lable, codingData))
 			return 1;
 
-		/* pushing lable to symbol table */
-		if (pushLable(lable, codingData->imageType, INTERN, codingData))
-			return 1;
+		if ((strcmp(".extern",command) == 0))
+			printWarning("Ignoring label definition before .extern command", codingData);
+		else
+		{
+			/* pushing lable to symbol table */
+			if (pushLable(lable, codingData->imageType, INTERN, codingData))
+				return 1;
+		}
 	}
 
 	if ((strcmp(".extern",command) == 0))
@@ -413,11 +422,63 @@ void advanceImageCounter(char *command, char *operands, fileCodingStruct *coding
 	}
 }
 
-void printError(char *errorString, struct fileCodingStruct *codingData)
+int createSymbolTableFiles(struct fileCodingStruct *codingData)
 {
-	/*printf("%s:%i: %s\n", codingData->fileName, codingData->sourceLine, errorString);*/
-	printf(BOLDWHITE "%s:%i: " RESET, codingData->fileName, codingData->sourceLine);
-	printf(BOLDRED "%s\n" RESET, errorString);
+	char entFileName[FILE_NAME_SIZE];
+	char extFileName[FILE_NAME_SIZE];
+
+	FILE *entFile, *extFile;
+	symbolLink *currLink;
+
+	int lastCharIndex;
+
+	strcpy(entFileName, codingData->fileName);
+	/* change .as to .ent */
+	lastCharIndex = strlen(entFileName)-1;
+	entFileName[lastCharIndex-1]	= 'e';
+	entFileName[lastCharIndex]		= 'n';
+	entFileName[lastCharIndex+1]	= 't';
+	entFileName[lastCharIndex+2]	=  0;
+
+	strcpy(extFileName, entFileName);
+	/* change .ent to .ext */
+	extFileName[lastCharIndex]		= 'x';
+
+	/* now entFileName = "FILENAME.ent" and extFileName = "FILENAME.ext" */
+
+
+	entFile = fopen(entFileName, "w");
+	if (entFile == NULL)
+	{
+		printf("Failed to open %s for writing\n",entFileName);
+		return 1;
+	}
+
+	extFile = fopen(extFileName, "w");
+	if (extFile == NULL)
+	{
+		printf("Failed to open %s for writing\n",extFileName);
+		fclose(entFile);
+		return 1;
+	}
+
+
+	currLink = codingData->symbolLinkHead;
+	while (currLink)
+	{
+		if (currLink->visibility == ENTRY)
+			fprintf(entFile, "%s %04i\n", currLink->name, currLink->adress);
+		if (currLink->visibility == EXTERN)
+			fprintf(extFile, "%s %04i\n", currLink->name, currLink->adress);
+
+		currLink = currLink->next;
+	}
+
+
+	fclose(entFile);
+	fclose(extFile);
+	return 0;
+
 }
 
 void printSymbolTable(char *fileName, fileCodingStruct *codingData)

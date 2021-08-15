@@ -76,7 +76,6 @@ int fileCompiler(char *fileName)
 
 	fseek(sourceFile, 0, SEEK_SET);
 
-													/*############################ here #############################*/
 
 	if (createObjectFile(objectFileName, &codingData))
 	{	/* failed creating file */

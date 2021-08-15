@@ -1,18 +1,17 @@
 
-LABEL: .extern abclabel
 .asc
 .asciz 3
 .asciz "
 .db
 
- .dh   	   2   ,     -3	 
+ .dh       2   ,     -3  
 aa;ddeeddrraaddeeddrraaddeeddrraaddeeddrraaddeeddrraaddeeddrraaddeeddrraaddeeddrraaddeeddrr
 .ent
 .entry 1
 .entry a
 .entry a*dsfs
 .entry a2a2
-.entry atab2		
+.entry atab2        
 .entry aspace3   
 .entry entry
 .entry entry3
@@ -44,4 +43,4 @@ hola: orn $2 , 444, $25
 hola : ori $2 , 444, $25
 hol$a: ori $2 , 444, $25
 h2ola: ori $2 , 444, $25
- .dh   	   2   ,     -3	 
+ .dh       2   ,     -3  

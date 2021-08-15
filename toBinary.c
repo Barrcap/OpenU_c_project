@@ -50,8 +50,11 @@ int toBinary(char * commandSTR, char * operands, fileCodingStruct *codingData) {
 	else if (i >= 5 && i <= 7){
 		res = RRcase(operands,commandSTR, codingData);
 	}
-	else if (i >= 8 && i <= 22){
+	else if ((i >= 8 && i <= 12) || (i >= 17 && i <= 22) ){
 		res = Icase(operands,commandSTR, codingData);
+	}
+	else if (i >= 13 && i <= 16){
+		res = IcaseLabel(operands,commandSTR, codingData);
 	}
 	else if (i >= 23 && i <=26 ){
 		res = Jcase(operands,commandSTR, codingData);
@@ -216,8 +219,6 @@ long int Icase(char * str ,char * commandSTR, fileCodingStruct *codingData){    
 	long int code;
 	int opcode;
 	long int mask;
-	long int tempMask;  /*this varieabl containes the val on each case*/
-	short distance;  /*the distance form labels*/
 	removeDollar(tempReg1, reg1);
 	removeDollar(tempReg2, reg2);
 
@@ -225,17 +226,6 @@ long int Icase(char * str ,char * commandSTR, fileCodingStruct *codingData){    
 	/*convert the string to an integer */
 	reg1Val = atoi(reg1);
 	reg2Val = atoi(reg2);
-		/*this way we are checking what case we are (register or lables) */
-	if(!isLabel(immed)){
-		immedVal = atoi(immed);
-		mask = tempHex;
-		tempMask = mask & immedVal;
-	}
-	else{
-		distance = getDistAddres(immed, codingData);
-		mask = tempHex;
-		tempMask = mask & distance;
-	}
 
 	code = 0;
 	opcode = findOpcode(commandSTR);
@@ -248,12 +238,56 @@ long int Icase(char * str ,char * commandSTR, fileCodingStruct *codingData){    
 	mask = reg2Val;
 	mask <<= 16;
 	code |= mask;
-	code |= tempMask; /*this is the coding for each case*/
+	immedVal = atoi(immed);
+	mask = tempHex;
+	mask = mask & immedVal;
+	code |= mask; 
 	
 
 	pushCode(code, codingData); 
 	return 0;
 
+}
+
+long int IcaseLabel(char * str ,char * commandSTR, fileCodingStruct *codingData){ 
+	long int tempHex = 0x0000FFFF;    /*this varieble helps to initilaize immed field */
+	char * tempReg1  = strtok(str,",");
+	char * tempReg2 = strtok(NULL,",");
+	char * immed = strtok(NULL,",");
+	char reg1[REG_LENGHT] = {0};
+	char reg2[REG_LENGHT] = {0};
+	int reg1Val;
+	int reg2Val;
+	long int code;
+	int opcode;
+	long int mask;
+	short distance;  /*the distance form labels*/
+	removeDollar(tempReg1, reg1);
+	removeDollar(tempReg2, reg2);
+
+	/*convert the string to an integer */
+	reg1Val = atoi(reg1);
+	reg2Val = atoi(reg2);
+
+	code = 0;
+	opcode = findOpcode(commandSTR);
+	mask = opcode; 
+	mask <<=  26;
+	code |= mask;
+	mask = reg1Val;
+	mask <<= 21;
+	code |= mask;
+	mask = reg2Val;
+	mask <<= 16;
+	code |= mask;
+
+	distance = getDistAddres(immed, codingData);
+	mask = tempHex;
+	mask = mask & distance;
+	code |= mask;
+
+	pushCode(code, codingData); 
+	return 0;
 }
 
 long int Jcase(char * str ,char * commandSTR, fileCodingStruct *codingData){    /*this function isnt ready yet*/

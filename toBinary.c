@@ -24,7 +24,7 @@ int isLabel(char * str){
 
 	if (str[0] == '$')
 		return 0;
-	else if(str[0] == '-')              /*thats the only cases to be a register, all the rest cases is  lables */
+	else if(str[0] == '-')       /*thats the only cases to be a register, all the rest cases is  lables */
 		return 0;
 	else if(isdigit(str[0]))
 		return 0;
@@ -34,32 +34,32 @@ int isLabel(char * str){
 
 int getDistAddres(int destAdd, fileCodingStruct *codingData){
 	int sourceAdd = getIC(codingData); /*find my address*/
-	int res = destAdd - sourceAdd; /*this is the clac to know where we have to go*/
+	int res = destAdd - sourceAdd; /*this is the claculation to know where we have to go*/
 	return res;
 }
 
 
-
-int toBinary(char * commandSTR, char * operands, fileCodingStruct *codingData) {
+			/*in this function we are running on lines array. the numbers is each part of the cases*/
+int toBinary(char * command, char * operands, fileCodingStruct *codingData) {
 	int res;
 	int i = 0;
-	while(strcmp(commandSTR, lines[i].command)){
+	while(strcmp(command, lines[i].command)){
 		i++;
 	}
-	if(i <= 4){
-		res = Rcase(operands,commandSTR, codingData);
+	if(i <= 4){  /*this is "add" "sub" "and" "or" commands*/
+		res = Rcase3param(operands,command, codingData);
 	}
-	else if (i >= 5 && i <= 7){
-		res = RRcase(operands,commandSTR, codingData);
+	else if (i >= 5 && i <= 7){  /*this is "move" "mvhi" "mvlo" commands*/
+		res = Rcase2param(operands,command, codingData);
 	}
-	else if ((i >= 8 && i <= 12) || (i >= 17 && i <= 22) ){
-		res = Icase(operands,commandSTR, codingData);
+	else if ((i >= 8 && i <= 12) || (i >= 17 && i <= 22) ){   /*"addi"	"subi"	"andi" "ori" "nori" "lb" "sb" "lw" "sw" "lh" "sh"*/
+		res = Icase(operands,command, codingData);
 	}
-	else if (i >= 13 && i <= 16){
-		res = IcaseLabel(operands,commandSTR, codingData);
+	else if (i >= 13 && i <= 16){  /*"bne" "beq" "blt" "bgt"*/
+		res = IcaseLabel(operands,command, codingData);
 	}
-	else if (i >= 23 && i <=26 ){
-		res = Jcase(operands,commandSTR, codingData);
+	else if (i >= 23 && i <=26 ){  /*"jmp" "la" "call" "stop"*/
+		res = Jcase(operands,command, codingData);
 	}
 	else
 	{
@@ -71,20 +71,20 @@ int toBinary(char * commandSTR, char * operands, fileCodingStruct *codingData) {
 }
 
 /*void removeDollar(char * str,int occation, char *strREG1, char *strREG2, char strREG3)*/
-void removeDollar(char *str, char *strREG){
+void removeDollar(char *reg_with_dollar, char *reg_no_dollar){
 
-	strREG[0] = str[1];
-	strREG[1] = str[2];
+	reg_no_dollar[0] = reg_with_dollar[1];
+	reg_no_dollar[1] = reg_with_dollar[2];
 	
 }
 
 int findfunct(char * str){
-	/* in this case we are running from 0 to 4 index in array lines*/
+
 	int x;
 	int i;
 	int res = ERROR;
 
-	for(i=0; i<8; i++){
+	for(i=0; i<8; i++){  /*this is the only 8 cases that we have funct*/
 		if((x = strcmp(str, lines[i].command)) == 0){
 			res = lines[i].funct;
 		}
@@ -93,13 +93,12 @@ int findfunct(char * str){
 	return res;
 }
 
-int findOpcode(char * str){
-	/* in this case we are running from 0 to 4 index in array lines*/
+int findOpcode(char * str){	
 	int x;
 	int i;
 	int res = ERROR;
-	
-	for(i=0; i<28; i++){
+			/*we are running all over lines array to find the opcode*/
+	for(i=0; i<= COMMAND_NUM; i++){
 		if((x = strcmp(str, lines[i].command)) == 0){
 			res = lines[i].opcode;
 		}
@@ -109,42 +108,39 @@ int findOpcode(char * str){
 }
 
 
-
-long int Rcase(char * str ,char * commandSTR, fileCodingStruct *codingData){
+				
+long int Rcase3param(char * operands ,char * command, fileCodingStruct *codingData){
 	/*Extracting each register from the string*/
-	char reg1[REG_LENGHT] = {0};
-	char reg2[REG_LENGHT] = {0};
-	char reg3[REG_LENGHT] = {0};
+	char reg1_no_dollar[REG_LENGHT] = {0};
+	char reg2_no_dollar[REG_LENGHT] = {0};
+	char reg3_no_dollar[REG_LENGHT] = {0};
 
 	unsigned int reg1Val;
-	unsigned int reg2Val;
+	unsigned int reg2Val;				
 	unsigned int reg3Val;
 
 	long int code;
 	long int mask; 
 
-	char * tempReg1  = strtok(str,",");
-	char * tempReg2 = strtok(NULL,",");
-	char * tempReg3 = strtok(NULL,",");
+	char * reg1_with_dollar  = strtok(operands,",");
+	char * reg2_with_dollar = strtok(NULL,",");
+	char * reg3_with_dollar = strtok(NULL,",");
+	
+
 	/*removing the '$ from the strings and saving in new pointer */
+	removeDollar(reg1_with_dollar, reg1_no_dollar);      
+	removeDollar(reg2_with_dollar, reg2_no_dollar);
+	removeDollar(reg3_with_dollar, reg3_no_dollar);
 
-	/*reg1 = removeDollar(tempReg1,1);
-	reg2 = removeDollar(tempReg2,2);
-	reg3 = removeDollar(tempReg3,3);*/
-
-
-	removeDollar(tempReg1, reg1);
-	removeDollar(tempReg2, reg2);
-	removeDollar(tempReg3, reg3);
 	/*convert the string to an integer */
-	reg1Val = atoi(reg1);
-	reg2Val = atoi(reg2);
-	reg3Val = atoi(reg3);
+	reg1Val = atoi(reg1_no_dollar);
+	reg2Val = atoi(reg2_no_dollar);
+	reg3Val = atoi(reg3_no_dollar);
 
 
 	/*coding to binary*/
 	code = 0;
-	mask = findOpcode(commandSTR);        /*this is the case with opcode = 1*/ 
+	mask = findOpcode(command);  /*coding opcode in each case*/
 	mask <<=  26;
 	code |= mask;
 	mask = reg1Val;
@@ -156,19 +152,19 @@ long int Rcase(char * str ,char * commandSTR, fileCodingStruct *codingData){
 	mask = reg3Val;
 	mask <<= 11;
 	code |= mask;
-	mask = findfunct(commandSTR);  /*this mask initialize funct in each case and thats the only diffrence in this case*/
+	mask = findfunct(command);  /*coding funct in each case*/
 	mask <<= 6;
 	code |= mask;
 
-	pushCode(code, codingData); 
+	pushCode(code, codingData);  /*pushing code for printing*/
 	return 0;
 
 }
 
-long int RRcase(char * str ,char * commandSTR, fileCodingStruct *codingData){
+long int Rcase2param(char * str ,char * command, fileCodingStruct *codingData){
 	/*Extracting each register from the string*/
-	char reg1[REG_LENGHT] = {0};
-	char reg2[REG_LENGHT] = {0};
+	char reg1_no_dollar[REG_LENGHT] = {0};
+	char reg2_no_dollar[REG_LENGHT] = {0};
 
 	unsigned int reg1Val;
 	unsigned int reg2Val;
@@ -176,30 +172,32 @@ long int RRcase(char * str ,char * commandSTR, fileCodingStruct *codingData){
 	long int code;
 	long int mask; 
 
-	char * tempReg1  = strtok(str,",");
-	char * tempReg2 = strtok(NULL,",");
+	char * reg1_with_dollar  = strtok(str,",");
+	char * reg2_with_dollar = strtok(NULL,",");
 
-	removeDollar(tempReg1, reg1);
-	removeDollar(tempReg2, reg2);
+		/*removing the dollar*/
+	removeDollar(reg1_with_dollar, reg1_no_dollar);
+	removeDollar(reg2_with_dollar, reg2_no_dollar);
 
-	reg1Val = atoi(reg1);
-	reg2Val = atoi(reg2);
+		/*convert the string to an integer */
+	reg1Val = atoi(reg1_no_dollar);
+	reg2Val = atoi(reg2_no_dollar);
 
 	/*coding to binary*/
 	code = 0;
-	mask = findOpcode(commandSTR);        /*this is the case with opcode = 1*/ 
+	mask = findOpcode(command);  /*coding opcode in each case*/ 
 	mask <<=  26;
 	code |= mask;
 	mask = reg1Val;
 	mask <<= 21;
 	code |= mask;
-	mask = reg2Val;
+	mask = 0;
 	mask <<= 16;
 	code |= mask;
-	mask = 0;
+	mask = reg2Val;
 	mask <<= 11;
 	code |= mask;
-	mask = findfunct(commandSTR);  /*this mask initialize funct in each case and thats the only diffrence in this case*/
+	mask = findfunct(command);  /*coding funct in each case*/
 	mask <<= 6;
 	code |= mask;
 
@@ -208,29 +206,31 @@ long int RRcase(char * str ,char * commandSTR, fileCodingStruct *codingData){
 
 }
 
-long int Icase(char * str ,char * commandSTR, fileCodingStruct *codingData){            /* this method isnt ready yet*/ /*have to chek complete to 2 method*/
+long int Icase(char * str ,char * command, fileCodingStruct *codingData){            /* this method isnt ready yet*/ /*have to chek complete to 2 method*/
 	long int tempHex = 0x0000FFFF;    /*this varieble helps to initilaize immed field */
-	char * tempReg1  = strtok(str,",");
+	char * reg1_with_dollar  = strtok(str,",");
 	char * immed = strtok(NULL,",");
-	char * tempReg2 = strtok(NULL,",");
-	char reg1[REG_LENGHT] = {0};
-	char reg2[REG_LENGHT] = {0};
+	char * reg2_with_dollar = strtok(NULL,",");
+	char reg1_no_dollar[REG_LENGHT] = {0};
+	char reg2_no_dollar[REG_LENGHT] = {0};
 	int reg1Val;
 	int reg2Val;
 	short immedVal;
-	long int code;
+	long int code;   
 	int opcode;
 	long int mask;
-	removeDollar(tempReg1, reg1);
-	removeDollar(tempReg2, reg2);
+
+		/*removing the dollar*/
+	removeDollar(reg1_with_dollar, reg1_no_dollar);
+	removeDollar(reg2_with_dollar, reg2_no_dollar);
 
 
 	/*convert the string to an integer */
-	reg1Val = atoi(reg1);
-	reg2Val = atoi(reg2);
+	reg1Val = atoi(reg1_no_dollar);
+	reg2Val = atoi(reg2_no_dollar);		
 
 	code = 0;
-	opcode = findOpcode(commandSTR);
+	opcode = findOpcode(command);  /*coding opcode in each case*/
 	mask = opcode; 
 	mask <<=  26;
 	code |= mask;
@@ -251,13 +251,13 @@ long int Icase(char * str ,char * commandSTR, fileCodingStruct *codingData){    
 
 }
 
-long int IcaseLabel(char * str ,char * commandSTR, fileCodingStruct *codingData){ 
+long int IcaseLabel(char * str ,char * command, fileCodingStruct *codingData){ 
 	long int tempHex = 0x0000FFFF;    /*this varieble helps to initilaize immed field */
-	char * tempReg1  = strtok(str,",");
-	char * tempReg2 = strtok(NULL,",");
+	char * reg1_with_dollar  = strtok(str,",");
+	char * reg2_with_dollar = strtok(NULL,",");
 	char * immed = strtok(NULL,",");
-	char reg1[REG_LENGHT] = {0};
-	char reg2[REG_LENGHT] = {0};
+	char reg1_no_dollar[REG_LENGHT] = {0};
+	char reg2_no_dollar[REG_LENGHT] = {0};
 	int reg1Val;
 	int reg2Val;
 	long int code;
@@ -266,15 +266,15 @@ long int IcaseLabel(char * str ,char * commandSTR, fileCodingStruct *codingData)
 	int addressVal;
 	int distanceValidation;
 	short distance;  /*the distance form labels*/
-	removeDollar(tempReg1, reg1);
-	removeDollar(tempReg2, reg2);
+	removeDollar(reg1_with_dollar, reg1_no_dollar);
+	removeDollar(reg2_with_dollar, reg2_no_dollar);
 
 	/*convert the string to an integer */
-	reg1Val = atoi(reg1);
-	reg2Val = atoi(reg2);
+	reg1Val = atoi(reg1_no_dollar);
+	reg2Val = atoi(reg2_no_dollar);
 
 	code = 0;
-	opcode = findOpcode(commandSTR);
+	opcode = findOpcode(command);  /*coding opcode in each case*/
 	mask = opcode; 
 	mask <<=  26;
 	code |= mask;
@@ -291,17 +291,17 @@ long int IcaseLabel(char * str ,char * commandSTR, fileCodingStruct *codingData)
 			printError("Label was not defined!", codingData);
 			return 1;
 		}
-		if (addressVal == 0)
+		if (addressVal == 0)   /*use the extern label, print to ext file*/
 			pushExtUsage(immed, codingData);
 
 	distanceValidation = getDistAddres(addressVal, codingData);
-								/*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@     here*/
 	if (distanceValidation < MIN_DH || distanceValidation > MAX_DH)
 	{
 		printError("Distance to label too big! (can't fit 16 bits)", codingData);
 		return 1;
 	}
-	distance = distanceValidation;
+	/*distance between label address and current address fits 16 bits*/
+	distance = distanceValidation;   /*moving from int to short*/
 	mask = tempHex;
 	mask = mask & distance;
 	code |= mask;
@@ -310,7 +310,7 @@ long int IcaseLabel(char * str ,char * commandSTR, fileCodingStruct *codingData)
 	return 0;
 }
 
-long int Jcase(char * str ,char * commandSTR, fileCodingStruct *codingData){    /*this function isnt ready yet*/
+long int Jcase(char * str ,char * command, fileCodingStruct *codingData){    /*this function isnt ready yet*/
 	/*Extracting each register from the string*/
 	long int tempHex = 0x00FFFFFF; /*this varieble helps to initilaize immed field */
 	char address[REG_LENGHT];
@@ -320,9 +320,9 @@ long int Jcase(char * str ,char * commandSTR, fileCodingStruct *codingData){    
 	long int mask;
 	int addressVal;
 
-	if(strcmp(commandSTR,"stop") == 0){    /*this is stop case*/
+	if(strcmp(command,"stop") == 0){    /*this is stop case*/
 		code = 0;
-		opcode = findOpcode(commandSTR);
+		opcode = findOpcode(command);
 		mask = opcode; 
 		mask <<=  26;
 		code |= mask;
@@ -331,12 +331,14 @@ long int Jcase(char * str ,char * commandSTR, fileCodingStruct *codingData){    
 		return 0;
 	}
 
-	if(!isLabel(str)){ 									
+	if(!isLabel(str)){ 	/*this is register case*/								
 		removeDollar(str, address);
+
 		/*convert the string to an integer */
 		reg1Val = atoi(address);
+
 		code = 0;
-		opcode = findOpcode(commandSTR);
+		opcode = findOpcode(command);
 		mask = opcode; 
 		mask <<=  26;
 		code |= mask;
@@ -351,18 +353,18 @@ long int Jcase(char * str ,char * commandSTR, fileCodingStruct *codingData){    
 		return 0;
 	
 	}
-	else {
+	else {  /*this is label case*/
 		addressVal = getLabelAdress(str , codingData);
 		if (addressVal == -1)
 		{
 			printError("Label was not defined!", codingData);
 			return 1;
 		}
-		if (addressVal == 0)
+		if (addressVal == 0)  /*use the extern label, print to ext file*/
 			pushExtUsage(str, codingData);
 
 		code = 0;
-		opcode = findOpcode(commandSTR);
+		opcode = findOpcode(command);
 		mask = opcode; 
 		mask <<=  26;
 		code |= mask;

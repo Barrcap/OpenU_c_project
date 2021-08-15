@@ -21,7 +21,6 @@ int validateLabel(char *label, struct fileCodingStruct *codingData,int print_err
 	/*clean white lettters*/
 	while(isspace(label[i])){
  		i++;
- 			
  	}
 
 		/*if the first letter isnt alph print error*/ 
@@ -111,9 +110,9 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
 
 	int operands_number; 
 	int i;
-	int smallestVal;
-  	int biggestVal;
-  	int num;
+	long int smallestVal;
+  	long int biggestVal;
+  	long int num;
 
   	char tempOperands[LINE_LENGTH];
   	strcpy(tempOperands, operands);      /*we need copy of the main string */
@@ -306,16 +305,16 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
   				switch (validCase)
   				{
   					case 8:  /*this is "dh" case*/
-  						smallestVal = -32767;
-  						biggestVal = 32766;
+  						smallestVal = MIN_DH ;
+  						biggestVal = MAX_DH ;
   						break;
   					case 9:   /*this is "dw" case*/
-  						smallestVal = -2147483647;
-  						biggestVal = 2147483646;
+  						smallestVal = MIN_DW ;
+  						biggestVal = MAX_DW ;
   						break;
   					case 10:  /*this is "db" case*/
-  						smallestVal = -127;
-  						biggestVal = 126;
+  						smallestVal = MIN_DB ;
+  						biggestVal = MAX_DB ;
   						break;
   				}
 
@@ -357,8 +356,8 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
   						return 1;
   					}
 
-  					num = atoi(param);
-  					if(num <= smallestVal || num >= biggestVal){
+  					num = atol(param);
+  					if(num < smallestVal || num > biggestVal){
   						printError("number is out of range", codingData);
   						return 1;
   					}

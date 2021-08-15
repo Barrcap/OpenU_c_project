@@ -4,9 +4,6 @@
 #define LABEL_SIZE 31
 #define COMMAND_SIZE 10
 #define START_LINE 100
-#define DB 1
-#define DH 2
-#define DW 4
 
 
 enum image_type {CODE_IMAGE, DATA_IMAGE, NONE};

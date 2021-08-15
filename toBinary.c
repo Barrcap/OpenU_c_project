@@ -1,11 +1,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
+
 #include "toBinary.h"
 #include "commandTable.h"
 #include "data.h"
 #include "fileCompiler.h"
-#include <ctype.h>
+#include "validation.h"
+
 
 
 /*function that prtinting integer in binary*/
@@ -261,6 +264,7 @@ long int IcaseLabel(char * str ,char * commandSTR, fileCodingStruct *codingData)
 	int opcode;
 	long int mask;
 	int addressVal;
+	int distanceValidation;
 	short distance;  /*the distance form labels*/
 	removeDollar(tempReg1, reg1);
 	removeDollar(tempReg2, reg2);
@@ -290,7 +294,14 @@ long int IcaseLabel(char * str ,char * commandSTR, fileCodingStruct *codingData)
 		if (addressVal == 0)
 			pushExtUsage(immed, codingData);
 
-	distance = getDistAddres(addressVal, codingData);
+	distanceValidation = getDistAddres(addressVal, codingData);
+								/*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@     here*/
+	if (distanceValidation < MIN_DH || distanceValidation > MAX_DH)
+	{
+		printError("Distance to label too big! (can't fit 16 bits)", codingData);
+		return 1;
+	}
+	distance = distanceValidation;
 	mask = tempHex;
 	mask = mask & distance;
 	code |= mask;

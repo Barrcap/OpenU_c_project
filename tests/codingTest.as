@@ -1,8 +1,17 @@
 
- 
+
+jmp	iWillReturn2
+jmp iWillReturn
+
+WarnMe:	.entry	iWillReturn
+
 iWillReturn:	.dh		1,2,14,8   
 iWillReturn2:	.asciz	"He will Return!" 
-    		
+
+
+
+jmp	iWillReturn2
+jmp iWillReturn    		
 ;	R Commands
 ;				reg reg reg
 HelloR:	add		$0 ,$1 ,$2  
@@ -53,9 +62,36 @@ LABE4:	.asciz	"Weeeeeeeee!!!! Sting!!!!!!!"
 LABE5:	.asciz	"now for some difficult string:"
 		.asciz	"!@#$%^&*()_+}{L'?><MKL"    
 
-		jmp		DoLabel
-		bne		$15, $6, DoLabel2
+DoLabel2:	jmp		DoLabel
+			bne		$15, $6, DoLabel2
 
 iWillReturn:	.extern		DoLabel
 iWillReturn2:	.entry		DoLabel2
 
+.entry LABE1
+.entry LABE2
+.entry LABE3
+.entry LABE4
+.entry LABE5
+
+.extern EXT1
+.extern EXT2
+.extern EXT3
+.extern EXT4
+
+		bne		$23 , 	$23,	EXT1   
+		beq		$16,	$6,		EXT2
+		blt		$15,	$0,		EXT3  
+		bgt		$20,	$15,	EXT4
+
+
+		la		EXT1
+		la		EXT1
+		call	EXT1
+		call	EXT1		
+
+
+WarnMe:	.entry	iWillReturn2
+
+
+jmp iWillReturn

@@ -1,5 +1,5 @@
-;	Written by Barr
-
+  
+			
 jmp	iWillReturn2
 jmp iWillReturn
 
@@ -7,7 +7,6 @@ WarnMe:	.entry	iWillReturn
 
 iWillReturn:	.dh		1,2,14,8   
 iWillReturn2:	.asciz	"He will Return!" 
-
 
 
 jmp	iWillReturn2
@@ -93,5 +92,9 @@ iWillReturn2:	.entry		DoLabel2
 
 WarnMe:	.entry	iWillReturn2
 
+.asciz "this line is really long, but fits just right (exactly 80 characters)!"
 
 jmp iWillReturn
+
+
+;Written by Barr

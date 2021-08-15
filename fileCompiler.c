@@ -564,21 +564,3 @@ void printCountersAfter(fileCodingStruct *codingData)
 	if (SHOW_DC && codingData->imageType == DATA_IMAGE)
 		printf("%i\n"RESET, codingData->dc);
 }
-
-
-
-
-
-/*
-	currLink = codingData->symbolLinkHead;
-	while (currLink)
-	{
-		if (currLink->visibility == ENTRY)
-			fprintf(entFile, "%s %04i\n", currLink->name, currLink->adress);
-		if (currLink->visibility == EXTERN)
-			fprintf(extFile, "%s %04i\n", currLink->name, currLink->adress);
-
-		currLink = currLink->next;
-	}
-
-	*/

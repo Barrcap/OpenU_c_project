@@ -1,11 +1,11 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
-#include <stdio.h> /* can be removed with fileCompiler.h? ######################*/
+#include <stdio.h>
 
 #include "data.h"
 #include "commandTable.h"
-#include "toBinary.h" /* to be removed? ############################  */
+#include "toBinary.h"
 #include "debugFlags.h"
 
 
@@ -342,14 +342,12 @@ void pushExtUsage(char *label, fileCodingStruct *codingData)
 
 void printError(char *errorString, struct fileCodingStruct *codingData)
 {
-	/*printf("%s:%i: %s\n", codingData->fileName, codingData->sourceLine, errorString);*/
 	printf(BOLDWHITE "%s:%i: " RESET, codingData->fileName, codingData->sourceLine);
 	printf(BOLDRED "%s\n" RESET, errorString);
 }
 
 void printWarning(char *errorString, struct fileCodingStruct *codingData)
 {
-	/*printf("%s:%i: %s\n", codingData->fileName, codingData->sourceLine, errorString);*/
 	printf(BOLDWHITE "%s:%i: " RESET, codingData->fileName, codingData->sourceLine);
 	printf(BOLDYELLOW "WARNING: %s\n" RESET, errorString);
 }

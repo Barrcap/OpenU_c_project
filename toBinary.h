@@ -23,5 +23,6 @@ long int RRcase(char * str ,char * commandSTR, struct fileCodingStruct *codingDa
 long int Icase(char * str ,char * commandSTR, struct fileCodingStruct *codingData);
 long int IcaseLabel(char * str ,char * commandSTR, struct fileCodingStruct *codingData);
 long int Jcase(char * str ,char * commandSTR, struct fileCodingStruct *codingData);
+int getDistAddres(int destAdd, struct fileCodingStruct *codingData);
 
 void removeDollar(char *str, char *strREG);

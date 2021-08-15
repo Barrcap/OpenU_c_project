@@ -29,8 +29,7 @@ int isLabel(char * str){
 		return 1;
 }
 
-int getDistAddres(char * label, fileCodingStruct *codingData){
-	int destAdd = getLabelAdress(label, codingData);
+int getDistAddres(int destAdd, fileCodingStruct *codingData){
 	int sourceAdd = getIC(codingData); /*find my address*/
 	int res = destAdd - sourceAdd; /*this is the clac to know where we have to go*/
 	return res;
@@ -261,6 +260,7 @@ long int IcaseLabel(char * str ,char * commandSTR, fileCodingStruct *codingData)
 	long int code;
 	int opcode;
 	long int mask;
+	int addressVal;
 	short distance;  /*the distance form labels*/
 	removeDollar(tempReg1, reg1);
 	removeDollar(tempReg2, reg2);
@@ -281,7 +281,16 @@ long int IcaseLabel(char * str ,char * commandSTR, fileCodingStruct *codingData)
 	mask <<= 16;
 	code |= mask;
 
-	distance = getDistAddres(immed, codingData);
+	addressVal = getLabelAdress(immed, codingData);
+	if (addressVal == -1)
+		{
+			printError("Label was not defined!", codingData);
+			return 1;
+		}
+		if (addressVal == 0)
+			pushExtUsage(immed, codingData);
+
+	distance = getDistAddres(addressVal, codingData);
 	mask = tempHex;
 	mask = mask & distance;
 	code |= mask;
@@ -333,6 +342,14 @@ long int Jcase(char * str ,char * commandSTR, fileCodingStruct *codingData){    
 	}
 	else {
 		addressVal = getLabelAdress(str , codingData);
+		if (addressVal == -1)
+		{
+			printError("Label was not defined!", codingData);
+			return 1;
+		}
+		if (addressVal == 0)
+			pushExtUsage(str, codingData);
+
 		code = 0;
 		opcode = findOpcode(commandSTR);
 		mask = opcode; 

@@ -270,13 +270,10 @@ void pushDataInt(char *operands, int argumentsAmount, fileCodingStruct *codingDa
 
 	val = atol( strtok(operandsToRuin,",") );
 
-	/*printf("\n"); / *##############################################3*/
 	for (i=0; i<argumentsAmount; i++)
 	{
-		/*printf("Big loop, i=%i\n", i); / *##############################################3*/
 		for (j=0; j<codingData->commandImageBytes; j++)
 		{
-			/*printf("Small loop, j=%i\n", j); / *##############################################3*/
 			mask = 0 | val;
 			if (codingData->dataImage->currIndex >= codingData->dataImage->size)
 			{

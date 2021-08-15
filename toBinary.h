@@ -1,5 +1,5 @@
 #define ERROR -1
-#define REG_LENGHT 2
+#define REG_LENGHT 3
 
 /*strings that stores the string without a '$' ######there is possibilty that we have a problem this way##########* /
 static char strREG1[2];
@@ -21,6 +21,7 @@ int findOpcode(char * str);
 long int Rcase(char * str ,char * commandSTR, struct fileCodingStruct *codingData);
 long int RRcase(char * str ,char * commandSTR, struct fileCodingStruct *codingData);
 long int Icase(char * str ,char * commandSTR, struct fileCodingStruct *codingData);
+long int IcaseLabel(char * str ,char * commandSTR, struct fileCodingStruct *codingData);
 long int Jcase(char * str ,char * commandSTR, struct fileCodingStruct *codingData);
 
 void removeDollar(char *str, char *strREG);

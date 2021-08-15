@@ -223,6 +223,7 @@ int encodingLineTake2(char *line, struct fileCodingStruct *codingData)
 		return 0; /* blank or comment line */
 
 	/* now lable, command, and operands strings are seperated*/
+	removeWhites(operands);
 	
 	/* for debugging - using SHOW_LABLE/COMMAND/OPERANDS macros */
 	if (SHOW_TAKE == 2 || SHOW_TAKE == 3) printTake(lable, command, operands, codingData);
@@ -416,6 +417,22 @@ int getStringLenght(char *operands)
 	/*recieves string in the format "string"
 	lenght take into considaration place for NULL, and ignores quatation marks */
 	return strlen(operands)-1;
+}
+
+void removeWhites(char *operands)
+{/*	removes white notes from string.
+	including \n at the end of string, which exist because string came from fgets */
+	int i,j;
+
+	for (i=0,j=0; operands[j]!=0;j++)
+	{
+		if (!isspace(operands[j]))
+		{
+			operands[i] = operands[j];
+			i++;
+		}
+	}
+	operands[i] = 0;
 }
 
 void advanceImageCounter(char *command, char *operands, fileCodingStruct *codingData)

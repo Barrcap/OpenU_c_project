@@ -13,6 +13,7 @@ int seperateArguments(char *line, char *lable, char *command, char *operands, st
 int operandPointers(char *line, int *start, int *end);
 int countOperands(char *operands);
 int getStringLenght(char *operands);
+void removeWhites(char *operands);
 void advanceImageCounter(char *command, char *operands, struct fileCodingStruct *codingData);
 
 int createObjectFile(char *objectFileName, struct fileCodingStruct *codingData);

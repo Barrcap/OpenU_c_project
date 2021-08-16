@@ -1,4 +1,4 @@
-  
+;Written by Barr Caplan  
 			
 jmp	iWillReturn2
 jmp iWillReturn
@@ -52,6 +52,8 @@ HelloJ:	jmp		LABE3
 		call	LABE5
 BYE:	stop
 
+SameLine:	call	SameLine
+SameLine2:	bne		$23,$23,SameLine2
 
 ;	Data Commands 
 LABE1:	.db		0,5,-3,+80, 1,1 ,-128,127  
@@ -60,6 +62,10 @@ LABE3:	.dw		0,5,-3,+80, 1,1 ,-2147483648,2147483647
 LABE4:	.asciz	"Weeeeeeeee!!!! Sting!!!!!!!"  
 LABE5:	.asciz	"now for some difficult string:"
 		.asciz	"!@#$%^&*()_+}{L'?><MKL"    
+		.asciz	" "
+		.asciz	"	"
+		.asciz	"""
+		.asciz	" " "
 
 DoLabel2:	jmp		DoLabel
 			bne		$15, $6, DoLabel2
@@ -72,10 +78,14 @@ iWillReturn2:	.entry		DoLabel2
 .entry LABE3
 .entry LABE4
 .entry LABE5
+.entry LABE5
+.entry LABE5
 
 .extern EXT1
 .extern EXT2
 .extern EXT3
+.extern EXT4
+.extern EXT4
 .extern EXT4
 
 		la		EXT1   
@@ -89,12 +99,11 @@ iWillReturn2:	.entry		DoLabel2
 		call	EXT1
 		call	EXT1		
 
-
+LongButStilValidLabellllllllll: stop
+Add:	stop
+AsCiz:	stop
 WarnMe:	.entry	iWillReturn2
 
 .asciz "this line is really long, but fits just right (exactly 80 characters)!"
 
 jmp iWillReturn
-
-
-;Written by Barr

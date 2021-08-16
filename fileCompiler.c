@@ -332,9 +332,14 @@ int seperateArguments(char *line, char *lable, char *command, char *operands, st
 			printError("label too long", codingData);
 			return 1;
 		}
-
+		if (end-start == 1)
+		{
+			printError("illegal label definition", codingData);
+			return 1;
+		}
 		line[end] = 0;
 		strcpy(lable, line+start);
+
 		if (reachedNULL)
 		{
 			printError("missing command (reachedNULL)", codingData);

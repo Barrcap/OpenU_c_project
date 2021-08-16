@@ -7,8 +7,8 @@ ValidLabel:   stop
 .asciz "This line is reallllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllly long"
 ;this comment is realllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllly long
 .dh 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
-.asciz "This line is 81 chars long, including white notes!!!!!!!!!!!!!!!!!!!!!!"
-;This comment is 81 chars long, including white notes!~~~~~~~~~~~~~~~~~~~~~~~~~~
+.asciz "This line is 81 chars long, including white notes!!!!!!!!!!!!!!!!!!!!!!!"
+;This comment is 81 chars long, including white notes!~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 
 ;###############  illegal registers:    ###############          
         add     $+0 ,$1 ,$2  
@@ -53,7 +53,7 @@ ValidLabel:   stop
         subi    $26 ,   0   ,   $2,7  
         andi    $28,    -3,0,    $29,
         ori     ,$30,-32768,$31 
-        nori    $17,32767,$20
+        nori    $17,327,67,$20
         bne     $23 ,   $23,    ValidLabel  , 
         beq     ,$16,    $6,     ValidLabel
         blt     $15,    $0,  ,   ValidLabel  
@@ -63,7 +63,7 @@ ValidLabel:   stop
         lw      $28,    ,-30,    $29
         sw      $30,-32768,$31 ,
         lh      $17,,32767,$20
-        sh      $26 ,   0   ,   $27  
+        sh      $26 ,   0   ,   $2,7  
         jmp     $7,
         jmp     ,$7
         .db     0,5,-3,+80, 1,1 ,-128,127 , 
@@ -148,10 +148,6 @@ NoColon  move    $15,$16
 move:  add     $0 ,$1 ,$2
 asciz:  move    $15,$16
 :       move    $15,$16
-        beq     $16,    $6,     NotDefined
-        .entry                  NotDefined2
-        jmp     NotDefined
-        call    NotDefined
 NotAgain:  add     $0 ,$1 ,$2
         .extern NotAgain
 LABE1:  move    $15,$16

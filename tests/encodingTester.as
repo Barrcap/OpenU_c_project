@@ -3,6 +3,7 @@
 jmp	iWillReturn2
 jmp iWillReturn
 
+;optional warning:
 WarnMe:	.entry	iWillReturn
 
 iWillReturn:	.dh		1,2,14,8   
@@ -70,6 +71,7 @@ LABE5:	.asciz	"now for some difficult string:"
 DoLabel2:	jmp		DoLabel
 			bne		$15, $6, DoLabel2
 
+;optional warning:
 iWillReturn:	.extern		DoLabel
 iWillReturn2:	.entry		DoLabel2
 
@@ -102,6 +104,8 @@ iWillReturn2:	.entry		DoLabel2
 LongButStilValidLabellllllllll: stop
 Add:	stop
 AsCiz:	stop
+
+;optional warning:
 WarnMe:	.entry	iWillReturn2
 
 .asciz "this line is really long, but fits just right (exactly 80 characters)!"

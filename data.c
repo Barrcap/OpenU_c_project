@@ -93,9 +93,10 @@ int analyzeCommand(char *commandName, fileCodingStruct *codingData)
 
 int pushLable(char *lable, int placing, int visibility, fileCodingStruct *codingData)
 {/*	
-	returns 0 on success, 1 if found error */
-	/*char *errorString[LINE_LENGTH];
-	char *sourceLineString[20];*/
+	returns 0 on success, 1 if found error
+	INTERN and EXTERN labels are pushed at Take1
+	ENTRY label is pushed at Take2 */
+
 
 	symbolLink *currLink, *lastLink;
 
@@ -110,7 +111,7 @@ int pushLable(char *lable, int placing, int visibility, fileCodingStruct *coding
 			/* lable was already defined */
 			switch (currLink->visibility)
 			{
-				case INTERN:
+				case INTERN: /* visibility of existing label */
 
 					if (visibility == ENTRY) /* visibility of new label */
 					{
@@ -122,13 +123,20 @@ int pushLable(char *lable, int placing, int visibility, fileCodingStruct *coding
 					return 1;
 					break;
 
-				case EXTERN:
-					if (visibility == INTERN)
+				case EXTERN: /* visibility of existing label */
+
+					if (visibility == INTERN) /* visibility of new label */
 					{
 						printError("Label already defined as extern", codingData);
 						return 1;
 					}
-					if (visibility == EXTERN)
+					if (visibility == EXTERN) /* visibility of new label */
+						return 0;
+					break;
+
+				case ENTRY: /* visibility of existing label */
+
+					if (visibility == ENTRY) /* visibility of new label */
 						return 0;
 					break;
 
@@ -318,15 +326,15 @@ void dataImageToFile(fileCodingStruct *codingData)
 	while (i<codingData->dataImage->size)
 	{
 		if (i%4 == 0)
-			fprintf(codingData->objectFile,"%04i ",codingData->icf + i);
+			fprintf(codingData->objectFile,"%04i",codingData->icf + i);
 
 		mask = codingData->dataImage->array[i];
-		fprintf(codingData->objectFile, "%02X", (mask & 0xFF));
+		fprintf(codingData->objectFile, " %02X", (mask & 0xFF));
 
 		if (i%4 == 3)
 			fprintf(codingData->objectFile, "\n");
-		else
-			fprintf(codingData->objectFile, " ");
+		/*else
+			fprintf(codingData->objectFile, " ");*/
 		i++;
 	}
 

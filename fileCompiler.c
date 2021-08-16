@@ -222,7 +222,9 @@ int encodingLineTake2(char *line, struct fileCodingStruct *codingData)
 		return 0; /* blank or comment line */
 
 	/* now lable, command, and operands strings are seperated*/
-	removeWhites(operands);
+	/* operands were validated at Take1 */
+	if (strcmp(".asciz",command) != 0)
+		removeWhites(operands);
 	
 	/* for debugging - using SHOW_LABLE/COMMAND/OPERANDS macros */
 	if (SHOW_TAKE == 2 || SHOW_TAKE == 3) printTake(lable, command, operands, codingData);
@@ -242,7 +244,8 @@ int encodingLineTake2(char *line, struct fileCodingStruct *codingData)
 	/* Deal with encoding functions */
 
 	if (codingData->imageType == CODE_IMAGE)
-		toBinary(command, operands, codingData);
+		if (toBinary(command, operands, codingData))
+			return 1; /* found error while encoding */
 
 	if (codingData->imageType == DATA_IMAGE)
 	{
@@ -329,9 +332,14 @@ int seperateArguments(char *line, char *lable, char *command, char *operands, st
 			printError("label too long", codingData);
 			return 1;
 		}
-
+		if (end-start == 1)
+		{
+			printError("illegal label definition", codingData);
+			return 1;
+		}
 		line[end] = 0;
 		strcpy(lable, line+start);
+
 		if (reachedNULL)
 		{
 			printError("missing command (reachedNULL)", codingData);

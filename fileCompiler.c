@@ -222,7 +222,9 @@ int encodingLineTake2(char *line, struct fileCodingStruct *codingData)
 		return 0; /* blank or comment line */
 
 	/* now lable, command, and operands strings are seperated*/
-	removeWhites(operands);
+	/* operands were validated at Take1 */
+	if (strcmp(".asciz",command) != 0)
+		removeWhites(operands);
 	
 	/* for debugging - using SHOW_LABLE/COMMAND/OPERANDS macros */
 	if (SHOW_TAKE == 2 || SHOW_TAKE == 3) printTake(lable, command, operands, codingData);

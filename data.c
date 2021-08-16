@@ -318,15 +318,15 @@ void dataImageToFile(fileCodingStruct *codingData)
 	while (i<codingData->dataImage->size)
 	{
 		if (i%4 == 0)
-			fprintf(codingData->objectFile,"%04i ",codingData->icf + i);
+			fprintf(codingData->objectFile,"%04i",codingData->icf + i);
 
 		mask = codingData->dataImage->array[i];
-		fprintf(codingData->objectFile, "%02X", (mask & 0xFF));
+		fprintf(codingData->objectFile, " %02X", (mask & 0xFF));
 
 		if (i%4 == 3)
 			fprintf(codingData->objectFile, "\n");
-		else
-			fprintf(codingData->objectFile, " ");
+		/*else
+			fprintf(codingData->objectFile, " ");*/
 		i++;
 	}
 

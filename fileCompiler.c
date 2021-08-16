@@ -244,7 +244,8 @@ int encodingLineTake2(char *line, struct fileCodingStruct *codingData)
 	/* Deal with encoding functions */
 
 	if (codingData->imageType == CODE_IMAGE)
-		toBinary(command, operands, codingData);
+		if (toBinary(command, operands, codingData))
+			return 1; /* found error while encoding */
 
 	if (codingData->imageType == DATA_IMAGE)
 	{

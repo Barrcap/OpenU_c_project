@@ -41,7 +41,7 @@ int getDistAddres(int destAdd, fileCodingStruct *codingData){
 
 			/*in this function we are running on lines array. the numbers is each part of the cases*/
 int toBinary(char * command, char * operands, fileCodingStruct *codingData) {
-	int res;
+	int res = 0;
 	int i = 0;
 	while(strcmp(command, lines[i].command)){
 		i++;
@@ -287,12 +287,15 @@ long int IcaseLabel(char * str ,char * command, fileCodingStruct *codingData){
 
 	addressVal = getLabelAdress(immed, codingData);
 	if (addressVal == -1)
-		{
-			printError("Label was not defined!", codingData);
-			return 1;
-		}
-		if (addressVal == 0)   /*use the extern label, print to ext file*/
-			pushExtUsage(immed, codingData);
+	{
+		printError("Label was not defined!", codingData);
+		return 1;
+	}
+	if (addressVal == 0)   /*use the extern label, print to ext file*/
+	{
+		printError("Illegal use of exten label", codingData);
+		return 1;
+	}
 
 	distanceValidation = getDistAddres(addressVal, codingData);
 	if (distanceValidation < MIN_DH || distanceValidation > MAX_DH)

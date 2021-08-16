@@ -78,10 +78,10 @@ iWillReturn2:	.entry		DoLabel2
 .extern EXT3
 .extern EXT4
 
-		bne		$23 , 	$23,	EXT1   
-		beq		$16,	$6,		EXT2
-		blt		$15,	$0,		EXT3  
-		bgt		$20,	$15,	EXT4
+		la		EXT1   
+		la		EXT2
+		jmp		EXT3  
+		jmp		EXT4
 
 
 		la		EXT1

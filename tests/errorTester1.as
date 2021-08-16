@@ -147,6 +147,7 @@ ImGoingToBeTooLongggggggggggggg:  move    $15,$16
 NoColon  move    $15,$16
 move:  add     $0 ,$1 ,$2
 asciz:  move    $15,$16
+:       move    $15,$16
         beq     $16,    $6,     NotDefined
         .entry                  NotDefined2
         jmp     NotDefined

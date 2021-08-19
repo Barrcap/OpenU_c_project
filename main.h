@@ -1,2 +1,0 @@
-
-int validateFileName(char *fileName);

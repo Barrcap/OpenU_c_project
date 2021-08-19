@@ -46,7 +46,7 @@ typedef struct fileCodingStruct
 	int dc; /* data commands counter */
 	int icf; /* amount of bytes in code image */
 	int dcf; /* amount of bytes in data image */
-	int sourceLine, validationCase, imageType, commandImageBytes;
+	int sourceLine, validationCase, imageType, commandImageBytes, externUsed;
 
 	long int code; /* Temprorary until start using tables ############################### */
 

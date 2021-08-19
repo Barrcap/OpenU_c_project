@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <string.h>
-#include "main.h"
 #include "fileCompiler.h"
 #include "data.h"
+
+int validateFileName(char *fileName);
+
 
 int main(int argc, char const *argv[])
 {

@@ -60,7 +60,14 @@ int getIC(fileCodingStruct *codingData)
 }
 
 int analyzeCommand(char *commandName, fileCodingStruct *codingData)
-{
+{	/* recieves string with detected command name and searching for that command in global command tables 
+	if command was found:
+		updates relevant fields in fileCodingStruct for encoding and validation
+		returns 0
+	if command not found:
+		prints error
+		returns 1 
+	*/
 	int i;
 
 	for (i=0; i<COMMAND_NUM; i++)
@@ -75,7 +82,6 @@ int analyzeCommand(char *commandName, fileCodingStruct *codingData)
 	for (i=0; i<DATA_COMMANDS; i++)
 		if (strcmp(commandName,dataCommands[i].name) == 0)
 		{
-			/**imageType = DATA_IMAGE;*/
 			/* check if .entry or .extern */
 			if (strcmp(".entry",dataCommands[i].name)*strcmp(".extern",dataCommands[i].name) == 0)
 				codingData->imageType = NONE;
@@ -92,8 +98,10 @@ int analyzeCommand(char *commandName, fileCodingStruct *codingData)
 }
 
 int pushLable(char *lable, int placing, int visibility, fileCodingStruct *codingData)
-{/*	
+{/*	recieves label string, placing (CODE_IMAGE/DATA_IMAGE/NONE) and visibility (INTERN/ENTRY/EXTERN)
+	pushes given label to symbol table's linked list
 	returns 0 on success, 1 if found error
+
 	INTERN and EXTERN labels are pushed at Take1
 	ENTRY label is pushed at Take2 */
 
@@ -220,7 +228,7 @@ int getLabelAdress(char *lableName, fileCodingStruct *codingData)
 }
 
 void finalizeSymbolTable(fileCodingStruct *codingData)
-{	/* icf is next available adress */
+{	/* icf is first available adress for data image */
 	symbolLink *currLink;
 
 	currLink = codingData->symbolLinkHead;
@@ -236,7 +244,9 @@ void finalizeSymbolTable(fileCodingStruct *codingData)
 }
 
 void pushCode(long int code, fileCodingStruct *codingData)
-{
+{	/* recieves encoded instruction command, and prints it to .ob file
+	will be activated by toBinary, during Take2, after .ob will be created
+	objectFile file pointer at codingDataSrtuct is pointing at beginning of line to print to at .ob file */
 	int i;
 	unsigned char mask;
 	long int codeForFile = code;
@@ -268,7 +278,8 @@ void pushCode(long int code, fileCodingStruct *codingData)
 }
 
 void pushDataInt(char *operands, int argumentsAmount, fileCodingStruct *codingData)
-{
+{	/* recieves valid operands string from .db/.dh/.dw command and number of arguments
+	pushes argument to data image array */
 	long int val;
 	unsigned char mask;
 	int i, j;
@@ -300,7 +311,8 @@ void pushDataInt(char *operands, int argumentsAmount, fileCodingStruct *codingDa
 }
 
 void pushDataStr(char *operands, fileCodingStruct *codingData)
-{
+{	/* recieves string from .asciz command.
+	pushing string to data image array */
 	int i;
 
 	for (i=1; i<strlen(operands)-1; i++)
@@ -318,7 +330,8 @@ void pushDataStr(char *operands, fileCodingStruct *codingData)
 }
 
 void dataImageToFile(fileCodingStruct *codingData)
-{
+{	/* writing data immage array's content to object file */
+
 	int i=0;
 	char mask;
 
@@ -333,26 +346,27 @@ void dataImageToFile(fileCodingStruct *codingData)
 
 		if (i%4 == 3)
 			fprintf(codingData->objectFile, "\n");
-		/*else
-			fprintf(codingData->objectFile, " ");*/
+
 		i++;
 	}
 
 }
 
 void pushExtUsage(char *label, fileCodingStruct *codingData)
-{
+{	/* activated by toBinary whenever an extern label is coded in a command
+	printgs label and adress to .ext file */
 	fprintf(codingData->extFile, "%s %04i\n", label, codingData->ic);
+	codingData->externUsed ++;
 }
 
 void printError(char *errorString, struct fileCodingStruct *codingData)
-{
+{	/* gets error to print and prints it with file name and current source code line */
 	printf(BOLDWHITE "%s:%i: " RESET, codingData->fileName, codingData->sourceLine);
 	printf(BOLDRED "%s\n" RESET, errorString);
 }
 
 void printWarning(char *errorString, struct fileCodingStruct *codingData)
-{
+{	/* gets warning to print and prints it with file name and current source code line  */
 	printf(BOLDWHITE "%s:%i: " RESET, codingData->fileName, codingData->sourceLine);
 	printf(BOLDYELLOW "WARNING: %s\n" RESET, errorString);
 }

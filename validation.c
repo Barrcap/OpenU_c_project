@@ -113,6 +113,7 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
 	long int smallestVal;
   long int biggestVal;
 	long int num;
+  long int immedVal;
 
   	char tempOperands[LINE_LENGTH];
   	strcpy(tempOperands, operands);      /*we need copy of the main string */
@@ -212,6 +213,12 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
   				printError("Missing operands", codingData);
   				return 1;
   			}
+
+      immedVal = atol(immed);  
+      if(immedVal < MIN_DH || immedVal > MAX_DH){   /*we are cheking if the number is in range of 16 bits*/
+          printError("number is not in range ! ", codingData);
+          return 1; 
+  }
           /*if all the strings is correct operands */
 			if(!isCorrectReg(reg1, codingData,1) && !isCorrectImmed(immed, codingData,1) && !isCorrectReg(reg3, codingData,1)){
 				return 0;
@@ -302,20 +309,13 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
   			case 10:	/* .db */
 
 
-  				switch (validCase)
-  				{
-  					case 8:  /*this is "dh" case*/
+  				if(validCase == 8){  /*this is "dh" case*/
   						smallestVal = MIN_DH ;
   						biggestVal = MAX_DH ;
-  						break;
-  					case 9:   /*this is "dw" case*/
-  						smallestVal = MIN_DW ;
-  						biggestVal = MAX_DW ;
-  						break;
-  					case 10:  /*this is "db" case*/
+  				}
+  				if(validCase == 10){  /*this is "db" case*/
   						smallestVal = MIN_DB ;
   						biggestVal = MAX_DB ;
-  						break;
   				}
 
   				if(tempOperands[0] == ','){
@@ -357,11 +357,13 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
   					}
 
   					num = atol(param);
-  					if(num < smallestVal || num > biggestVal){
-  						printError("number is out of range", codingData);
-  						return 1;
-  					}
 
+            if(validCase == 10 || validCase == 8){
+  					   if(num < smallestVal || num > biggestVal){
+  					    	printError("number is out of range", codingData);
+  					   	  return 1;
+  					   }
+            }
   				}
 
   				return 0;
@@ -400,7 +402,6 @@ int isCorrectImmed(char * immed, struct fileCodingStruct *codingData,int print_e
  	int strPtr_index = 0;   
  	int index = 0;
  	int boolean = 0;
-  int immedVal;
  	strcpy(tempImmed,immed);   /*have to do this because we dont want to destroied the original string*/
 
   if(isWhiteString(tempImmed)){  /*we are cheking if all the string is white*/
@@ -439,13 +440,8 @@ int isCorrectImmed(char * immed, struct fileCodingStruct *codingData,int print_e
  		}	
  	}
 
- 	immedVal = strtol(tempImmed, &strPtr, 10);   /*now the first part of the string is a number and the secound is unknowed*/
-  if(immedVal < MIN_DH || immedVal > MAX_DH){   /*we are cheking if the number is in range of 16 bits*/
-    if(print_error){
-               printError("number is not in range ! ", codingData);
-            }   
-            return 1; 
-  }
+ 	strtol(tempImmed, &strPtr, 10);   /*now the first part of the string is a number and the secound is unknowed*/
+  
 
  	if(strPtr[0] != 0){     /*its mark that the secound field is with alphbetic letters or with white letters*/
  			if(isspace(strPtr[strPtr_index])){   /*if the first letter is white letter we have to chek if all the part is white spaces*/

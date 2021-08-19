@@ -1,6 +1,6 @@
 #include "commandTable.h"
 
-line lines[COMMAND_NUM] = 
+codeCommand codeCommands[CODE_COMMANDS] = 
 {
 /*	command	action,case,funct,opcode*/
 	{"add",		'R'	,1	,1	,0},

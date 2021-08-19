@@ -13,7 +13,7 @@
 
 /*function that prtinting integer in binary*/
 void binPrint(unsigned long int n)
-{
+{	/* for debugging purpose */
     unsigned i;
     for (i = 1 << 31; i > 0; i = i / 2)
         (n & i) ? printf("1") : printf("0");
@@ -21,6 +21,7 @@ void binPrint(unsigned long int n)
 }
 
 int isLabel(char * str){
+	/* recieves agrument, checks whethers its label */
 
 	if (str[0] == '$')
 		return 0;
@@ -33,17 +34,23 @@ int isLabel(char * str){
 }
 
 int getDistAddres(int destAdd, fileCodingStruct *codingData){
+	/* recieves label adress, and calculates distance from current encoded line's adress */
+
 	int sourceAdd = getIC(codingData); /*find my address*/
 	int res = destAdd - sourceAdd; /*this is the claculation to know where we have to go*/
 	return res;
 }
 
 
-			/*in this function we are running on lines array. the numbers is each part of the cases*/
+			
 int toBinary(char * command, char * operands, fileCodingStruct *codingData) {
+	/* receives valid instruction command with opernds, encodes it and send it to 'pushCode' function
+
+	in this function we are running on codeCommands array. the numbers is each part of the cases*/
+
 	int res = 0;
 	int i = 0;
-	while(strcmp(command, lines[i].command)){
+	while(strcmp(command, codeCommands[i].command)){
 		i++;
 	}
 	if(i <= 4){  /*this is "add" "sub" "and" "or" commands*/
@@ -78,29 +85,30 @@ void removeDollar(char *reg_with_dollar, char *reg_no_dollar){
 	
 }
 
-int findfunct(char * str){
-
+int findfunct(char * command){
+	/* recieves command's string and extracts funct from codeCommands gloabl table */
 	int x;
 	int i;
 	int res = ERROR;
 
 	for(i=0; i<8; i++){  /*this is the only 8 cases that we have funct*/
-		if((x = strcmp(str, lines[i].command)) == 0){
-			res = lines[i].funct;
+		if((x = strcmp(command, codeCommands[i].command)) == 0){
+			res = codeCommands[i].funct;
 		}
 	}
 	
 	return res;
 }
 
-int findOpcode(char * str){	
+int findOpcode(char * command){	
+	/* recieves command's string and extracts opcode from codeCommands gloabl table */
 	int x;
 	int i;
 	int res = ERROR;
-			/*we are running all over lines array to find the opcode*/
-	for(i=0; i<= COMMAND_NUM; i++){
-		if((x = strcmp(str, lines[i].command)) == 0){
-			res = lines[i].opcode;
+			/*we are running all over codeCommands array to find the opcode*/
+	for(i=0; i<= CODE_COMMANDS; i++){
+		if((x = strcmp(command, codeCommands[i].command)) == 0){
+			res = codeCommands[i].opcode;
 		}
 	}
 	
@@ -110,6 +118,7 @@ int findOpcode(char * str){
 
 				
 long int Rcase3param(char * operands ,char * command, fileCodingStruct *codingData){
+	/* encodes R commands with 3 params */
 	/*Extracting each register from the string*/
 	char reg1_no_dollar[REG_LENGHT] = {0};
 	char reg2_no_dollar[REG_LENGHT] = {0};
@@ -162,6 +171,7 @@ long int Rcase3param(char * operands ,char * command, fileCodingStruct *codingDa
 }
 
 long int Rcase2param(char * str ,char * command, fileCodingStruct *codingData){
+	/* encodes R commands with 2 params */
 	/*Extracting each register from the string*/
 	char reg1_no_dollar[REG_LENGHT] = {0};
 	char reg2_no_dollar[REG_LENGHT] = {0};
@@ -206,7 +216,9 @@ long int Rcase2param(char * str ,char * command, fileCodingStruct *codingData){
 
 }
 
-long int Icase(char * str ,char * command, fileCodingStruct *codingData){            /* this method isnt ready yet*/ /*have to chek complete to 2 method*/
+long int Icase(char * str ,char * command, fileCodingStruct *codingData){
+	/* encodes I commands */
+
 	long int tempHex = 0x0000FFFF;    /*this varieble helps to initilaize immed field */
 	char * reg1_with_dollar  = strtok(str,",");
 	char * immed = strtok(NULL,",");
@@ -251,7 +263,9 @@ long int Icase(char * str ,char * command, fileCodingStruct *codingData){       
 
 }
 
-long int IcaseLabel(char * str ,char * command, fileCodingStruct *codingData){ 
+long int IcaseLabel(char * str ,char * command, fileCodingStruct *codingData){
+	/* encodes I commands with label */
+
 	long int tempHex = 0x0000FFFF;    /*this varieble helps to initilaize immed field */
 	char * reg1_with_dollar  = strtok(str,",");
 	char * reg2_with_dollar = strtok(NULL,",");
@@ -313,7 +327,9 @@ long int IcaseLabel(char * str ,char * command, fileCodingStruct *codingData){
 	return 0;
 }
 
-long int Jcase(char * str ,char * command, fileCodingStruct *codingData){    /*this function isnt ready yet*/
+long int Jcase(char * str ,char * command, fileCodingStruct *codingData){
+	/* encodes J commands */
+
 	/*Extracting each register from the string*/
 	long int tempHex = 0x00FFFFFF; /*this varieble helps to initilaize immed field */
 	char address[REG_LENGHT];

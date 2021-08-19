@@ -70,12 +70,12 @@ int analyzeCommand(char *commandName, fileCodingStruct *codingData)
 	*/
 	int i;
 
-	for (i=0; i<COMMAND_NUM; i++)
-		if (strcmp(commandName,lines[i].command) == 0)
+	for (i=0; i<CODE_COMMANDS; i++)
+		if (strcmp(commandName,codeCommands[i].command) == 0)
 		{
 			codingData->imageType = CODE_IMAGE;
 			codingData->commandImageBytes = 4;
-			codingData->validationCase = lines[i].validationCase;
+			codingData->validationCase = codeCommands[i].validationCase;
 			return 0;
 		}
 

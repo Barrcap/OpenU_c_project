@@ -67,9 +67,9 @@ int validateLabel(char *label, struct fileCodingStruct *codingData,int print_err
 	}
 
 		/*cheaking if the name of the label is command*/
-	while(j <= COMMAND_NUM)
+	while(j <= CODE_COMMANDS)
 	{
-		if(strcmp(label_without_spaces, lines[j].command) == 0)
+		if(strcmp(label_without_spaces, codeCommands[j].command) == 0)
 		{
 			is_command = 1;   /*if we find that the string is command */
 			break;
@@ -396,7 +396,7 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
 
 
 int isCorrectImmed(char * immed, struct fileCodingStruct *codingData,int print_error)   
-{
+{	
  	char tempImmed [80];    /*80 is the max possible length of a string*/
  	char * strPtr;   /*pointer for srtol*/
  	int strPtr_index = 0;   

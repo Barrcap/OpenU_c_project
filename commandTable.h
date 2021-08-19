@@ -1,8 +1,8 @@
-#define COMMAND_NUM 27
+#define CODE_COMMANDS 27
 #define DATA_COMMAND_LENGHT 8
 #define DATA_COMMANDS 6
 
-typedef struct s1
+typedef struct codeCommand
 {
 	char command[30];
 	char action;
@@ -10,7 +10,7 @@ typedef struct s1
 	int funct;
 	int opcode;
 
-}line;
+}codeCommand;
 
 typedef struct dataCommand
 {
@@ -20,5 +20,5 @@ typedef struct dataCommand
 
 }dataCommand;
 
-line lines[COMMAND_NUM];
+codeCommand codeCommands[CODE_COMMANDS];
 dataCommand dataCommands[DATA_COMMANDS];

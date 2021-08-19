@@ -33,7 +33,7 @@ int validateLabel(char *label, struct fileCodingStruct *codingData,int print_err
     
 	}
 	
-			/*in thisx case the string is to long*/
+			/*in this case the string is to long*/
 	if(strlen(label) >= LABEL_SIZE)
 	{
     if(print_error){       
@@ -46,14 +46,14 @@ int validateLabel(char *label, struct fileCodingStruct *codingData,int print_err
 	/*we have to copy the string without the spaces because we want to compare strings*/
 	while(i < strlen(label)){
 
-		/*now we cant seeing white letters anymore cuz we getting this string with now white letters initioaly*/
+		/*now we cant seeing white letters anymore because we getting this string with now white letters initioaly*/
 		if(isspace(label[i])){
       if(print_error){
 			   printError("Can not use white letter at the middle of the label !", codingData);
        }
 			return 1;
 		}
-		if ( !(isalpha(label[i])||isdigit(label[i])) )
+		if ( !(isalpha(label[i]) || isdigit(label[i])) )  /*we can see only digit or alph letter , else its an error*/
 		{
       if(print_error){
 			   printError("Illegal label - invalid letter", codingData);
@@ -71,7 +71,7 @@ int validateLabel(char *label, struct fileCodingStruct *codingData,int print_err
 	{
 		if(strcmp(label_without_spaces, lines[j].command) == 0)
 		{
-			is_command = 1;
+			is_command = 1;   /*if we find that the string is command */
 			break;
 		}
 		j++;
@@ -81,19 +81,19 @@ int validateLabel(char *label, struct fileCodingStruct *codingData,int print_err
 	{
 		if(strcmp(label_without_spaces, dataCommands[j].name +1) == 0)
 		{
-			is_command = 1;
+			is_command = 1;  /*if we find that the string is command */
 			break;
 		}
 		j++;
 	}
-	if(is_command)
+	if(is_command)   /*if the string is command print error*/
 	{
     if(print_error){
 		  printError("label name can not be command name", codingData);
     }  
 		return 1;
 	}
-	   /*cheaking if the name of the label is command*/
+	   
 
 	return 0;
 }
@@ -101,7 +101,7 @@ int validateLabel(char *label, struct fileCodingStruct *codingData,int print_err
 int validateOperands(char *operands, int validCase, struct fileCodingStruct *codingData)
 {
   			/*creating template for the registers*/
-  	char *reg1;
+  char *reg1;
 	char *reg2;
 	char *reg3;
 	char *immed;
@@ -111,8 +111,8 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
 	int operands_number; 
 	int i;
 	long int smallestVal;
-  	long int biggestVal;
-  	long int num;
+  long int biggestVal;
+	long int num;
 
   	char tempOperands[LINE_LENGTH];
   	strcpy(tempOperands, operands);      /*we need copy of the main string */
@@ -127,7 +127,7 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
   	switch(validCase){
 
   	case 1: /* 3 registers */
-  			if(howManyComma(tempOperands) != 2){     /*in this case we need 3 registers' it means 2 commas in the string*/
+  			if(howManyComma(tempOperands) != 2){     /*in this case we need 3 registers it means 2 commas in the string*/
   				printError("invalid number of commas", codingData);
   				return 1;
   			}
@@ -152,8 +152,8 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
   				return 1;
   			}
 			
-
-			if(!isCorrectReg(reg1, codingData,1) && !isCorrectReg(reg2, codingData,1) && !isCorrectReg(reg3, codingData,1))
+          /*if all the strings is correct registers */
+			if(!isCorrectReg(reg1, codingData,1) && !isCorrectReg(reg2, codingData,1) && !isCorrectReg(reg3, codingData,1)) 
 				return 0;
 
 			else
@@ -162,7 +162,7 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
 
 
 		case 2: /* 2 registers */
-			if(howManyComma(tempOperands) != 1){     /*in this case we need 3 registers' it means 2 commas in the string*/
+			if(howManyComma(tempOperands) != 1){     /*in this case we need 2 registers it means 1 comma in the string*/
   				printError("invalid number of commas", codingData);
   				return 1;
   			}	
@@ -180,7 +180,7 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
   				printError("Missing operands", codingData);
   				return 1;
   			}
-
+          /*if all the strings is correct registers */
 			if(!isCorrectReg(reg1, codingData,1) && !isCorrectReg(reg2, codingData,1)){
 				return 0; 
 			}	
@@ -188,7 +188,7 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
 				return 1;
 
 		case 3:	/* reg, immed, reg */
-			if(howManyComma(tempOperands) != 2){     /*in this case we need 3 registers' it means 2 commas in the string*/
+			if(howManyComma(tempOperands) != 2){     /*in this case we need 3 operands it means 2 commas in the string*/
   				printError("invalid number of commas", codingData);
   				return 1;
   			}
@@ -212,7 +212,7 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
   				printError("Missing operands", codingData);
   				return 1;
   			}
-
+          /*if all the strings is correct operands */
 			if(!isCorrectReg(reg1, codingData,1) && !isCorrectImmed(immed, codingData,1) && !isCorrectReg(reg3, codingData,1)){
 				return 0;
 			}
@@ -222,7 +222,7 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
 			
 
 			case 4: /* reg, reg, label */
-				if(howManyComma(tempOperands) != 2){     /*in this case we need 3 parts of it means 2 commas in the string*/
+				if(howManyComma(tempOperands) != 2){     /*in this case we need 3 operands of it means 2 commas in the string*/
   					printError("invalid number of commas", codingData);
   					return 1;
   				}	
@@ -245,7 +245,7 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
 	  				printError("Missing operands", codingData);
 	  				return 1;
 	  			}
-
+            /*if all the strings is correct operands */
 				if(!isCorrectReg(reg1, codingData,1) && !isCorrectReg(reg2, codingData,1) && !validateLabel(string, codingData,1)){
 					return 0;
 				}
@@ -275,7 +275,7 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
   				return 0;
 
   			case 6: /* label */
-  				if(howManyComma(tempOperands)){     /*in this case we need one part it means 0 commas in the string*/
+  				if(howManyComma(tempOperands)){     /*in this case we need one operand it means 0 commas in the string*/
   					printError("invalid number of commas", codingData);
   					return 1;
   				}
@@ -287,7 +287,7 @@ int validateOperands(char *operands, int validCase, struct fileCodingStruct *cod
   				return 0;
 
   			case 7: /* stop command, no operands */
-  				if(howManyComma(tempOperands)){     /*in this case we need one part it means 0 commas in the string*/
+  				if(howManyComma(tempOperands)){     /*in this case we need one operand it means 0 commas in the string*/
   					printError("invalid number of commas", codingData);
   					return 1;
   				}
@@ -400,14 +400,22 @@ int isCorrectImmed(char * immed, struct fileCodingStruct *codingData,int print_e
  	int strPtr_index = 0;   
  	int index = 0;
  	int boolean = 0;
- 	strcpy(tempImmed,immed);   /*have to this because we dont want to destroied the original string*/
+  int immedVal;
+ 	strcpy(tempImmed,immed);   /*have to do this because we dont want to destroied the original string*/
 
- 			/*we are check the first part of the string for abc0 case*/
+  if(isWhiteString(tempImmed)){  /*we are cheking if all the string is white*/
+    if(print_error){
+           printError("all the string is white", codingData);  
+        }  
+        return 1;
+  }
+
+ 			/*we are check the first part of the string for */
  	while(index < strlen(tempImmed)){
- 		if(isspace(tempImmed[index])){
+ 		if(isspace(tempImmed[index])){  /*if white letters continue*/
  			index++;
  		}
- 		else if((tempImmed[index] == '-') || (tempImmed[index] == '+')){
+ 		else if((tempImmed[index] == '-') || (tempImmed[index] == '+')){  /*we can see this letters only one time at the beggining*/
 
  			if(boolean == 1){
         if(print_error){
@@ -431,7 +439,13 @@ int isCorrectImmed(char * immed, struct fileCodingStruct *codingData,int print_e
  		}	
  	}
 
- 	strtol(tempImmed, &strPtr, 10);   /*now the first part of the string is a number and the secound is unknowed*/
+ 	immedVal = strtol(tempImmed, &strPtr, 10);   /*now the first part of the string is a number and the secound is unknowed*/
+  if(immedVal < MIN_DH || immedVal > MAX_DH){   /*we are cheking if the number is in range of 16 bits*/
+    if(print_error){
+               printError("number is not in range ! ", codingData);
+            }   
+            return 1; 
+  }
 
  	if(strPtr[0] != 0){     /*its mark that the secound field is with alphbetic letters or with white letters*/
  			if(isspace(strPtr[strPtr_index])){   /*if the first letter is white letter we have to chek if all the part is white spaces*/
@@ -470,7 +484,7 @@ int isCorrectReg(char * reg, struct fileCodingStruct *codingData,int print_error
  	int j = 0;
  	int i = 0;
  	int spaces_boolean = 0;
- 	char reg_without_dollar[10]={0}; /* check buffer number ############################### */
+ 	char reg_without_dollar[10]={0}; 
 
  	if(strlen(reg) <=1){
     if(print_error){
@@ -552,4 +566,15 @@ int howManyComma(char * str)
  		i++;
  	}
  	return count;
+}
+
+int isWhiteString(char * str){
+  int i = 0;
+  while(i  < strlen(str)){
+    if(!isspace(str[i])){
+      return 0;
+    }
+    i++;
+  }
+  return 1;
 }
